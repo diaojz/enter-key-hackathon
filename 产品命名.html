@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>产品命名定稿 · 回车键</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf; --warn:#c9472b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:22px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .hero{background:linear-gradient(135deg,#fff6ee,#fdeee2);border:1px solid #f0d4c0;text-align:center}
+  .hero .name{font-family:Georgia,"Songti SC",serif;font-size:54px;font-weight:800;color:var(--accent);letter-spacing:.04em}
+  .hero .en{font-size:22px;font-weight:700;color:var(--ink);margin-top:2px}
+  .hero .tag{font-size:17px;font-weight:700;margin-top:10px}
+  .hero .tag .hl{color:var(--accent)}
+  .iconbox{width:160px;height:160px;margin:6px auto 14px;border-radius:28px;overflow:hidden;
+    border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center}
+  .iconbox img{width:100%;height:100%;object-fit:cover}
+  .iconbox .ph{color:var(--sub);font-size:12px;padding:0 10px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:var(--pill);font-weight:700}
+  .rank{font-size:18px}
+  tr.win td{background:#fbf4ec}
+
+  ul{margin:6px 0 0 18px}
+  li{margin:5px 0}
+  .pill{display:inline-block;background:var(--pill);border:1px solid var(--line);
+    border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin:2px 4px 2px 0}
+  .why{background:#f6f1e8;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+    padding:12px 16px;margin-top:12px;font-size:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}.hero .name{font-size:40px}}
+  .mini{background:var(--pill);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .mini h3{font-size:14px;margin-bottom:6px;color:var(--accent)}
+  .mini p{font-size:13px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">回车键 · Coding Agent 赛道</span>
+  <h1>产品命名定稿</h1>
+  <p class="meta">基于 <b>clawd-on-desk</b> 二次开发的 AI 编码 Agent 桌面萌宠 · 形象 + 命名一并拍板 · 2026-06-27</p>
+
+  <nav>
+    <a href="#final">定稿</a>
+    <a href="#bg">产品是什么</a>
+    <a href="#bench">竞品参照</a>
+    <a href="#options">候选方案</a>
+    <a href="#image">形象设定</a>
+  </nav>
+
+  <section id="final" class="hero">
+    <div class="iconbox"><img src="./assets/coda-icon.png" alt="Coda icon"
+       onerror="this.style.display='none';this.parentNode.querySelector('.ph').style.display='block'">
+       <span class="ph" style="display:none">icon 生成中<br>（assets/coda-icon.png）</span></div>
+    <div class="name">小哒</div>
+    <div class="en">Coda</div>
+    <p class="tag">它替你 <span class="hl">看</span> 着 AI 把活干完 —— Enter 一下，<span class="hl">小哒</span> 上岗收尾</p>
+  </section>
+
+  <section id="bg">
+    <h2><span class="badge">1</span>产品是什么</h2>
+    <p>一个蹲在桌面上的像素 / 拟物萌宠，<b>替你实时盯着 Claude Code、Codex、Cursor 等 20+ 个 AI 编码 Agent</b>——它们在思考、打字、构建、报错、等你审批权限时，萌宠会用动画和气泡告诉你，让你不用一直盯着终端。</p>
+    <p style="margin-top:8px">基于开源项目 <b>clawd-on-desk</b>（Electron，原形象是只像素螃蟹 Clawd，名字取自 Claude + claw 爪子）二次开发，我们要给它一个更朗朗上口、对中文路演观众更友好的名字与形象。</p>
+    <div class="why"><b>命名要戳中三件事：</b>① 盯 / 守（产品核心动作）　② 萌宠陪伴感　③ 和 Claude / Code 有谐音钩子</div>
+  </section>
+
+  <section id="bench">
+    <h2><span class="badge">2</span>竞品命名参照系</h2>
+    <table>
+      <tr><th>产品</th><th>命名逻辑</th><th>给我们的启示</th></tr>
+      <tr><td><b>Clawd</b>（原项目）</td><td>Claude + claw（爪子），谐音梗</td><td>谐音钩子是这条赛道的通用语</td></tr>
+      <tr><td><b>WorkBuddy</b>（腾讯）</td><td>Work + Buddy =「工作伙伴」</td><td>Buddy/伙伴=陪伴感，国内已被验证好传播</td></tr>
+      <tr><td><b>Codex</b>（OpenAI）</td><td>Code + -ex 拉丁词尾</td><td>「Code 家族」气质，国际范</td></tr>
+      <tr><td><b>Masko Code / Cloudling / Calico</b></td><td>萌后缀 -ling / -o + watch 调性</td><td>萌系小后缀好记好爱</td></tr>
+    </table>
+  </section>
+
+  <section id="options">
+    <h2><span class="badge">3</span>候选方案（按推荐排序）</h2>
+    <table>
+      <tr><th>排名</th><th>中文主名</th><th>英文代号</th><th>拆解</th><th>评价</th></tr>
+      <tr class="win"><td class="rank">🥇</td><td><b>小哒</b></td><td><b>Coda</b></td><td>Coda=乐谱「收尾记号」，谐音 Code；「哒」=轻快的提示音</td><td>谐音 Code 又含「替你把活收尾交付」的巧思，叠出萌感、国际范</td></tr>
+      <tr><td class="rank">🥈</td><td>码宝</td><td>Codo</td><td>码=Code，宝=宝贝 / 萌宠</td><td>国内最好叫、最像萌宠，一秒懂</td></tr>
+      <tr><td class="rank">🥉</td><td>看看</td><td>Kanon</td><td>叠字「看看」=替你看着 Agent</td><td>口语化、扣「盯 / 看」动作，亲切</td></tr>
+    </table>
+    <div class="why">
+      <b>为什么定「小哒 / Coda」：</b>
+      <ul>
+        <li><b>Coda</b> 是乐谱里的「收尾记号」——精准隐喻它陪你把 AI 写的活儿盯到<b>收尾交付</b>，立意比单纯「盯着」高一层；</li>
+        <li>Coda 谐音 <b>Code</b>，和 Code<i>x</i> / Clau<i>de</i> 同属「code 家族」气质，好拼好读、国际范；</li>
+        <li>中文「小哒」自带萌宠昵称感 +「哒」的轻快提示音，路演叫起来亲切上口；</li>
+        <li>形象不被螃蟹 / 猫绑死，做成原创小精灵，配 3D 拟物质感更出片。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="image">
+    <h2><span class="badge">4</span>形象设定</h2>
+    <div class="grid2">
+      <div class="mini"><h3>主体</h3><p>原创圆滚滚小精灵，<b>两只圆亮的大眼睛</b>专注望着前方——又萌又机灵，象征它替你看着 AI Agent 把活干完。</p></div>
+      <div class="mini"><h3>质感</h3><p>3D 拟物渲染，软胶 / 磨砂塑料玩偶质感 + 柔和光泽，正经产品 logo 级。</p></div>
+      <div class="mini"><h3>配色</h3><p>暖琥珀橙 + 奶白，对齐作战中心暖米编辑风（accent #e0623a）。</p></div>
+      <div class="mini"><h3>用途</h3><p>桌面 App 图标 + 路演主视觉 + 各动画状态的母版形象。</p></div>
+    </div>
+    <p style="margin-top:12px;font-size:13px;color:var(--sub)">icon 文件：<code>assets/coda-icon.png</code>（用 ChatGPT 网页版生成，零 API 成本）。</p>
+  </section>
+
+</div>
+</body>
+</html>

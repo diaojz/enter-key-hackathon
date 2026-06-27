@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>回车键 · 产品需求文档 PRD</title>
+<title>回车键 · 产品需求文档 PRD v3.0</title>
 <style>
   :root{
     --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
@@ -52,29 +52,36 @@
   th{color:var(--sub);font-size:12px;font-weight:700}
   tr:last-child td{border-bottom:none}
   .w{font-weight:800;color:var(--accent);white-space:nowrap}
-  /* 手机端：功能需求表首列防汉字拆字 */
   #feature td:first-child{word-break:keep-all}
   @media(max-width:560px){#feature td:first-child{min-width:76px}}
 
-  /* 优先级药丸 */
   .pri{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;color:#fff;white-space:nowrap}
   .pri.P0{background:var(--p0)} .pri.P1{background:var(--p1)} .pri.P2{background:var(--p2)}
 
-  /* 用户画像卡 */
-  .personas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-  @media(max-width:760px){.personas{grid-template-columns:1fr}}
-  .persona{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--pill)}
-  .persona .pn{font-weight:800;color:var(--accent);font-size:15px}
+  .personas{display:grid;grid-template-columns:1fr;gap:10px}
+  .persona{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--pill)}
+  .persona .pn{font-weight:800;color:var(--accent);font-size:16px}
   .persona .pj{font-size:12px;color:var(--sub);margin-bottom:8px}
-  .persona .pl{font-size:13px;margin:4px 0;padding-left:0}
+  .persona .pl{font-size:13.5px;margin:5px 0;padding-left:0}
   .persona .pl b{color:var(--ink)}
 
-  /* 用户故事卡 */
   .story{border-left:3px solid var(--accent);background:#fffefb;border-radius:0 10px 10px 0;
     padding:12px 14px;margin:8px 0;font-size:14px}
   .story .sid{font-weight:800;color:var(--accent);font-size:12px;letter-spacing:.04em}
 
-  /* demo 分镜 / 核心流程 */
+  /* 漏斗三段 */
+  .funnel{display:flex;flex-direction:column;gap:0}
+  .fstage{position:relative;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px;background:#fffefb}
+  .fstage:last-child{margin-bottom:0}
+  .fstage .stag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;
+    background:var(--accent);color:#fff;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+  .fstage .sttl{font-size:17px;font-weight:800;margin-bottom:4px}
+  .fstage .ssub{font-size:13px;color:var(--sub);margin-bottom:8px}
+  .fstage.s1{border-left:4px solid #c98a2b}
+  .fstage.s2{border-left:4px solid #3f8f5b}
+  .fstage.s3{border-left:4px solid var(--accent)}
+  .arrow{text-align:center;color:var(--accent);font-size:13px;font-weight:700;margin:-4px 0 8px}
+
   .flow{display:flex;flex-direction:column;gap:0}
   .fstep{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line)}
   .fstep:last-child{border-bottom:none}
@@ -85,7 +92,11 @@
   .quote{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;
     padding:12px 14px;font-size:13.5px;margin:8px 0;color:#384a3a;font-style:italic}
 
-  /* in/out scope 双栏 */
+  code,.cmd{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px}
+  .cmd{display:block;background:#2b2723;color:#f3ede2;border-radius:10px;padding:12px 14px;margin:8px 0;
+    white-space:pre-wrap;line-height:1.7;overflow-x:auto}
+  .cmd .c{color:#e0a07a} .cmd .g{color:#8fc99a} .cmd .d{color:#9a948a}
+
   .scope{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media(max-width:680px){.scope{grid-template-columns:1fr}}
   .scol{border-radius:12px;padding:14px}
@@ -99,7 +110,7 @@
 
   .timeline .tl{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
   .timeline .tl:last-child{border-bottom:none}
-  .timeline .tt{font-weight:800;color:var(--accent);white-space:nowrap;font-size:13px;min-width:130px}
+  .timeline .tt{font-weight:800;color:var(--accent);white-space:nowrap;font-size:13px;min-width:150px}
   .timeline .tc{font-size:14px}
 
   .verdict{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:14px 16px;font-size:14px}
@@ -107,267 +118,288 @@
   .risk{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:14px;margin-top:10px}
   .risk b{color:var(--accent)}
 
+  .kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:6px 0}
+  @media(max-width:680px){.kpis{grid-template-columns:1fr}}
+  .kpi{background:var(--pill);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .kpi .kn{font-family:Georgia,serif;font-size:24px;font-weight:800;color:var(--accent)}
+  .kpi .kl{font-size:12px;color:var(--sub);margin-top:2px}
+
   footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <span class="kicker">回车键 · 产品需求文档 · CODING AGENT</span>
+  <span class="kicker">小哒 Coda · 产品需求文档 v3.0 · CODING AGENT</span>
   <h1>产品需求文档（PRD）</h1>
-  <p class="meta"><b>回车键 Enter</b> · v1.0 · 撰写 2026-06-27 · 状态：定稿·待实现 · 与 <a href="选题定稿.html" style="color:var(--accent)">选题定稿</a> 衔接</p>
+  <p class="meta"><b>小哒 Coda</b>（回车键团队出品）· v3.0 产品中心版 · 撰写 2026-06-27 · 状态：黑客松冲刺·48H MVP · 取代 v2.0 · 与 <a href="选题定稿.html" style="color:var(--accent)">选题定稿</a>、<a href="路演PPT.html" style="color:var(--accent)">路演 PPT</a> 衔接</p>
 
   <nav>
-    <a href="#overview">概述</a>
-    <a href="#persona">用户画像</a>
-    <a href="#story">用户故事</a>
-    <a href="#feature">功能需求</a>
-    <a href="#flow">核心流程</a>
-    <a href="#scope">范围边界</a>
-    <a href="#nfr">非功能</a>
-    <a href="#metric">成功指标</a>
+    <a href="#overview">定位</a>
+    <a href="#problem">问题</a>
+    <a href="#persona">用户</a>
+    <a href="#product">产品形态</a>
+    <a href="#cap">三个能力</a>
+    <a href="#tech">技术地基</a>
+    <a href="#feature">功能</a>
+    <a href="#scope">MVP范围</a>
+    <a href="#demo">Demo脚本</a>
+    <a href="#metric">指标</a>
     <a href="#risk">风险</a>
-    <a href="#plan">里程碑</a>
+    <a href="#plan">演进</a>
   </nav>
 
   <!-- 概述 -->
   <section id="overview" class="hero">
-    <h2><span class="badge">🎯</span>产品概述</h2>
-    <p class="oneliner">让<span class="hl">不懂代码的行业专业人士</span>，用<span class="hl">自己行业的大白话</span>说一句诉求，按下<span class="hl">回车</span>，自动生成一个<span class="hl">真能跑、能上线、能扫码分享</span>的单页小工具。</p>
+    <h2><span class="badge">🎯</span>一句话定位</h2>
+    <p class="oneliner"><span class="hl">小哒 Coda</span> 是一个<span class="hl">常驻桌面</span>、<span class="hl">懂你行业</span>的 Coding Agent 助手——它盯着你的 Coding Agent <span class="hl">实时反馈进度</span>，带<span class="hl">业务维度</span>帮你 Review，还能把你的行业经验<span class="hl">打包成插件一键分享</span>给同行。</p>
     <p class="slogan">回车键 · Enter 一下，世界开始运行</p>
-    <h3>问题陈述</h3>
-    <p>行业专家（诊所运营、餐馆老板、培训机构老师）有明确的数字化提效需求，却卡在两道鸿沟：</p>
+    <h3>与 v2.0 的关键差异</h3>
+    <p>v2.0 用「成长漏斗（入门→进阶→裂变）」叙事，是用户旅程视角，导致「产品到底是个什么东西」始终没讲清。v3.0 改为<b>产品中心</b>：先立住产品形态——<b>一个有形象、常驻桌面的助手</b>（参考 clawd-on-desk 类桌面宠物），再讲它的<b>三个能力：看得见 · 懂业务 · 能裂变</b>，每个能力正面解决一个痛点。</p>
+  </section>
+
+  <!-- 问题 -->
+  <section id="problem">
+    <h2><span class="badge">!</span>问题陈述：用 AI 写代码的人，卡在三件事</h2>
+    <p style="color:var(--sub);font-size:13.5px;margin-bottom:6px">目标用户是「行业专家但不懂代码」的跨界者。他们想用 Coding Agent 解决本行业问题，却被三件事挡住：</p>
     <ul>
-      <li><b>能力鸿沟</b>：现有工具（v0、Bolt、Lovable）的交互语言是"组件、路由、数据库、API"，行业专家根本看不懂，不知从何描述需求。</li>
-      <li><b>交付鸿沟</b>：即便聊出 Demo，成果停在对话框截图或本地运行，无法生成公网链接分享，没形成真正可用的工具。</li>
+      <li><b>① 看不见（挂着不知道进度）</b>　让 Agent 跑任务，干没干完、要不要确认，得一直盯着终端窗口。盯久了、或网络/token 一失败，就在「门口」放弃了。</li>
+      <li><b>② 不懂你（只懂技术不懂业务）</b>　通用 Agent 帮你 Review 只懂技术维度（依赖/结构/bug），不懂你的商业逻辑。它说「变量命名不规范」，却不会说「患者隐私字段不该明文存 localStorage」。用了 AI 但感受不到真正懂我。</li>
+      <li><b>③ 传不出（经验沉淀不下、传不出去）</b>　调好的 Prompt、行业规则锁在自己会话历史里，换项目重来，同行更用不上——每个人都在重新发明轮子。</li>
     </ul>
-    <h3>我们的解法 · 两座桥</h3>
-    <ul>
-      <li><b>行业语言层</b>：系统自动识别行业背景，用该行业原生术语（"患者、排号、预约时段"而非"用户 ID、数据表、接口"）确认需求 —— 消除能力鸿沟。</li>
-      <li><b>一键交付层</b>：Agent 生成后自动部署到公网，输出可访问 URL 和二维码，扫码即用 —— 消除交付鸿沟。</li>
-    </ul>
+    <h3>现有解法的痛点</h3>
+    <table>
+      <tr><th>解法</th><th>痛点</th></tr>
+      <tr><td class="w">通用 LLM（豆包/Kimi）</td><td>不懂行业，每次重新解释背景，知识不积累</td></tr>
+      <tr><td class="w">Cursor/Copilot</td><td>面向开发者；Review 无业务维度；Agent 状态藏在终端里</td></tr>
+      <tr><td class="w">Claude Code 裸用</td><td>能力强但要盯终端、不懂你行业、经验传不出去</td></tr>
+      <tr><td class="w">手动分享 Prompt</td><td>传播链条长，接收者需会用 Prompt，门槛依然在</td></tr>
+    </table>
   </section>
 
   <!-- 用户画像 -->
   <section id="persona">
-    <h2><span class="badge">👤</span>目标用户与画像</h2>
+    <h2><span class="badge">👤</span>目标用户 · 贯穿 Demo 的主线人物</h2>
+    <p><b>核心受众</b>：T 型人才中想向 <b>π（派）型</b>进化的跨界专家。T 型＝某领域深度专家、技术宽度有限；π 型＝在行业深度之外，能借工具完成基础数字化构建。这类人清楚自己时间价值，<b>付费意愿高</b>。</p>
+    <p style="color:var(--sub);font-size:13px">非目标：职业软件工程师（他们用 Cursor/Claude/Copilot，小哒 Coda 不为他们设计）。</p>
     <div class="personas">
       <div class="persona">
-        <div class="pn">王姐</div><div class="pj">社区诊所运营 · 北京</div>
-        <p class="pl"><b>背景</b>：管挂号、排号、医生排班；会微信和 Excel，装过简道云嫌麻烦放弃。</p>
-        <p class="pl"><b>痛点</b>：早高峰扎堆、手写排号易错；想做"扫码取号"但外包报价 3000 太贵。</p>
-        <p class="pl"><b>期望</b>：说一句话、按回车，马上能用。</p>
-      </div>
-      <div class="persona">
-        <div class="pn">老李</div><div class="pj">小餐馆老板 · 上海</div>
-        <p class="pl"><b>背景</b>：20 桌川菜馆，自己管店兼收银；用美团接单。</p>
-        <p class="pl"><b>痛点</b>：想做"桌号扫码点餐→后厨"，平台抽佣、开发费高。</p>
-        <p class="pl"><b>期望</b>：说"做个点菜单"，立刻有能发给顾客扫的链接。</p>
-      </div>
-      <div class="persona">
-        <div class="pn">张老师</div><div class="pj">少儿编程机构 · 杭州</div>
-        <p class="pl"><b>背景</b>：课程老师兼招生；会腾讯文档。</p>
-        <p class="pl"><b>痛点</b>：招生季靠微信群发截图，信息凌乱。</p>
-        <p class="pl"><b>期望</b>：说"做暑期班报名表"，生成链接发朋友圈招生。</p>
+        <div class="pn">王医生　社区诊所全科医生 · 42 岁</div>
+        <div class="pj">深耕临床 15 年，管理诊所日常运营。会微信、会简单 Excel，从未写过代码。</div>
+        <div class="pl"><b>行业语言：</b>候诊、挂号、科室、主诉、就诊时段、复诊</div>
+        <div class="pl"><b>核心诉求：</b>「患者扫码登记姓名电话和来意，然后排队，我这边能看今天的候诊顺序」</div>
+        <div class="pl"><b>用小哒 Coda 后：</b>桌面助手帮他盯着 Agent 干活（看得见）→ Review 懂诊所排班/复诊规律（懂业务）→ 把诊所经验打包给同行医生一键装机（能裂变）</div>
+        <div class="pl" style="color:var(--accent)"><b>这个人物贯穿 Demo，评委代入感最强。</b></div>
       </div>
     </div>
   </section>
 
-  <!-- 用户故事 -->
-  <section id="story">
-    <h2><span class="badge">📖</span>用户故事</h2>
-    <div class="story"><span class="sid">US-01 · 核心</span><br>作为社区诊所前台王姐，我想用"患者来了我要排号"这句话就能生成排号工具，以便不找程序员也能让患者扫码取号。</div>
-    <div class="story"><span class="sid">US-02 · 行业确认</span><br>作为小餐馆老板老李，我想系统用"桌号、菜单、后厨通知"这些我听得懂的词确认需求，以便我知道 AI 真理解我，而不是让我猜它在做什么。</div>
-    <div class="story"><span class="sid">US-03 · 生成可见</span><br>作为培训机构张老师，我想在 AI 生成报名表时看到它一步步在做什么，以便我知道进度、不觉得系统卡死。</div>
-    <div class="story"><span class="sid">US-04 · 扫码交付</span><br>作为任一行业专家，我想生成完成立刻拿到二维码，以便当场扫码验证，满意就发给同事或顾客。</div>
-    <div class="story"><span class="sid">US-05 · 不出现技术词</span><br>作为不懂编程的行业专家，我想全程看不到"组件、路由、API、数据库"，以便不会因看不懂而放弃。</div>
-    <div class="story"><span class="sid">US-06 · 路演场景</span><br>作为台上路演的创业者，我想"说一句话→回车→扫码可用"在 3 分钟内跑通，以便评委直观感受核心价值。</div>
+  <!-- 产品形态 -->
+  <section id="product" class="hero">
+    <h2><span class="badge">🖥</span>产品形态：一个常驻桌面的 AI 助手</h2>
+    <p class="oneliner" style="font-size:17px"><span class="hl">小哒 Coda</span> <span class="hl">不是又一个代码生成器</span>，而是一个<span class="hl">住在你桌面上的小助手</span>——有形象、有状态、会反馈。它盯着你的 Coding Agent，懂你的行业，还能把你的经验分享出去。</p>
+    <div style="display:flex;gap:18px;align-items:center;background:var(--pill);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:12px 0">
+      <img src="assets/coda-icon.png" alt="小哒 Coda" style="width:96px;height:96px;object-fit:contain;border-radius:12px;flex-shrink:0">
+      <div style="font-size:13.5px;line-height:1.6"><b style="color:var(--accent)">形象设定 · 小哒 Coda</b><br>暖橙色萌系小柴犬精灵，大眼睛、肉垫，住在桌面一角。它就是产品的「脸」——状态全靠它的表情/动作传达。详见 <a href="产品命名.html" style="color:var(--accent)">产品命名定稿</a>。</div>
+    </div>
+    <h3>产品载体（参考 clawd-on-desk 类桌面宠物）</h3>
+    <ul>
+      <li><b>桌面常驻形象</b>　像素宠物 / 角色形象常驻桌面一角，不抢屏、随时可见。</li>
+      <li><b>状态即形象</b>　思考中💭 / 写代码⌨️ / 跑构建🔨 / 干完了✅ / 等你确认🙋——Agent 在干嘛，看一眼形象就知道，不用盯终端。</li>
+      <li><b>跨 Agent 监控</b>　同时盯 Claude Code / Codex / Cursor 等多个 Coding Agent 的会话状态。</li>
+      <li><b>能力可插拔</b>　业务知识、行业 Review 规则以<b>插件</b>形式装进来——这是「懂业务」和「能裂变」的技术载体。</li>
+    </ul>
+    <p style="font-size:13px;color:var(--sub)">技术栈方向：Electron 跨平台桌面应用（Win/macOS/Linux）+ 读取各 Coding Agent 的会话/事件 + Claude Code 原生 plugin 机制承载行业能力。</p>
   </section>
 
-  <!-- 功能需求 -->
+  <!-- 三个能力 -->
+  <section id="cap">
+    <h2><span class="badge">⚡</span>三个能力（每个正面解决一个痛点）</h2>
+    <div class="funnel">
+      <div class="fstage s1">
+        <span class="stag">能力一 · 看得见</span>
+        <div class="sttl">桌面助手：让 Agent 的状态浮出水面</div>
+        <div class="ssub">解决痛点①：挂着不知道进度、门口就放弃</div>
+        <ul style="margin-top:4px">
+          <li><b>状态实时反馈</b>　形象随 Agent 活动变化：思考 / 写代码 / 干完了 / 等你确认，不用盯终端</li>
+          <li><b>权限气泡 · 一键确认</b>　Agent 要权限时桌面弹卡片，一眼看到、一键放行，不卡在终端</li>
+          <li><b>游戏化 · 越用越想用</b>　勋章、宠物互动、进度助推，把折腾变成好玩，提打开率</li>
+        </ul>
+      </div>
+      <div class="fstage s2">
+        <span class="stag">能力二 · 懂业务</span>
+        <div class="sttl">业务版 Code Review —— 核心差异</div>
+        <div class="ssub">解决痛点②：通用 Agent 只懂技术、不懂你的行业业务</div>
+        <ul style="margin-top:4px">
+          <li><b>业务维度 Review</b>　不只查技术，还问「候诊逻辑是否考虑复诊优先排队」——技术对、业务也对</li>
+          <li><b>反问补齐，绝不重复问</b>　首次像问卷追问你的行业规则，记住后绝不重复问；「我明明说过了怎么又问」是杀死信任最快的方式</li>
+          <li><b>知识不内置，跟着你走</b>　不预置过时的行业知识，你才是专家，它只负责记住、复用你的经验——越用越懂你</li>
+        </ul>
+      </div>
+      <div class="fstage s3">
+        <span class="stag">能力三 · 能裂变</span>
+        <div class="sttl">行业经验打包成插件，同行一键装机</div>
+        <div class="ssub">解决痛点③：经验沉淀不下、传不出去 · 48h Demo 主线</div>
+        <div class="quote">「我用了个特别牛的 → 发给你 → 你装机直接感受到强」</div>
+        <ul style="margin-top:4px">
+          <li><b>经验打包成插件</b>　反问补齐的行业 know-how、调好的脚本，一键打包成 Claude Code 插件</li>
+          <li><b>同行一键装机</b>　发个链接，对方 <code>/plugin install</code> 装上，他的 Agent 立刻懂这个行业</li>
+          <li><b>越分享越强</b>　同领域垂直 Agent 远强于通用工具，强到让人想推荐 → 垂直社区裂变</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 技术地基 -->
+  <section id="tech">
+    <h2><span class="badge">🔧</span>技术地基：基于 Claude Code 原生 Plugin 机制</h2>
+    <div class="verdict"><b>重大利好（已实测）：</b>Claude Code 原生 plugin / marketplace 机制<b>完全 GA</b>，本机 v2.1.195 验证可用。「能裂变」的 Demo <b>无需自建</b>，现场可真的 <code>/plugin install</code> 一键装插件——评委是技术人，看到真命令执行瞬间建立信任，比任何 PPT 动画都有力。</div>
+    <h3>分享 + 一键装机的真实命令（两步闭环）</h3>
+    <div class="cmd"><span class="d"># 第一步：注册"技能市场"仓库</span>
+<span class="c">/plugin marketplace add</span> enter-key/enter-key-marketplace
+<span class="d"># 第二步：安装插件</span>
+<span class="c">/plugin install</span> enter-key-industry@enter-key-marketplace
+<span class="d"># 验证</span>
+<span class="c">/plugin list</span></div>
+    <h3>插件能打包什么（承载「懂业务」与「能裂变」）</h3>
+    <ul>
+      <li><b>Skills</b>（skills/&lt;name&gt;/SKILL.md）　核心：行业理解与业务 Review 能力</li>
+      <li><b>Slash commands</b>（commands/*.md）　如 <code>/enter-key:行业需求对齐</code></li>
+      <li><b>CLAUDE.md</b>　行业知识库注入（医疗/餐饮/教育词汇与业务规则）</li>
+      <li><b>Agents / Hooks / MCP</b>　专门化子 Agent、自动触发、工具集成（飞书/钉钉）</li>
+    </ul>
+    <p style="font-size:13px;color:var(--sub)">桌面助手层技术方向：Electron 桌面应用读取各 Coding Agent 的会话/事件流，渲染形象状态与权限气泡。48h 内桌面助手以原型/录屏呈现，插件能力真跑。</p>
+  </section>
+
+  <!-- 功能清单 -->
   <section id="feature">
-    <h2><span class="badge">🧩</span>功能需求 <span style="font-size:12px;font-weight:400;color:var(--sub)">P0 = 48h 必须跑通</span></h2>
-
-    <h3>① 行业意图层</h3>
+    <h2><span class="badge">⚙</span>核心功能清单（按三能力分组）</h2>
+    <p style="font-size:13px;color:var(--sub)"><span class="pri P0">P0</span> 48h 必做·Demo主线　<span class="pri P1">P1</span> 加分项　<span class="pri P2">P2</span> 二期</p>
+    <h3>能力一 · 看得见（桌面助手）</h3>
     <table>
-      <tr><th>功能点</th><th>描述</th><th>优先级</th></tr>
-      <tr><td>行业背景采集</td><td>首次进入选择/输入所在行业（医疗/餐饮/教育/零售/其他），加载对应行业词汇包。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>大白话输入框</td><td>纯文字输入，无任何技术提示，占主屏焦点；唯一操作是"回车"或大号 Enter 键。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td><b>行业语言确认</b><br><span style="font-size:11px;color:var(--accent)">★ 核心差异化</span></td><td>AI 用该行业术语把需求复述成确认卡"我理解你要做的是……包含……"，用户点"对，开始做"或"不对，我改"；全程零技术词。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>需求修正循环</td><td>确认卡上可用自然语言补充/修正，系统重新理解再出卡，最多 2 轮。</td><td><span class="pri P1">P1</span></td></tr>
-      <tr><td>行业模板推荐</td><td>输入框下展示 3 条示例诉求（灰色提示），降低首次输入门槛。</td><td><span class="pri P2">P2</span></td></tr>
+      <tr><th>功能</th><th>优先级</th></tr>
+      <tr><td>桌面常驻形象 + 状态动画（思考/写代码/干完/等确认）</td><td><span class="pri P1">P1</span>（原型/录屏）</td></tr>
+      <tr><td>权限气泡：Agent 请求权限时桌面弹卡片一键放行</td><td><span class="pri P2">P2</span></td></tr>
+      <tr><td>游戏化：勋章 / 宠物互动 / 进度助推</td><td><span class="pri P2">P2</span></td></tr>
     </table>
-
-    <h3>② 生成层</h3>
+    <h3>能力二 · 懂业务（业务 Review）</h3>
     <table>
-      <tr><th>功能点</th><th>描述</th><th>优先级</th></tr>
-      <tr><td>Agent 多步可见进度</td><td>调用 Agent API 时，将 意图分析→结构方案→HTML 编写→自检 四步用进度条+行业语言说明实时展示（"正在设计排号逻辑"而非 generating component tree）。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>单页 HTML 生成</td><td>严格限定"单页 HTML 小工具"（表单/登记/计算器/展示类），不做多页、不引后端数据库；优先复用主办方 Agent API 的 Code 能力。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>内置自检步骤</td><td>生成后自动自检"能否渲染、关键字段是否存在"，发现问题自动重试一次。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>生成预览</td><td>部署前内嵌渲染预览，用户可直接交互验证。</td><td><span class="pri P1">P1</span></td></tr>
-      <tr><td>重新生成</td><td>预览不满意可带补充描述再跑一次。</td><td><span class="pri P1">P1</span></td></tr>
+      <tr><th>功能</th><th>优先级</th></tr>
+      <tr><td>业务维度 Review，发现业务逻辑错误（非纯技术 bug）</td><td><span class="pri P2">P2</span></td></tr>
+      <tr><td>首次 Review 反问业务背景；已答问题绝不重复问</td><td><span class="pri P2">P2</span></td></tr>
+      <tr><td>行业知识不内置，跟着用户走、可复用</td><td><span class="pri P2">P2</span></td></tr>
     </table>
-
-    <h3>③ 部署层</h3>
+    <h3>能力三 · 能裂变（插件分享 · 48h Demo 主线）</h3>
     <table>
-      <tr><th>功能点</th><th>描述</th><th>优先级</th></tr>
-      <tr><td>自动公网部署</td><td>生成成功后自动推送公网（Vercel 静态或等效），返回唯一 HTTPS URL。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>部署状态反馈</td><td>显示"正在上线，大约需要 XX 秒"，成功/失败均明确提示。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>部署失败降级</td><td>失败时提供下载 HTML 兜底 + 可操作说明。</td><td><span class="pri P1">P1</span></td></tr>
-      <tr><td>URL 有效期说明</td><td>告知链接有效期（Demo 阶段 7 天或演示期内），设定预期。</td><td><span class="pri P2">P2</span></td></tr>
-    </table>
-
-    <h3>④ 交付层</h3>
-    <table>
-      <tr><th>功能点</th><th>描述</th><th>优先级</th></tr>
-      <tr><td>二维码生成</td><td>部署成功即时生成 URL 二维码，醒目展示。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>一键复制链接</td><td>"复制链接"按钮，适配非扫码分享。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>移动端交付页适配</td><td>交付页在手机浏览器正常显示二维码和链接（台上用手机扫）。</td><td><span class="pri P0">P0</span></td></tr>
-      <tr><td>生成记录（会话内）</td><td>本次会话保留历史生成列表，可切换查看。</td><td><span class="pri P2">P2</span></td></tr>
+      <tr><th>功能</th><th>优先级</th></tr>
+      <tr><td>行业知识/skills 打包成 Plugin，生成可分享包/链接</td><td><span class="pri P0">P0</span></td></tr>
+      <tr><td>同行收到链接一键装机，Agent 立刻懂行业、用对词汇</td><td><span class="pri P0">P0</span></td></tr>
+      <tr><td><b>装前 vs 装后</b>对比，量化感受差异（Demo 核心时刻）</td><td><span class="pri P0">P0</span></td></tr>
+      <tr><td>技能市场页（卡片 + 一键复制命令 + 二维码）</td><td><span class="pri P0">P0</span></td></tr>
+      <tr><td>Plugin 广场按领域浏览、一键装他人 Plugin</td><td><span class="pri P2">P2</span></td></tr>
     </table>
   </section>
 
-  <!-- 核心流程 -->
-  <section id="flow">
-    <h2><span class="badge">🎬</span>核心流程 · 黄金示例：社区诊所排号工具</h2>
-    <div class="flow">
-      <div class="fstep"><div class="fno">1</div><div class="fbody">
-        <div class="ft">行业背景采集</div>
-        <div class="fd">王姐打开"回车键"→ 选"医疗"→ 系统加载医疗词汇包（患者/挂号/排号/预约时段/科室/医生），进入输入界面。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">2</div><div class="fbody">
-        <div class="ft">说行话 · 用户输入</div>
-        <div class="fd">王姐打"我想让患者扫码取号，我这边能看到还有多少人在排队" → 唯一提示是"按回车或点 Enter 键"。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">3</div><div class="fbody">
-        <div class="ft">行业语言确认 · 核心差异化节点</div>
-        <div class="quote">"我理解你要做的是：一个<b>患者排号小工具</b>。患者扫码后填姓名，系统自动分配排号（001、002……）。你作为医护人员，可在同一页面看到当前排队人数和各号信息。这样对吗？"</div>
-        <div class="fd">王姐说"对，但还要让患者填科室" → 点"修改一下"补充"内科/外科/儿科" → 系统更新确认卡 → 点"对，开始做"。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">4</div><div class="fbody">
-        <div class="ft">生成 · Agent 多步可见</div>
-        <div class="fd">进度条 + 行业语言描述：① 正在理解排号需求（~5s）② 正在设计排号流程和科室选择（~10s）③ 正在写页面代码（~20–40s）④ 正在检查排号和科室是否正常（~10s）。全程无技术词。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">5</div><div class="fbody">
-        <div class="ft">预览确认</div>
-        <div class="fd">预览中：患者填姓名、选科室、提交后显示"您的号码是 003，前方还有 2 人"；医护端看实时队列。王姐满意 → 点"上线这个工具"。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">6</div><div class="fbody">
-        <div class="ft">自动部署</div>
-        <div class="fd">自动推送 Vercel，显示"正在上线，大约 15 秒……" → 返回公网 HTTPS URL。</div>
-      </div></div>
-      <div class="fstep"><div class="fno">7</div><div class="fbody">
-        <div class="ft">交付 · 扫码即用</div>
-        <div class="fd">交付页：大号二维码 + URL + "复制链接"。王姐手机扫码当场可用，截图发到诊所工作群，患者下次扫码取号。</div>
-      </div></div>
-    </div>
-  </section>
-
-  <!-- 范围边界 -->
+  <!-- MVP 范围 -->
   <section id="scope">
-    <h2><span class="badge">🚧</span>范围边界（48h）</h2>
-    <div class="scope">
+    <h2><span class="badge">▢</span>48 小时 MVP 范围</h2>
+    <div class="verdict"><b>核心取舍：</b>「能裂变」（插件打包 + 一键装机 + 装前后对比）做成<b>真 Demo</b>（技术最轻最可控、对比是最有冲击力的一帧）；「看得见」桌面助手用<b>原型/录屏</b>呈现；「懂业务」Review 用 <b>PPT + 截图</b>讲清。三能力都有画面，故事完整。</div>
+    <div class="scope" style="margin-top:12px">
       <div class="scol in">
-        <h4>做（In Scope）</h4>
+        <h4>✓ 48h 必做</h4>
         <ul>
-          <li>行业背景选择（4 预设 + 其他）</li>
-          <li>大白话输入 + 回车触发</li>
-          <li>行业语言确认卡（可修正 1–2 次）</li>
-          <li>Agent 多步生成单页 HTML（表单/登记/取号/计算器/展示）</li>
-          <li>生成进度实时可见（4 步 + 行业语言）</li>
-          <li>生成结果内嵌预览</li>
-          <li>自动部署公网（Vercel）</li>
-          <li>公网 URL + 二维码交付</li>
-          <li>移动端可扫码访问交付页</li>
-          <li>录屏兜底（≥3 段，覆盖诊所全流程）</li>
+          <li>真实可 install 的插件仓库 + marketplace</li>
+          <li>技能市场 HTML（卡片 + 一键复制命令 + 对比图）</li>
+          <li>分享链接 / 二维码</li>
+          <li>装前 vs 装后对比（截图，可控）</li>
+          <li>桌面助手原型 / 状态形象录屏</li>
+          <li>业务 Review 的 PPT 素材 + 截图</li>
+          <li>王医生贯穿讲稿 + 标准输入文案</li>
         </ul>
       </div>
       <div class="scol out">
-        <h4>不做（Out of Scope）</h4>
+        <h4>✕ 明确不做</h4>
         <ul>
-          <li>多页应用生成（只做单页）</li>
-          <li>后端数据库持久化（仅 localStorage / webhook）</li>
-          <li>账号登录注册系统</li>
-          <li>历史项目跨会话保存</li>
-          <li>代码编辑器 / 源码展示</li>
-          <li>开发者 prompt 调试界面</li>
-          <li>AI Code Review</li>
-          <li>纯聊天 / 问答套壳</li>
-          <li>多人协作、版本管理</li>
-          <li>超过 2 轮的需求修正 / 原生 App</li>
+          <li>桌面助手完整 Electron 工程（仅原型/录屏）</li>
+          <li>注册/登录/账号体系</li>
+          <li>业务 Review 真实 AI 知识积累（做不完）</li>
+          <li>Plugin 广场/装机统计</li>
+          <li>多用户权限/上下级 Review</li>
+          <li>游戏化完整实现（仅形象示意）</li>
+          <li>订阅/付费墙、自定义域名、多语言</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- 非功能需求 -->
-  <section id="nfr">
-    <h2><span class="badge">⚙️</span>非功能需求</h2>
-    <h3>性能</h3>
+  <!-- Demo 脚本 -->
+  <section id="demo">
+    <h2><span class="badge">▶</span>Demo 演示脚本（真实命令）</h2>
+    <div class="flow">
+      <div class="fstep"><div class="fno">1</div><div class="fbody"><div class="ft">桌面助手亮相（录屏/原型）</div><div class="fd">形象常驻桌面，Agent 跑任务时状态动起来：思考 → 写代码 → 干完了，权限气泡弹出一键放行</div></div></div>
+      <div class="fstep"><div class="fno">2</div><div class="fbody"><div class="ft">装前（截图）</div><div class="fd">新项目问「帮我做个候诊登记系统」→ Agent 用技术词汇/泛泛回答</div></div></div>
+      <div class="fstep"><div class="fno">3</div><div class="fbody"><div class="ft">现场装插件（真跑）</div><div class="fd"><code>/plugin marketplace add …</code> → <code>/plugin install …</code> → <code>/plugin list</code> 确认</div></div></div>
+      <div class="fstep"><div class="fno">4</div><div class="fbody"><div class="ft">装后验证（现场跑，提前测稳）</div><div class="fd"><code>/enter-key-industry:行业需求对齐 我是诊所的，想要患者扫码排队…</code> → Agent 用「候诊/就诊来意/候诊顺序」复述，不出现前端/API/数据库</div></div></div>
+      <div class="fstep"><div class="fno">5</div><div class="fbody"><div class="ft">对比定帧</div><div class="fd">装前 vs 装后并排截图（用截图不用实时，更可控）= 路演最高潮</div></div></div>
+    </div>
+    <h3>标准输入文案（禁止现场即兴）</h3>
+    <div class="quote">「我是社区诊所的医生，想做一个页面，患者扫码后填姓名、电话和今天来的原因，系统自动排候诊顺序，我这边能看到今天所有候诊患者和来意。」</div>
+    <h3>路演话术关键句</h3>
     <ul>
-      <li><b>回车 → 内嵌预览</b>：目标 90s 内，上限 120s；生成期间禁止"空白等待 > 5s"。</li>
-      <li><b>部署拿到 URL</b>：目标 20s，上限 30s。</li>
-      <li><b>回车 → 扫码可用</b>：目标 2min，上限 3min（路演 6min 内必须跑完一次）。</li>
-    </ul>
-    <h3>可靠性</h3>
-    <ul>
-      <li>自检失败自动重试一次（最多 2 次生成机会）；2 次均败则给"下载 HTML"兜底，不展示错误堆栈。</li>
-      <li>路演前完成 ≥3 次完整流程录屏，作为现场网络故障备用。</li>
-      <li>部署失败提供 HTML 下载 + 一句话说明（"发给任意懂网站的朋友即可上线"）。</li>
-    </ul>
-    <h3>可用性 · 零技术词红线</h3>
-    <ul>
-      <li>任何界面不得出现：组件、路由、API、数据库、HTTP、JSON、CSS、DOM、变量、函数、部署日志。</li>
-      <li>确认卡措辞经 ≥1 位非技术人员口头验证可理解；输入界面主操作只有"回车"。</li>
-      <li>错误提示用行业语言描述问题和下一步，不暴露技术错误。</li>
-    </ul>
-    <h3>移动端适配</h3>
-    <ul>
-      <li>生成的 HTML 工具在手机浏览器（微信内置/Safari/Chrome）可正常使用。</li>
-      <li>交付页二维码不小于 200×200px，手机正常渲染。</li>
+      <li>「它不是又一个代码生成器，是一个住在你桌面上、懂你行业的助手」</li>
+      <li>「Agent 在干嘛、干完没，看一眼桌面就知道，不用盯终端」</li>
+      <li>「这不是分享文档，是分享一个已经学会你行业的 Agent」</li>
     </ul>
   </section>
 
   <!-- 成功指标 -->
   <section id="metric">
-    <h2><span class="badge">📊</span>成功指标 · 对齐评分五维</h2>
+    <h2><span class="badge">📊</span>成功指标（对齐五维评分）</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="kn">1帧</div><div class="kl">装前vs装后对比<br>评委当场有反应</div></div>
+      <div class="kpi"><div class="kn">秒懂</div><div class="kl">产品形态页<br>评委知道这是啥</div></div>
+      <div class="kpi"><div class="kn">真命令</div><div class="kl">现场真 install<br>非 PPT 动画</div></div>
+    </div>
     <table>
-      <tr><th>维度</th><th>权重</th><th>命中方式</th></tr>
-      <tr><td>创新性</td><td class="w">最高</td><td>"行业语言层"是结构性创新——同类工具从未在生成前用行业术语确认需求，非界面微创新。</td></tr>
-      <tr><td>产品完成度</td><td class="w">高</td><td>Demo 四步全可演示；二维码扫码即用是可验证交付态；现场完成端到端。</td></tr>
-      <tr><td>技术深度</td><td class="w">中</td><td>展示 Agent 多步执行（意图→方案→代码→自检）+ 行业 context 注入对生成质量的影响。</td></tr>
-      <tr><td>商业价值</td><td class="w">中</td><td>"卖铲子"：行业用户付费即得工具，可延伸行业 SaaS 订阅；市场=数亿非技术从业者。</td></tr>
-      <tr><td>Demo 表现</td><td class="w">高</td><td>叙事清晰（问题→解法→演示→扫码）；现场扫码验证是强视觉记忆点。</td></tr>
+      <tr><th>评分维度</th><th>我们的对应</th><th>验收标准</th></tr>
+      <tr><td class="w">创新性<br><span style="color:var(--sub);font-weight:400">最高·1万</span></td><td>桌面助手 + 业务 Review + 插件裂变的组合是否独特</td><td>评委说出「这个组合我没见过」</td></tr>
+      <tr><td class="w">完成度</td><td>「能裂变」Demo 全程走通无断点</td><td>打包→装机→前后对比整条路现场可演</td></tr>
+      <tr><td class="w">技术深度</td><td>桌面助手监控 + 原生 plugin 机制</td><td>答题能讲清三能力技术路径，有真实代码</td></tr>
+      <tr><td class="w">商业价值</td><td>产品形态清晰 + 付费/裂变路径清晰</td><td>评委能复述「这是什么、谁愿付钱、怎么裂变」</td></tr>
+      <tr><td class="w">Demo质量</td><td>现场流畅 + 对比冲击力</td><td>前后对比时评委有明显反应</td></tr>
     </table>
-    <div class="verdict" style="margin-top:12px"><b>Demo 验收 Go/No-Go：</b>① 一句行话→回车→行业确认→生成→公网 URL→二维码→手机扫码成功，全程无人工干预；② 确认卡和进度零技术词（人工逐条检查）；③ 完整流程 ≤3min（≥3 次测试达标）；④ 诊所场景录屏 ≥3 段就绪。</div>
   </section>
 
   <!-- 风险 -->
   <section id="risk">
-    <h2><span class="badge">⚠️</span>风险与应对</h2>
-    <div class="risk"><b>风险 1 · AI 生成不稳定（最高概率）：</b>① 自检自动重试（最多 2 次）；② 收窄到最简表单/展示类；③ 为路演备 3 条黄金场景 preset prompt；④ 录屏兜底。</div>
-    <div class="risk"><b>风险 2 · 网络/Vercel 部署失败：</b>① 路演前提前部署好 3 个成品页存 URL 保底；② 本地 ngrok 隧道备选；③ 交付层提供 HTML 下载。</div>
-    <div class="risk"><b>风险 3 · 场景过宽 48h 做不完：</b>MVP 严收为 3 黄金场景（医疗排号/餐饮点单/教育报名），其余复用"通用表单"；生成严限单页；P1/P2 时间不足全砍。</div>
-    <div class="risk"><b>风险 4 · 撞 v0/Bolt/Lovable：</b>叙事点出差异——它们面向"会描述技术需求的人"，我们面向"连技术需求都不会描述的行业专家"；台上现场做一个 v0 接不住的输入（"我要做个排号的东西"）对比展示行业语言确认层。</div>
+    <h2><span class="badge">⚠</span>风险与应对</h2>
+    <div class="risk"><b>最大风险：</b>Plugin 装前装后对比效果不够显著。整个路演最高潮就是那一帧——无插件通用回复 vs 有插件领域专业回复。<b>立刻开始测对比问题组</b>，把插件里的业务知识写得足够具体、有辨识度。</div>
+    <table style="margin-top:12px">
+      <tr><th>风险</th><th>应对</th></tr>
+      <tr><td class="w">桌面助手 48h 做不完</td><td>仅做原型/录屏呈现形象与状态，不强求完整 Electron 工程；插件能力真跑兜底</td></tr>
+      <tr><td class="w">install 命令参数不对</td><td>今晚必须实测；fallback 直接 Git URL 格式</td></tr>
+      <tr><td class="w">行业语言效果不稳</td><td>提前测 20+ 组 prompt，路演只用最稳的三个场景</td></tr>
+      <tr><td class="w">评委问"和 git clone 啥区别"（必问）</td><td>plugin 自动注册 skills/commands、有版本管理、一行命令 vs 手动配多文件</td></tr>
+      <tr><td class="w">现场网络故障</td><td>三级兜底：手机热点 → 演示机提前装好 → 全程录屏</td></tr>
+    </table>
   </section>
 
-  <!-- 里程碑 -->
+  <!-- 演进路线 -->
   <section id="plan">
-    <h2><span class="badge">⏱</span>里程碑 · 48 小时时间线</h2>
+    <h2><span class="badge">🛣</span>演进路线</h2>
     <div class="timeline">
-      <div class="tl"><div class="tt">6/27 20:00–22:00</div><div class="tc">技术骨架打通：输入框→调 Agent API→返回 HTML→本地渲染，端到端最简跑通。</div></div>
-      <div class="tl"><div class="tt">6/27 22:00–24:00</div><div class="tc">行业意图层接入：行业选择 + 词汇包加载 + 行业语言确认卡 MVP。</div></div>
-      <div class="tl"><div class="tt">6/27 24:00–02:00</div><div class="tc">部署层接通：Vercel 自动部署跑通，可生成公网 URL。</div></div>
-      <div class="tl"><div class="tt">6/28 09:00–11:00</div><div class="tc">黄金场景跑顺：诊所排号端到端 3 次测试均 ≤3min 且无崩溃。</div></div>
-      <div class="tl"><div class="tt">6/28 11:00–12:00</div><div class="tc">二维码交付层 + 移动端适配：扫码可在手机微信打开成品页。</div></div>
-      <div class="tl"><div class="tt">6/28 12:00</div><div class="tc"><b>录屏冻结</b>：≥3 段成功录屏存档，核心流程不再动。</div></div>
-      <div class="tl"><div class="tt">6/28 12:00–14:30</div><div class="tc">提交四件套：产品链接 / 演示视频 / PPT / 文档 + 截图留存。<b>14:30 提交截止。</b></div></div>
-      <div class="tl"><div class="tt">6/28 14:30–16:00</div><div class="tc">路演演练 ≥2 遍（一遍正常、一遍走备用录屏），卡 4 分钟。</div></div>
+      <div class="tl"><div class="tt">黑客松 Demo（现在）</div><div class="tc"><b>桌面助手原型 + 插件真跑</b>　单用户、无账号，插件链接即身份</div></div>
+      <div class="tl"><div class="tt">二期 · 桌面助手完整版</div><div class="tc"><b>Electron 跨平台</b>　多 Agent 监控、权限气泡、游戏化全量落地</div></div>
+      <div class="tl"><div class="tt">三期 · 团队 / 上下级版</div><div class="tc"><b>中心化多用户</b>　团队共享领域档案，专家插件向成员推送，上下级 Review</div></div>
     </div>
-    <div class="risk"><b>最大风险点：</b>6/27 深夜前必须定稿"行业语言确认卡"措辞 —— 这是核心差异化锚点和路演叙事灵魂。把它当<b>产品文案</b>打磨，而非技术 prompt。</div>
+    <h3>商业化口径</h3>
+    <p>不做订阅制（「过时」）。做<b>嵌进别人工作流的能力层（卖铲子模型）</b>——你用 Cursor/Codex 都行，我是你桌面上的垂直能力助手。受众付费意愿高。</p>
   </section>
 
-  <footer>回车键 · 产品需求文档 v1.0 · 据选题定稿与产品调研整理 · 开发依据</footer>
+  <footer>
+    小哒 Coda（回车键团队）· PRD v3.0 产品中心版 · 48H MVP · 常驻桌面助手 = 看得见 · 懂业务 · 能裂变<br>
+    Enter 一下，你的 Agent 就懂你了
+  </footer>
 
 </div>
 </body>

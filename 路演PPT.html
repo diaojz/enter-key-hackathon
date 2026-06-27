@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回车键 · 路演 PPT · Coding Agent 赛道</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  /* ===== 全站深蓝暖金体系（与封面海报一镜到底）===== */
+  --bg:#0a1626;                 /* 深蓝主底 */
+  --bg2:#0f2038;
+  --card:rgba(255,255,255,.045); /* 玻璃卡 */
+  --card-alt:rgba(255,255,255,.07);
+  --border:rgba(232,168,74,.32);
+  --border-light:rgba(255,255,255,.12);
+  --text:#f3ece0;               /* 暖白字 */
+  --text-dim:#a9b7c9;           /* 冷灰副字 */
+  --radius:22px;
+  --orange:#e8a84a;             /* accent 统一为暖金 */
+  --gold:#e8a84a; --navy:#13243f;
+  --blue:#6ea3d8; --purple:#b58ae0; --green:#5fc28a; --red:#e08a8a; --cyan:#5fc2d8;
+
+  --fs-hero:        clamp(4.2rem, 5.2vw, 5.6rem);
+  --fs-h2:          3.0rem;
+  --fs-card-title:  1.9rem;
+  --fs-body:        1.7rem;
+  --fs-label:       1.35rem;
+  --fs-chip:        1.2rem;
+  --lh-body:        1.58;
+  --lh-heading:     1.16;
+  --ls-heading:     -0.015em;
+  --ls-label:       0.04em;
+
+  --shadow-card:    0 1px 2px rgba(60,45,30,.06), 0 18px 40px -12px rgba(120,90,55,.18);
+  --shadow-hover:   0 1px 2px rgba(60,45,30,.06), 0 28px 56px -14px rgba(120,90,55,.26);
+  --border-card:    1px solid rgba(180,150,110,.28);
+  --hl-top:         rgba(255,250,240,.7);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; scroll-snap-type:y proximity; }
+[id^="sec-"] { scroll-margin-top:104px; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+/* 每页深蓝渐变底 + 暖金光晕（一镜到底） */
+.slide { position:relative; background:linear-gradient(135deg,#0a1626 0%,#0f2038 55%,#13202f 100%); }
+.slide:not(.cover-slide)::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse 55% 50% at 82% 18%, rgba(232,150,60,.13), transparent 62%); }
+.slide > * { position:relative; z-index:1; }
+/* 顶部暖金细高光 */
+.projection .slide:not(.cover-slide)::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; z-index:2;
+  background:linear-gradient(90deg, transparent, rgba(232,168,74,.6), rgba(232,104,42,.4), transparent); }
+h1,h2,h3 { font-family:'Playfair Display',serif; font-weight:900; letter-spacing:var(--ls-heading); }
+.container { max-width:1600px; margin:0 auto; padding:0 48px 120px; }
+.mono { font-family:'JetBrains Mono',monospace; }
+.o { color:var(--orange); }
+
+/* nav */
+.topnav { position:sticky; top:0; z-index:100; background:rgba(236,231,222,0.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--border-light); }
+.topnav-inner { max-width:1600px; margin:0 auto; padding:16px 48px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.topnav .brand { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); margin-right:auto; }
+.nav-tag { padding:10px 20px; border-radius:30px; border:1px solid var(--border); font-size:var(--fs-label); font-weight:600; background:var(--card); color:var(--text); text-decoration:none; transition:all .25s; }
+.nav-tag:hover,.nav-tag.active { background:var(--text); color:#fff; border-color:var(--text); }
+
+/* hero */
+.hero { padding:80px 0 60px; border-bottom:1px solid var(--border-light); margin-bottom:72px; }
+.hero .eyebrow { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; letter-spacing:var(--ls-label); text-transform:uppercase; color:var(--orange); margin-bottom:22px; }
+.hero h1 { font-size:var(--fs-hero); line-height:var(--lh-heading); }
+.hero h1 .dot { display:inline-block; width:22px; height:22px; border-radius:50%; background:var(--orange); margin-left:12px; }
+.hero-desc { font-size:var(--fs-body); color:var(--text-dim); line-height:var(--lh-body); margin-top:28px; max-width:1180px; }
+.hero-desc strong { color:var(--text); font-weight:600; }
+.hero-stats { display:flex; gap:18px; margin-top:46px; flex-wrap:wrap; }
+.hstat { border:1px solid var(--border); border-radius:40px; background:var(--card); padding:18px 30px; text-align:center; box-shadow:var(--shadow-card); }
+.hstat .n { font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:900; display:block; font-variant-numeric:tabular-nums; line-height:1; }
+.hstat .l { font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--text-dim); margin-top:8px; display:block; }
+
+/* section title */
+.sec-title { display:flex; align-items:baseline; gap:22px; margin:0 0 34px; flex-wrap:wrap; }
+.sec-title .sn { font-family:'JetBrains Mono',monospace; font-size:1.5rem; font-weight:700; color:#0a1626; background:linear-gradient(135deg,#e8a84a,#f0c070); padding:5px 14px; border-radius:8px; box-shadow:0 4px 14px -4px rgba(232,168,74,.5); }
+.sec-title h2 { font-size:var(--fs-h2); line-height:var(--lh-heading); color:#fff; }
+.sec-title .sub { font-size:var(--fs-label); color:var(--text-dim); margin-left:auto; }
+.section { margin-bottom:96px; }
+
+/* lead 大句 */
+.lead { font-size:2.3rem; line-height:1.45; color:#fff; max-width:1300px; }
+.lead .dim { color:var(--text-dim); }
+.lead.small { font-size:1.95rem; }
+
+/* steps */
+.steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.steps.two { grid-template-columns:repeat(2,1fr); }
+.step { background:var(--card); border:1px solid var(--border-light); border-top:1px solid rgba(232,168,74,.25); border-radius:22px; padding:30px 34px; backdrop-filter:blur(6px); box-shadow:0 18px 40px -16px rgba(0,0,0,.5); transition:transform .2s ease-out, box-shadow .2s ease-out; }
+.step:hover { transform:translateY(-4px); border-color:rgba(232,168,74,.5); }
+.step .n { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; color:var(--orange); margin-bottom:10px; }
+.step .t { font-weight:700; font-size:var(--fs-card-title); margin-bottom:10px; line-height:1.25; color:#fff; }
+.step .d { font-size:var(--fs-body); color:var(--text-dim); line-height:var(--lh-body); }
+.step .d strong { color:#fff; font-weight:600; }
+
+/* agent-full 单主体双栏 */
+.agent { background:var(--card); border:1px solid var(--border-light); border-radius:22px; backdrop-filter:blur(6px); box-shadow:0 24px 60px -20px rgba(0,0,0,.55); }
+.agent-full { display:grid; grid-template-columns:1fr 1.15fr; gap:52px; padding:48px 56px; border-top:6px solid var(--ac); }
+.agent-head { display:flex; align-items:center; gap:22px; margin-bottom:8px; }
+.agent-icon { width:74px; height:74px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; background:var(--ac-bg); flex-shrink:0; }
+.agent-role { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; letter-spacing:var(--ls-label); text-transform:uppercase; color:var(--ac); }
+.agent-name { font-size:var(--fs-card-title); font-family:'Playfair Display',serif; font-weight:900; line-height:1.12; color:#fff; }
+.agent-one { font-size:1.78rem; line-height:1.6; color:var(--text-dim); margin:22px 0 0; }
+.agent-one strong { color:#fff; font-weight:600; }
+.agent-col:last-child { border-left:1px solid var(--border-light); padding-left:52px; }
+.block-label { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; letter-spacing:var(--ls-label); text-transform:uppercase; color:var(--ac); margin:30px 0 14px; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; }
+.chip { font-family:'JetBrains Mono',monospace; font-size:var(--fs-chip); font-weight:600; padding:7px 15px; border-radius:24px; background:var(--ac-bg); color:var(--ac); border:1px solid var(--ac-bd); }
+.changes { list-style:none; margin-top:4px; }
+.changes li { font-size:1.62rem; color:var(--text-dim); line-height:1.5; padding:10px 0 10px 30px; position:relative; }
+.changes li::before { content:''; position:absolute; left:0; top:17px; width:11px; height:11px; border-radius:3px; background:var(--ac); }
+.changes li strong { color:var(--text); font-weight:600; }
+.keep { margin-top:28px; padding-top:24px; border-top:1px dashed var(--border-light); font-size:1.55rem; color:var(--text-dim); line-height:1.55; }
+.keep b { color:var(--text); font-weight:600; }
+
+.a-orange { --ac:#e8a84a; --ac-bg:rgba(232,168,74,.16); --ac-bd:rgba(232,168,74,.4); }
+.a-blue   { --ac:#6ea3d8; --ac-bg:rgba(110,163,216,.16); --ac-bd:rgba(110,163,216,.4); }
+.a-green  { --ac:#5fc28a; --ac-bg:rgba(95,194,138,.16); --ac-bd:rgba(95,194,138,.4); }
+.a-purple { --ac:#b58ae0; --ac-bg:rgba(181,138,224,.16); --ac-bd:rgba(181,138,224,.4); }
+.a-red    { --ac:#e08a8a; --ac-bg:rgba(224,138,138,.16); --ac-bd:rgba(224,138,138,.4); }
+.a-cyan   { --ac:#5fc2d8; --ac-bg:rgba(95,194,216,.16); --ac-bd:rgba(95,194,216,.4); }
+
+/* pipe 流程 */
+.pipe-lead { font-size:1.95rem; line-height:1.5; color:#fff; max-width:1300px; margin-bottom:40px; }
+.pipe-lead b { color:var(--gold); font-weight:700; }
+.pipe { display:flex; align-items:stretch; gap:0; flex-wrap:wrap; }
+.pipe .st { flex:1; min-width:240px; background:var(--card); border:1px solid var(--border-light); border-top:1px solid rgba(232,168,74,.25); border-radius:16px; padding:28px 26px; backdrop-filter:blur(6px); box-shadow:0 18px 40px -16px rgba(0,0,0,.5); }
+.pipe .st .k { font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:700; color:var(--gold); margin-bottom:11px; }
+.pipe .st .tt { font-size:1.7rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.25; }
+.pipe .st .v { font-size:1.42rem; color:var(--text-dim); line-height:1.5; }
+.pipe .ar { display:flex; align-items:center; color:var(--gold); font-size:2.2rem; padding:0 10px; font-weight:700; }
+
+/* 装前装后对比 */
+.vs { display:grid; grid-template-columns:1fr auto 1fr; gap:22px; align-items:stretch; margin-top:30px; }
+.vs .col { border-radius:20px; padding:30px 34px; }
+.vs .before { background:rgba(255,255,255,.05); border:1px solid var(--border-light); }
+.vs .after { background:rgba(232,168,74,.14); border:1px solid rgba(232,168,74,.45); box-shadow:0 18px 44px -16px rgba(232,168,74,.3); }
+.vs .vlabel { font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin-bottom:16px; }
+.vs .before .vlabel { color:var(--text-dim); }
+.vs .after .vlabel { color:var(--gold); }
+.vs .vq { font-size:1.66rem; line-height:1.5; color:#fff; }
+.vs .vq .note { display:block; margin-top:14px; font-size:1.3rem; color:var(--text-dim); }
+.vs .after .vq .note { color:var(--gold); }
+.vs .arrow { display:flex; align-items:center; font-size:2.6rem; color:var(--gold); font-weight:800; }
+
+/* 终端 widget */
+.term { background:#0f2b30; border-radius:16px; overflow:hidden; box-shadow:0 18px 44px -14px rgba(15,43,48,.5); border:1px solid #1c3a40; }
+.term .cw-bar { background:#0a2024; padding:11px 18px; font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:#9fd8a0; display:flex; align-items:center; gap:11px; border-bottom:1px solid #1c3a40; }
+.term .cw-bar .d3 { display:flex; gap:6px; }
+.term .cw-bar .d3 i { width:10px; height:10px; border-radius:50%; display:block; }
+.term .cw-bar .fn { font-weight:600; color:#6e9098; }
+.term pre { margin:0; padding:24px 28px; overflow:hidden; }
+.term code { font-family:'JetBrains Mono',monospace; font-size:1.5rem; line-height:1.8; color:#cfe3e7; white-space:pre-wrap; display:block; }
+.term code .cm { color:#5f8a8f; } .term code .c { color:#e8a05a; } .term code .g { color:#9fd8a0; }
+
+/* foot 收尾 */
+.foot { border:1px solid rgba(232,168,74,.32); border-top:1px solid rgba(232,168,74,.4); border-radius:22px; background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02)); backdrop-filter:blur(6px); padding:50px 56px; box-shadow:0 24px 60px -20px rgba(0,0,0,.55); }
+.foot h2 { font-size:var(--fs-h2); margin-bottom:8px; line-height:var(--lh-heading); color:#fff; }
+.foot .fsub { font-size:var(--fs-body); color:var(--text-dim); margin-bottom:30px; line-height:1.5; }
+.bd-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.bd { background:rgba(255,255,255,.05); border:1px solid var(--border-light); border-radius:18px; padding:26px 28px; }
+.bd .q { font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.bd .p { font-size:1.5rem; color:var(--text-dim); line-height:1.52; }
+.bd .p b { color:#fff; font-weight:700; }
+footer.pf { text-align:center; margin-top:52px; font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); color:var(--text-dim); letter-spacing:.5px; }
+
+/* ===== 深色叙事卡（承接封面深蓝暖金质感，给文字页加视觉重量）===== */
+.dark-card { background:linear-gradient(135deg,#102742 0%,#16304e 60%,#1d2a3d 100%); border-radius:28px;
+  padding:64px 72px; color:#f3ece0; position:relative; overflow:hidden; border:1px solid rgba(232,168,74,.28);
+  box-shadow:0 30px 80px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(232,168,74,.3); }
+.dark-card::before { content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 50% 60% at 85% 20%, rgba(232,150,60,.16), transparent 65%); pointer-events:none; }
+.dark-card .dc-eyebrow { font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:#e8a84a; margin-bottom:26px; position:relative; }
+.dark-card h2 { font-size:3.4rem; line-height:1.22; color:#fff; position:relative; }
+.dark-card .gold { color:#e8a84a; }
+
+/* 对话气泡（钩子页用） */
+.dialog { display:flex; flex-direction:column; gap:20px; margin-top:36px; position:relative; }
+.bubble { max-width:80%; padding:22px 28px; border-radius:20px; font-size:1.7rem; line-height:1.5; }
+.bubble.user { align-self:flex-start; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16); color:#f3ece0; border-bottom-left-radius:6px; }
+.bubble.ai { align-self:flex-end; background:rgba(201,138,43,.16); border:1px solid rgba(232,168,74,.4); color:#fbe7c8; border-bottom-right-radius:6px; }
+.bubble .who { display:block; font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:700; letter-spacing:.04em; opacity:.7; margin-bottom:7px; }
+.bubble .gold { color:#e8a84a; font-weight:700; }
+.dialog .cut { align-self:center; margin-top:14px; font-family:'Playfair Display',serif; font-weight:900; font-size:2.2rem; color:#e8a84a; }
+
+/* 大金句页（深色版） */
+.bigquote { font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(2.8rem,4.6vw,4.4rem); line-height:1.34; color:#fff; position:relative; }
+.bigquote .arrow-line { color:#e8a84a; }
+.bigquote .sub { display:block; font-family:'DM Sans',sans-serif; font-weight:400; font-size:1.75rem; color:#c9d3e0; margin-top:36px; line-height:1.6; }
+.bigquote .sub b { color:#e8a84a; font-weight:700; }
+.bigquote .qmark { position:absolute; top:-40px; left:-20px; font-family:'Playfair Display',serif; font-size:9rem; color:rgba(232,168,74,.18); line-height:1; }
+
+@media (max-width:1100px){ .dark-card{padding:44px 40px} .dark-card h2{font-size:2.4rem} .bubble{max-width:100%} }
+
+/* ===== 海报封面（深蓝暖金，全屏）===== */
+.cover-slide { padding:0 !important; }
+.cover-wrap { width:100%; height:100%; display:grid; grid-template-columns:1.05fr 0.95fr;
+  background:linear-gradient(135deg,#0a1a30 0%,#13243f 55%,#1a2236 100%); position:relative; overflow:hidden; }
+.cover-wrap::before { content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 50% at 30% 45%, rgba(232,150,60,.16), transparent 70%); pointer-events:none; }
+.cover-art { position:relative; display:flex; align-items:center; justify-content:center; padding:3vh 2vw; }
+.cover-art img { max-height:94vh; max-width:100%; width:auto; object-fit:contain;
+  border-radius:14px; box-shadow:0 30px 90px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(232,180,110,.18); }
+.cover-side { position:relative; display:flex; flex-direction:column; justify-content:center; padding:0 6vw 0 3vw; color:#f3ece0; }
+.cover-side .eyebrow { font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; color:#e8a84a; margin-bottom:26px; }
+.cover-side h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(3rem,4.2vw,4.6rem);
+  line-height:1.12; letter-spacing:-.01em; color:#fff; }
+.cover-side h1 .gold { color:#e8a84a; }
+.cover-side .csub { font-size:1.62rem; line-height:1.62; color:#c9d3e0; margin-top:26px; max-width:24em; }
+.cover-side .csub strong { color:#fff; font-weight:600; }
+.cover-side .cstats { display:flex; gap:16px; margin-top:42px; flex-wrap:wrap; }
+.cover-side .cstat { border:1px solid rgba(232,168,74,.4); border-radius:40px; background:rgba(255,255,255,.04);
+  padding:16px 26px; text-align:center; }
+.cover-side .cstat .n { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:900; display:block;
+  color:#e8a84a; line-height:1; font-variant-numeric:tabular-nums; }
+.cover-side .cstat .l { font-family:'JetBrains Mono',monospace; font-size:.95rem; font-weight:600;
+  letter-spacing:.04em; text-transform:uppercase; color:#9fb0c4; margin-top:8px; display:block; }
+@media (max-width:1100px){ .cover-wrap{grid-template-columns:1fr; grid-template-rows:1fr auto} .cover-side{padding:0 6vw 5vh; text-align:center} .cover-side .cstats{justify-content:center} .cover-art img{max-height:60vh} }
+
+/* ===== 产品亮相页：左形象卡 + 右定位 ===== */
+.reveal { display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:center; }
+.reveal-art { background:linear-gradient(160deg,#102742,#16304e 60%,#1d2a3d); border:1px solid rgba(232,168,74,.3); border-radius:28px;
+  padding:54px 40px; text-align:center; position:relative; overflow:hidden; box-shadow:0 30px 70px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(232,168,74,.3); }
+.reveal-art::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 55% at 50% 38%, rgba(232,150,60,.22), transparent 68%); pointer-events:none; }
+.reveal-art .pet { font-size:8.5rem; line-height:1; filter:drop-shadow(0 14px 30px rgba(232,168,74,.4)); position:relative; }
+.reveal-art .petimg { width:230px; height:230px; object-fit:contain; filter:drop-shadow(0 16px 36px rgba(232,168,74,.45)); position:relative; }
+.reveal-art .petname { font-family:'Playfair Display',serif; font-weight:900; font-size:2.6rem; color:#fff; margin-top:18px; position:relative; }
+.reveal-art .petdesc { font-family:'JetBrains Mono',monospace; font-size:1.2rem; color:#e8a84a; letter-spacing:.06em; margin-top:10px; position:relative; }
+.reveal-art .statusrow { display:flex; gap:10px; justify-content:center; margin-top:26px; flex-wrap:wrap; position:relative; }
+.reveal-art .stbadge { font-family:'JetBrains Mono',monospace; font-size:1.05rem; padding:7px 14px; border-radius:20px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); color:#c9d3e0; }
+.reveal-side .eyebrow { font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#e8a84a; margin-bottom:18px; }
+.reveal-side h2 { font-size:3.2rem; line-height:1.2; color:#fff; margin-bottom:22px; }
+.reveal-side h2 .gold { color:#e8a84a; }
+.reveal-side .rlead { font-size:1.78rem; line-height:1.6; color:var(--text-dim); }
+.reveal-side .rlead strong { color:#fff; font-weight:600; }
+.reveal-side .rsplit { margin-top:26px; display:flex; flex-direction:column; gap:12px; }
+.reveal-side .rsplit .ri { display:flex; gap:16px; align-items:flex-start; font-size:1.5rem; line-height:1.45; color:var(--text-dim); }
+.reveal-side .rsplit .ri .rk { font-family:'JetBrains Mono',monospace; font-weight:700; color:#e8a84a; white-space:nowrap; }
+.reveal-side .rsplit .ri strong { color:#fff; font-weight:600; }
+@media (max-width:1100px){ .reveal{grid-template-columns:1fr; gap:32px} }
+
+/* ===== 能力页：大图标 + 标题 + 要点（单主体满屏）===== */
+.cap { display:grid; grid-template-columns:0.78fr 1.22fr; gap:52px; align-items:center; }
+.cap-left { text-align:center; }
+.cap-icon { font-size:6.5rem; line-height:1; filter:drop-shadow(0 12px 26px rgba(232,168,74,.35)); }
+.cap-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:1.2rem; font-weight:700; letter-spacing:.06em; color:#0a1626; background:linear-gradient(135deg,#e8a84a,#f0c070); padding:6px 16px; border-radius:20px; margin-top:22px; }
+.cap-left h2 { font-size:2.7rem; line-height:1.2; color:#fff; margin-top:18px; }
+.cap-left .csolve { margin-top:18px; font-size:1.45rem; line-height:1.5; color:var(--text-dim); max-width:18em; margin-inline:auto; }
+.cap-left .csolve b { color:#e8a84a; }
+.caplist { list-style:none; }
+.caplist li { background:var(--card); border:1px solid var(--border-light); border-top:1px solid rgba(232,168,74,.22); border-radius:16px; padding:22px 28px; margin-bottom:16px; backdrop-filter:blur(6px); box-shadow:0 14px 34px -16px rgba(0,0,0,.5); }
+.caplist li:last-child { margin-bottom:0; }
+.caplist li .lt { font-size:1.66rem; font-weight:700; color:#fff; margin-bottom:6px; }
+.caplist li .ld { font-size:1.42rem; color:var(--text-dim); line-height:1.5; }
+.caplist li .ld b { color:#e8a84a; font-weight:600; }
+@media (max-width:1100px){ .cap{grid-template-columns:1fr; gap:32px} .cap-left .csolve{max-width:none} }
+
+/* 收尾封面 */
+.endhero { display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+.endhero .eyebrow { font-family:'JetBrains Mono',monospace; font-size:var(--fs-label); font-weight:700; letter-spacing:var(--ls-label); text-transform:uppercase; color:var(--orange); margin-bottom:22px; }
+.endhero h1 { font-size:var(--fs-hero); line-height:var(--lh-heading); }
+.endhero .tag { margin-top:30px; font-size:1.7rem; color:var(--text-dim); }
+
+.proj-hint { position:fixed; right:24px; bottom:24px; z-index:200; background:var(--text); color:#fff; font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:600; padding:10px 18px; border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,.18); opacity:.82; }
+.proj-hint b { color:var(--orange); }
+
+/* 投影一屏一页 */
+.slide { padding-block:0; scroll-snap-align:start; }
+html.projection { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+.projection .topnav { display:none; }
+.projection .container { padding-bottom:0; }
+.projection .section, .projection .hero { margin-bottom:0; }
+.projection .slide { height:100vh; scroll-snap-align:start; scroll-snap-stop:always; display:flex; flex-direction:column; justify-content:center; padding-block:2.2vh; box-sizing:border-box; overflow:hidden; }
+.projection .sec-title { margin-bottom:clamp(20px,2.6vh,34px); }
+.projection .agent-full { padding-block:clamp(30px,3.4vh,48px); }
+.projection .changes li { padding-top:clamp(6px,0.9vh,10px); padding-bottom:clamp(6px,0.9vh,10px); }
+.projection .steps { gap:clamp(16px,2vh,24px); }
+
+@media (max-width:1100px){ .steps,.steps.two{grid-template-columns:1fr} .agent-full{grid-template-columns:1fr!important} .agent-col:last-child{border-left:none;padding-left:0;border-top:1px solid var(--border-light);padding-top:30px} .bd-grid{grid-template-columns:1fr} .vs{grid-template-columns:1fr} .vs .arrow{justify-content:center;transform:rotate(90deg)} }
+@media (max-width:640px){ .container{padding:0 20px 80px} }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-inner">
+    <span class="brand">⏎ 回车键 · Coding Agent 赛道</span>
+    <a class="nav-tag active" href="#sec-top">封面</a>
+    <a class="nav-tag" href="#sec-pain">痛点</a>
+    <a class="nav-tag" href="#sec-what">产品是什么</a>
+    <a class="nav-tag" href="#sec-cap">三个能力</a>
+    <a class="nav-tag" href="#sec-demo">现场 Demo</a>
+    <a class="nav-tag" href="#sec-take">收尾</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 1 封面（海报全屏） -->
+  <section class="slide cover-slide" id="sec-top">
+  <div class="cover-wrap">
+    <div class="cover-art">
+      <img src="assets/cover-poster.png" alt="回车键 · Enter 一下，世界开始运行">
+    </div>
+    <div class="cover-side">
+      <div class="eyebrow">Beyond Prompt · Agents in Action · 北京站</div>
+      <h1>一个<span class="gold">常驻桌面</span>、<br>懂你行业的<br>Coding Agent 助手</h1>
+      <p class="csub"><strong>小哒 Coda</strong> 盯着你的 Coding Agent <strong>实时反馈进度</strong>，<strong>懂你的行业业务</strong>，还能把行业经验<strong>打包成插件一键分享</strong>给同行。</p>
+      <div class="cstats">
+        <div class="cstat"><span class="n">👁</span><span class="l">看得见</span></div>
+        <div class="cstat"><span class="n">🧠</span><span class="l">懂业务</span></div>
+        <div class="cstat"><span class="n">🔌</span><span class="l">能裂变</span></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- 2 痛点：用 Coding Agent 的人卡在三件事 -->
+  <section class="slide">
+  <div class="section" id="sec-pain">
+    <div class="sec-title"><span class="sn">01</span><h2>用 AI 写代码的人，卡在三件事</h2><span class="sub">他们是行业专家，只是不懂代码</span></div>
+    <div class="steps">
+      <div class="step"><div class="n">痛点 01 · 看不见</div><div class="t">挂着不知道进度</div><div class="d">让 Agent 跑个任务，干没干完、要不要确认，<strong>得一直盯着终端</strong>，盯久了就放弃。</div></div>
+      <div class="step"><div class="n">痛点 02 · 不懂你</div><div class="t">只懂技术，不懂业务</div><div class="d">通用 Agent 帮你 Review，只会说命名不规范，不会说「<strong>患者隐私字段不该明文存</strong>」。</div></div>
+      <div class="step"><div class="n">痛点 03 · 传不出</div><div class="t">经验沉淀不下来</div><div class="d">调好的 Prompt、行业规则锁在自己会话里，换项目重来，<strong>同行更用不上</strong>。</div></div>
+    </div>
+  </div>
+  </section>
+
+  <!-- 3 产品亮相：回车键是什么（灵魂页） -->
+  <section class="slide">
+  <div class="section" id="sec-what">
+    <div class="sec-title"><span class="sn">02</span><h2>小哒 Coda，是什么</h2><span class="sub">回车键团队出品 · 一个常驻桌面的 AI 助手</span></div>
+    <div class="reveal">
+      <div class="reveal-art">
+        <img class="petimg" src="assets/coda-icon-transparent.png" alt="小哒 Coda">
+        <div class="petname">小哒 · Coda</div>
+        <div class="petdesc">常驻桌面 · 盯着你的 Coding Agent</div>
+        <div class="statusrow">
+          <span class="stbadge">💭 思考中</span>
+          <span class="stbadge">⌨️ 写代码</span>
+          <span class="stbadge">✅ 干完了</span>
+          <span class="stbadge">🙋 等确认</span>
+        </div>
+      </div>
+      <div class="reveal-side">
+        <div class="eyebrow">PRODUCT · 一句话定位</div>
+        <h2>一个<span class="gold">常驻桌面</span>、<br>懂你行业的 Agent 助手</h2>
+        <p class="rlead"><strong>小哒 Coda</strong> 不是又一个代码生成器。它是一个<strong>住在你桌面上的小助手</strong>——盯着你的 Coding Agent，懂你的行业，还能把你的经验分享出去。</p>
+        <div class="rsplit">
+          <div class="ri"><span class="rk">看得见 →</span><span>实时反馈 Agent 在干嘛、干完没，<strong>不用盯屏</strong></span></div>
+          <div class="ri"><span class="rk">懂业务 →</span><span>Review 带行业维度，<strong>越用越懂你</strong></span></div>
+          <div class="ri"><span class="rk">能裂变 →</span><span>经验打包成插件，<strong>同行一键装机</strong></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- 4 能力一：看得见（桌面助手主角） -->
+  <section class="slide">
+  <div class="section" id="sec-cap">
+    <div class="sec-title"><span class="sn">03</span><h2>能力一 · 看得见</h2><span class="sub">桌面助手 · 让 Agent 的状态浮出水面</span></div>
+    <div class="cap">
+      <div class="cap-left">
+        <div class="cap-icon">👁️</div>
+        <div class="cap-tag">DESKTOP · 桌面助手</div>
+        <h2>一个盯着 Agent 的<br>桌面小助手</h2>
+        <p class="csolve">解决<b>挂着不知道进度</b>、<b>门口就放弃</b>的最大痛点</p>
+      </div>
+      <ul class="caplist">
+        <li><div class="lt">状态实时反馈</div><div class="ld">思考、写代码、跑构建、<b>干完了、等你确认</b>——形象动起来，不用盯终端</div></li>
+        <li><div class="lt">权限气泡 · 一键确认</div><div class="ld">Agent 要权限时桌面弹卡片，<b>一眼看到、一键放行</b>，不卡在终端</div></li>
+        <li><div class="lt">游戏化 · 越用越想用</div><div class="ld">勋章、宠物互动、进度助推——<b>把折腾变成好玩</b>，提打开率</div></li>
+      </ul>
+    </div>
+  </div>
+  </section>
+
+  <!-- 5 能力二：懂业务（核心差异） -->
+  <section class="slide">
+  <div class="section">
+    <div class="sec-title"><span class="sn">03</span><h2>能力二 · 懂业务</h2><span class="sub">业务版 Code Review · 我们的核心差异</span></div>
+    <div class="cap">
+      <div class="cap-left">
+        <div class="cap-icon">🧠</div>
+        <div class="cap-tag">REVIEW · 业务维度</div>
+        <h2>它不只懂技术，<br>它懂你的行业</h2>
+        <p class="csolve">通用 Agent 只会查 bug，<b>它会查业务对不对</b></p>
+      </div>
+      <ul class="caplist">
+        <li><div class="lt">业务维度 Review</div><div class="ld">不只看代码结构，还问「<b>候诊逻辑是否考虑复诊优先排队</b>」——技术对，业务也对</div></li>
+        <li><div class="lt">反问补齐 · 记一辈子</div><div class="ld">第一次像问卷追问你的行业规则，<b>记住后绝不重复问</b>——越用越懂你</div></li>
+        <li><div class="lt">知识不内置 · 跟着你走</div><div class="ld">不预置过时的行业知识，<b>你才是专家</b>，它只负责记住、复用你的经验</div></li>
+      </ul>
+    </div>
+  </div>
+  </section>
+
+  <!-- 6 能力三：能裂变 -->
+  <section class="slide">
+  <div class="section">
+    <div class="sec-title"><span class="sn">03</span><h2>能力三 · 能裂变</h2><span class="sub">技能打包成插件 · 同行一键装机</span></div>
+    <div class="cap">
+      <div class="cap-left">
+        <div class="cap-icon">🔌</div>
+        <div class="cap-tag">PLUGIN · 一键分享</div>
+        <h2>你的经验，<br>同行一键就装上</h2>
+        <p class="csolve">分享的不是文字，是<b>一个学会了你行业的 Agent</b></p>
+      </div>
+      <ul class="caplist">
+        <li><div class="lt">行业经验打包成插件</div><div class="ld">反问补齐的行业 know-how、调好的脚本，<b>一键打包成 Claude Code 插件</b></div></li>
+        <li><div class="lt">同行一键装机</div><div class="ld">发个链接，对方 <b>/plugin install</b> 装上，他的 Agent 立刻懂这个行业</div></li>
+        <li><div class="lt">越分享越强 · 垂直社区</div><div class="ld">同领域的垂直 Agent 远强于通用工具，<b>强到让人想推荐 → 裂变</b></div></li>
+      </ul>
+    </div>
+  </div>
+  </section>
+
+  <!-- 7 现场 Demo：插件真跑 + 助手录屏 -->
+  <section class="slide">
+  <div class="section" id="sec-demo">
+    <div class="sec-title"><span class="sn">04</span><h2>现场演示 · 真命令真执行</h2><span class="sub">基于 Claude Code 原生 plugin 机制</span></div>
+    <div class="term">
+      <div class="cw-bar"><span class="d3"><i style="background:#ff5f56"></i><i style="background:#ffbd2e"></i><i style="background:#27c93f"></i></span><span class="fn">同行收到链接 · 两步装上行业大脑</span></div>
+      <pre><code><span class="cm"># 注册技能市场 + 安装插件，两行搞定</span>
+<span class="c">/plugin marketplace add</span> enter-key/enter-key-marketplace
+<span class="c">/plugin install</span> enter-key-industry@enter-key-marketplace</code></pre>
+    </div>
+    <div class="vs">
+      <div class="col before">
+        <div class="vlabel">装 前</div>
+        <div class="vq">「候诊是什么？请先描述一下您的场景…」<span class="note">— 泛泛而谈，用户看不懂</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="col after">
+        <div class="vlabel">装 后</div>
+        <div class="vq">「您诊所候诊按初诊/复诊区分，复诊优先，手机号脱敏，对吗？」<span class="note">— 直接进业务，零学习成本</span></div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:24px;font-size:1.35rem;color:var(--text-dim)">+ 桌面助手原型录屏：形象常驻、状态实时反馈、权限气泡</p>
+  </div>
+  </section>
+
+  <!-- 8 收尾 -->
+  <section class="slide">
+  <div class="section" id="sec-take" style="margin-bottom:0">
+    <div class="foot">
+      <h2>一句话记住小哒 Coda</h2>
+      <p class="fsub">一个常驻桌面、看得见 · 懂业务 · 能裂变的 Coding Agent 助手。</p>
+      <div class="bd-grid">
+        <div class="bd"><div class="q">看得见</div><div class="p">桌面助手盯着 Agent，<b>状态实时反馈、不用盯屏</b>。</div></div>
+        <div class="bd"><div class="q">懂业务</div><div class="p">业务维度 Review，<b>懂你的行业、越用越懂你</b>。</div></div>
+        <div class="bd"><div class="q">能裂变</div><div class="p">经验打包成插件，<b>同行一键装机、垂直社区</b>。</div></div>
+      </div>
+    </div>
+    <footer class="pf">⏎ 回车键 · Enter 一下，你的 Agent 就懂你了</footer>
+  </div>
+  </section>
+
+</div>
+
+<div class="proj-hint">按 <b>P</b> 切换投影一屏一页模式</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+let cur = 0;
+const root = document.documentElement;
+function isProjection(){ return root.classList.contains('projection'); }
+function scrollYpos(){ return window.scrollY || root.scrollTop || 0; }
+function goTo(i){ cur = Math.max(0, Math.min(slides.length - 1, i)); window.scrollTo({ top: slides[cur].offsetTop, behavior:'smooth' }); }
+function syncCurrentSlide(){ const y = scrollYpos() + 1; cur = 0; for (let i=0;i<slides.length;i++) if (slides[i].offsetTop <= y) cur = i; }
+addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') { root.classList.toggle('projection'); if (isProjection()) syncCurrentSlide(); return; }
+  if (!isProjection()) return;
+  const next = ['ArrowDown','ArrowRight','PageDown',' ','Spacebar'];
+  const prev = ['ArrowUp','ArrowLeft','PageUp'];
+  if (next.includes(e.key)) { e.preventDefault(); goTo(cur + 1); }
+  else if (prev.includes(e.key)) { e.preventDefault(); goTo(cur - 1); }
+  else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  else if (e.key === 'End') { e.preventDefault(); goTo(slides.length - 1); }
+  else if (e.key === 'Escape') { root.classList.remove('projection'); }
+});
+const navTags = document.querySelectorAll('.nav-tag');
+const obs = new IntersectionObserver(es => { es.forEach(en => { if (en.isIntersecting) { const id='#'+en.target.id; navTags.forEach(t => { if (t.getAttribute('href')===id){ navTags.forEach(x=>x.classList.remove('active')); t.classList.add('active'); } }); } }); }, { rootMargin:'-12% 0px -75% 0px' });
+document.querySelectorAll('[id^="sec-"]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
