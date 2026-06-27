@@ -47,15 +47,22 @@ python3 scan.py samples/clinic-demo
 
 ## HTTP API（对齐接口契约）
 
-| 方法 | 路径 | 入参 | 出参 |
-|---|---|---|---|
-| POST | `/profile` | `{"scan":{...}}` 或 `{"root":"/abs/dir"}` | 行业画像 |
-| POST | `/review` | `{"profile":{...},"file":{"path","content"}}` | `{score, issues[]}` |
-| POST | `/scan` | `{"root":"/abs/dir"}` | 扫盘+画像+评价一条龙 |
-| GET | `/health` | — | `{ok:true}` |
+| 方法 | 路径 | 入参 | 出参 | 功能 |
+|---|---|---|---|---|
+| POST | `/scan` | `{"root"}` | 画像+评价+复用+复用提醒+阶段+人设一条龙 | 主入口 |
+| POST | `/profile` | `{"root"}` 或 `{"scan"}` | 行业画像（含手改覆盖） | ①评价 |
+| POST | `/review` | `{"profile","file"}` | `{score, issues[]}` | ①评价 |
+| POST | `/reuse` | `{"root"}` | `{reuse:{candidates[]}}` | ③复用 |
+| POST | `/explain` | `{"profile","term"}` | `{explain:{plain,why}}` | ②解释 |
+| POST | `/explain/stage` | `{"root"}` | `{stage:{stage,analogy,next}}` | ②解释 |
+| POST | `/notify` | `{"root"}` | `{alerts[]}` + 推桌宠通知 | ④提醒 |
+| POST | `/profile/override` | `{"root","override"}` | 保存画像覆盖 | 人设跟随 |
+| GET | `/profile/override?root=` | — | `{override}` | 人设跟随 |
+| GET | `/persona` | — | `{persona:{headline,skills,...}}` | 人设跟随 |
+| GET | `/health` | — | `{ok:true}` | — |
 
 ```bash
-curl -s localhost:8848/profile -d '{"root":"samples/clinic-demo"}'
+curl -s localhost:8848/scan -d '{"root":"samples/clinic-demo"}'
 ```
 
 ## 文件
@@ -64,17 +71,27 @@ curl -s localhost:8848/profile -d '{"root":"samples/clinic-demo"}'
 |---|---|
 | `keywords.py` | 行业关键词库（医疗做厚，余行业种子词）+ 红线清单 |
 | `scanner.py` | 扫盘引擎（本地遍历 + 关键词匹配 + 反推画像）·**只读** |
-| `review.py` | 评价核心（调 LLM 做打分/行话翻译/改法）·**只读不改** |
+| `review.py` | ①评价核心（调 LLM 做打分/行话翻译/改法）·**只读不改** |
+| `explain.py` | ②解释（技术概念→行业类比 + 项目阶段感知） |
+| `reuse.py` | ③复用·公共模块抽取（静态分析，零 LLM） |
+| `reuse_store.py` | ③复用·行业能力库（跨项目存轮子 + 命中提醒） |
+| `notify.py` | ④提醒（踩红线/可复用时主动弹桌宠通知，启发式） |
+| `profile_store.py` | 人设跟随·画像手改持久化（按目录） |
+| `persona.py` | 人设跟随·跨项目累积人设（越用越准） |
+| `pet_bridge.py` | 桌宠桥接（评价进度 → 表情联动） |
 | `llm_client.py` | 可换后端的 LLM client（零三方依赖，标准库 urllib） |
 | `scan.py` | CLI 入口 |
 | `server.py` | HTTP 服务（标准库 http.server，零依赖） |
-| `samples/clinic-demo/` | 医疗测试项目（埋了红线问题），demo 第一幕「项目 A」素材 |
+| `samples/clinic-demo/` | 医疗项目 A（埋红线），demo 第一幕素材 |
+| `samples/clinic-new/` | 医疗项目 B（缺轮子），demo 第二幕·复用提醒素材 |
 
-## 状态（2026-06-27 今晚 · ①评价已全跑通）
+## 状态（2026-06-28 · 全部能力跑通）
 
-- ✅ 扫盘 + 画像反推：医疗样本反推「医疗 88%」+ 证据词 + 红线（纯本地、秒出、零依赖）
-- ✅ 评价（真 LLM）：`visit.ts` 32 分 / `patient.py` 46 分，问题全是医疗行话 + 改法建议
-  - 还自动发现了没埋的问题（身份证校验过于简单），不是背答案
-- ✅ CLI + HTTP API（/health /profile /review /scan）+ 可换后端：全部实测通过
-- ✅ 后端：主办方 `api.openai-next.com`（OpenAI 兼容，gpt-5）跑通
-- ⏭️ 明早：②解释（复用 review 的行话口径）③复用（医疗轮子库）+ 前端接这两个 API
+- ✅ **①评价**：扫盘反推「医疗 88%」+ 真 LLM 打分（visit.ts 32-42 / patient.py 46-52）+ 行话翻译 + 改法（只读不改）。还自动发现没埋的问题，不是背答案。
+- ✅ **②解释**：技术概念→行业类比（状态机→患者就诊流程表）+ 项目阶段感知（门诊试运行、前端是叫号屏后端是档案室）
+- ✅ **③复用**：公共模块抽取（5 个轮子）+ 跨项目命中提醒（扫项目B提醒"用项目A的现成轮子"）
+- ✅ **④提醒**：踩红线/可复用时主动推 notification 弹桌宠气泡（启发式，不调 LLM，快稳）
+- ✅ **人设跟随**：画像手改持久化（按目录）+ 跨项目累积人设（"你主要在做医疗，攒下5个能力"）
+- ✅ **桌宠联动**：评价进度驱动表情（扫盘=思考/评价=干活/红线=慌张）+ 工作台 Dashboard（coda-desktop）
+- ✅ 后端可换：主办方 `api.openai-next.com`（OpenAI 兼容，gpt-5）跑通；零三方依赖、纯标准库
+- ⏭️ 二期：传播（分享给同行）、通用复用引擎、更多行业关键词库
