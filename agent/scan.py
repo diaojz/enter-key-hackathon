@@ -16,9 +16,14 @@ import json
 
 from scanner import scan_dir, infer_profile
 from review import review_file, pick_review_targets
+from pet_bridge import push_state
 
 
-def run(root: str, use_llm: bool = True, review_limit: int = 3):
+def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True):
+    # 扫盘开始 → 桌宠思考脸
+    if pet:
+        push_state("thinking", event="扫盘中", cwd=os.path.abspath(root))
+
     scan = scan_dir(root)
     profile = infer_profile(scan)
 
@@ -29,6 +34,8 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3):
     }, "profile": profile, "reviews": []}
 
     if use_llm and profile["industry"] != "未知":
+        if pet:
+            push_state("working", event="评价中", cwd=scan["root"])  # 专注干活
         targets = pick_review_targets(scan, profile, limit=review_limit)
         for rel in targets:
             full = os.path.join(scan["root"], rel)
@@ -40,6 +47,17 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3):
             r = review_file(profile, rel, content)
             r["file"] = rel
             result["reviews"].append(r)
+
+    # 收尾：发现红线 → 慌张报错脸；否则 → 欢呼
+    if pet:
+        has_redline = any(
+            it.get("redlineLevel") == "high"
+            for rv in result["reviews"] for it in rv.get("issues", [])
+        )
+        if has_redline:
+            push_state("error", event="发现红线", cwd=scan["root"])
+        else:
+            push_state("done", event="评价完成", cwd=scan["root"])
 
     return result
 
