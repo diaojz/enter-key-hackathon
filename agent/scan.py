@@ -34,11 +34,23 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
     # 抽取可复用公共模块（行业未知也尝试，抽不到则 candidates 为空）
     reuse = extract_reusable(scan, profile)
 
+    # ③复用·跨项目提醒：先拿当前项目轮子去比对行业库（命中=别的项目有现成的），
+    # 再把当前项目轮子入库供下个项目用。顺序不能反，否则会提醒"用你自己刚写的"。
+    reuse_hint = {"matchedIndustry": profile.get("industry"), "message": "", "candidates": []}
+    try:
+        from reuse_store import match_reuse_hint, deposit
+        ind = profile.get("industry")
+        cur_cands = reuse.get("candidates", [])
+        reuse_hint = match_reuse_hint(ind, cur_cands, scan["root"])
+        deposit(ind, cur_cands)
+    except Exception:
+        pass
+
     result = {"scan_summary": {
         "root": scan["root"],
         "fileCount": scan["fileCount"],
         "langs": scan["langs"],
-    }, "profile": profile, "reviews": [], "reuse": reuse}
+    }, "profile": profile, "reviews": [], "reuse": reuse, "reuseHint": reuse_hint}
 
     # ②解释：项目阶段（用行业语言讲现在在干什么）。只在能调 LLM + 行业已知时跑。
     if use_llm and profile["industry"] != "未知":
