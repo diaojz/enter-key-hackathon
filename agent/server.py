@@ -25,6 +25,7 @@ from review import review_file
 from scan import run as run_pipeline
 from reuse import extract_reusable
 from profile_store import apply_override, set_override, get_override, clear_override
+from explain import explain_concept, explain_stage
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -115,6 +116,26 @@ class Handler(BaseHTTPRequestHandler):
                     return self._send(400, {"error": "缺少 scan 或 root"})
                 profile = infer_profile(scan)
                 return self._send(200, {"reuse": extract_reusable(scan, profile)})
+
+            if self.path == "/explain":
+                # 解释单个技术概念：{"profile":{...}|"industry","term":"状态机"}
+                profile = data.get("profile") or {"industry": data.get("industry", "通用")}
+                term = data.get("term")
+                if not term:
+                    return self._send(400, {"error": "缺少 term"})
+                return self._send(200, {"explain": explain_concept(profile, term)})
+
+            if self.path == "/explain/stage":
+                # 解释项目阶段：{"root"} 或 {"scan","profile"}
+                scan = data.get("scan")
+                root = data.get("root")
+                if scan is None and root:
+                    scan = scan_dir(root)
+                if scan is None:
+                    return self._send(400, {"error": "缺少 scan 或 root"})
+                profile = data.get("profile") or apply_override(
+                    infer_profile(scan), root or scan.get("root", ""))
+                return self._send(200, {"stage": explain_stage(profile, scan)})
 
             return self._send(404, {"error": f"未知路径 {self.path}"})
         except (NotADirectoryError, FileNotFoundError) as e:

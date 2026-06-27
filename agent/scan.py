@@ -40,6 +40,14 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
         "langs": scan["langs"],
     }, "profile": profile, "reviews": [], "reuse": reuse}
 
+    # ②解释：项目阶段（用行业语言讲现在在干什么）。只在能调 LLM + 行业已知时跑。
+    if use_llm and profile["industry"] != "未知":
+        try:
+            from explain import explain_stage
+            result["stage"] = explain_stage(profile, scan)
+        except Exception:
+            result["stage"] = None
+
     if use_llm and profile["industry"] != "未知":
         if pet:
             push_state("working", event="评价中", cwd=scan["root"])  # 专注干活
