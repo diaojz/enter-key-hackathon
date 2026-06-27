@@ -17,6 +17,7 @@ import json
 from scanner import scan_dir, infer_profile
 from review import review_file, pick_review_targets
 from pet_bridge import push_state
+from reuse import extract_reusable
 
 
 def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True):
@@ -27,11 +28,14 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
     scan = scan_dir(root)
     profile = infer_profile(scan)
 
+    # 抽取可复用公共模块（行业未知也尝试，抽不到则 candidates 为空）
+    reuse = extract_reusable(scan, profile)
+
     result = {"scan_summary": {
         "root": scan["root"],
         "fileCount": scan["fileCount"],
         "langs": scan["langs"],
-    }, "profile": profile, "reviews": []}
+    }, "profile": profile, "reviews": [], "reuse": reuse}
 
     if use_llm and profile["industry"] != "未知":
         if pet:

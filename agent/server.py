@@ -21,6 +21,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from scanner import scan_dir, infer_profile
 from review import review_file
 from scan import run as run_pipeline
+from reuse import extract_reusable
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -79,6 +80,16 @@ class Handler(BaseHTTPRequestHandler):
                 use_llm = data.get("useLlm", True)
                 return self._send(200, run_pipeline(root, use_llm=use_llm))
 
+            if self.path == "/reuse":
+                # 支持两种入参：{"root": "..."} 或 {"scan": {...}}
+                scan = data.get("scan")
+                if scan is None and data.get("root"):
+                    scan = scan_dir(data["root"])
+                if scan is None:
+                    return self._send(400, {"error": "缺少 scan 或 root"})
+                profile = infer_profile(scan)
+                return self._send(200, {"reuse": extract_reusable(scan, profile)})
+
             return self._send(404, {"error": f"未知路径 {self.path}"})
         except (NotADirectoryError, FileNotFoundError) as e:
             return self._send(400, {"error": str(e)})
@@ -93,7 +104,7 @@ def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8848
     srv = ThreadingHTTPServer(("0.0.0.0", port), Handler)
     print(f"🐾 小哒 Coda 评价 Agent 已启动 → http://localhost:{port}")
-    print(f"   POST /profile  /review  /scan   ·   GET /health")
+    print(f"   POST /profile  /review  /scan  /reuse   ·   GET /health")
     print("   Ctrl-C 停止")
     try:
         srv.serve_forever()
