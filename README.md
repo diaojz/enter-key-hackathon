@@ -16,7 +16,7 @@
 
 ## 🚀 快速直达（点链接打开，本地 clone 后双击即开）
 
-> 📌 **当前阶段：物料就绪 + 已上线（GitHub Pages 在线可看）→ 待搭真插件仓库**
+> 📌 **当前阶段：物料/PPT/PRD 全部对齐 v4 + 已上线 → 待打 Agent（扫盘引擎 + /profile、/review）**
 > ⏰ **下一个硬截止：6/28 14:30 全部提交** · 路演 6/28 16:00（每队 6 min）
 > 🌐 **在线站点：https://diaojz.github.io/enter-key-hackathon/** ← 点链接直接在浏览器打开，图 / GIF 都在
 
@@ -90,8 +90,8 @@
 |---|---|
 | [`选题定稿.html`](./选题定稿.html) | **选题定稿 v4（当前口径）** · 扫盘 Review / 行业画像（真做）+ 跨项目复用（医疗最小切片）· 开发依据 + PPT 底稿 |
 | [`Agent接口契约.html`](./Agent接口契约.html) | **Agent 接口契约** · `/profile` + `/review` 两个 API · 医疗示例 + 关键词库，给 Agent 同学照搭 |
-| [`路演PPT.html`](./路演PPT.html) | 路演演讲稿 · 8 页 · 深蓝暖金风 · ⚠️ 仍是 v3.0「插件裂变」主线，待随 v4 改 |
-| [`PRD.html`](./PRD.html) | 产品需求文档 v3.0 · 产品中心版 · ⚠️ 仍是 v3.0「插件裂变」主线，待随 v4 改 |
+| [`路演PPT.html`](./路演PPT.html) | 路演演讲稿 · 8 页 · 深蓝暖金风 · ✅ 已对齐 v4（扫盘 Review）· 横版海报全屏封面 |
+| [`PRD.html`](./PRD.html) | 产品需求文档 v4 · 扫盘 Review 主线 · ✅ 已同步（评价 / 解释 / 复用） |
 | [`产品命名.html`](./产品命名.html) | 产品命名定稿（小哒 / Coda · 竞品参照 / 候选方案 / 形象设定，含 icon） |
 | [`选题脑暴.html`](./选题脑暴.html) | 选题脑暴白板（思考脉络） |
 | `assets/cover-poster-wide.png` | **横版主视觉海报**（16:9 宽屏 · README 顶图 / PPT / Figma 用） |
