@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒 Coda · 功能验证报告</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf; --warn:#c9472b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:22px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .hero{background:linear-gradient(135deg,#fff6ee,#fdeee2);border:1px solid #f0d4c0}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+  @media(max-width:680px){.summary{grid-template-columns:1fr 1fr}}
+  .scard{background:var(--pill);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .scard .n{font-family:Georgia,serif;font-size:30px;font-weight:800;color:var(--accent);line-height:1}
+  .scard .n.green{color:var(--good)}
+  .scard .l{font-size:12px;color:var(--sub);margin-top:6px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-size:12px;font-weight:700}
+  tr:last-child td{border-bottom:none}
+  .tid{font-family:"SF Mono",Menlo,monospace;font-size:12px;color:var(--accent);white-space:nowrap}
+  .pass{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;background:#e6f3ea;color:var(--good);white-space:nowrap}
+  .evi{color:var(--sub);font-size:12.5px}
+
+  .verdict{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:14px 16px;font-size:14px}
+  .verdict b{color:var(--good)}
+  .note{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:13px 15px;font-size:13.5px;margin-top:10px}
+  .note b{color:var(--accent)}
+  code{background:var(--pill);padding:1px 6px;border-radius:5px;font-size:12.5px;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+  .grp{font-size:13px;font-weight:800;color:var(--ink);margin:14px 0 6px;padding-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">小哒 Coda · 功能验证报告</span>
+  <h1>功能验证报告</h1>
+  <p class="meta"><b>小哒 Coda</b>（回车键团队）· 验证时间 2026-06-28 · 范围：评价 Agent 全部能力 + 桌宠联动 + 工作台</p>
+
+  <nav>
+    <a href="#sum">结论</a>
+    <a href="#scope">范围</a>
+    <a href="#cases">逐项明细</a>
+    <a href="#safety">安全/容错</a>
+    <a href="#how">复现方法</a>
+  </nav>
+
+  <section id="sum" class="hero">
+    <h2><span class="badge">✓</span>验证结论</h2>
+    <div class="summary">
+      <div class="scard"><div class="n green">24</div><div class="l">用例总数</div></div>
+      <div class="scard"><div class="n green">24</div><div class="l">通过</div></div>
+      <div class="scard"><div class="n">0</div><div class="l">失败</div></div>
+      <div class="scard"><div class="n green">100%</div><div class="l">通过率</div></div>
+    </div>
+    <div class="verdict" style="margin-top:14px"><b>结论：</b>四轮核心能力（①评价 ②解释 ③复用 ④提醒 + 人设跟随）、桌宠表情联动、工作台三块、选文件夹、后端可换全部跑通。<b>「只读不改」铁律经文件哈希比对验证通过</b>。无阻断性缺陷，可进入路演演练。</div>
+    <div class="note"><b>说明：</b>真实 LLM 用例（/review、/explain）走主办方 <code>api.openai-next.com</code>（gpt-5）实跑；扫盘/画像/复用/提醒/人设为纯本地逻辑，零外部依赖、秒级响应。</div>
+  </section>
+
+  <section id="scope">
+    <h2><span class="badge">▢</span>验证范围（8 组）</h2>
+    <table>
+      <tr><th>组</th><th>覆盖</th><th>用例数</th></tr>
+      <tr><td>第1组</td><td>①评价：health / 扫盘反推画像 / review 真 LLM 打分</td><td>3</td></tr>
+      <tr><td>第2组</td><td>②解释：概念→行业类比 / 项目阶段感知</td><td>2</td></tr>
+      <tr><td>第3组</td><td>③复用：公共模块抽取 / 跨项目命中提醒</td><td>2</td></tr>
+      <tr><td>第4组</td><td>④提醒：主动通知 + 红线检测</td><td>1</td></tr>
+      <tr><td>第5组</td><td>人设跟随：画像覆盖持久化 / 跨项目累积</td><td>2</td></tr>
+      <tr><td>第6组</td><td>桌宠联动 / 只读铁律 / 4 项容错边界</td><td>6</td></tr>
+      <tr><td>第7组</td><td>工作台前端 / 选文件夹 IPC / 菜单 / i18n / 语法</td><td>6</td></tr>
+      <tr><td>第8组</td><td>后端可换（mock 兜底）/ CLI</td><td>2</td></tr>
+    </table>
+  </section>
+
+  <section id="cases">
+    <h2><span class="badge">≡</span>逐项明细（24 项全通过）</h2>
+
+    <div class="grp">① 评价（扫盘 → 画像 → 打分）</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T1.1</td><td><span class="pass">PASS</span></td><td class="evi">/health 返回 ok，服务在线</td></tr>
+      <tr><td class="tid">T1.2</td><td><span class="pass">PASS</span></td><td class="evi">扫医疗样本 → 行业=医疗、置信度 0.88、证据 patient×8/就诊×6</td></tr>
+      <tr><td class="tid">T1.3</td><td><span class="pass">PASS</span></td><td class="evi">/review 真 LLM：score=25（整数）+ 行话 problem + 改法 fix，结构完整</td></tr>
+    </table>
+
+    <div class="grp">② 解释（行业白话讲 coding）</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T2.1</td><td><span class="pass">PASS</span></td><td class="evi">「幂等」→「同一条医嘱有唯一编号，误点几次只算一次」</td></tr>
+      <tr><td class="tid">T2.2</td><td><span class="pass">PASS</span></td><td class="evi">阶段感知 →「挂号与分诊的骨架搭建阶段」</td></tr>
+    </table>
+
+    <div class="grp">③ 复用（抽取 + 跨项目提醒）</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T3.1</td><td><span class="pass">PASS</span></td><td class="evi">/reuse 抽出 5 个轮子：就诊状态机 / 复诊优先排队 / validate patient id…</td></tr>
+      <tr><td class="tid">T3.2</td><td><span class="pass">PASS</span></td><td class="evi">扫项目 A 入库 → 扫项目 B 提醒「有 5 个现成轮子，直接用」，命中跨项目</td></tr>
+    </table>
+
+    <div class="grp">④ 提醒（主动通知）</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T4.1</td><td><span class="pass">PASS</span></td><td class="evi">/notify 返回 4 条提醒（含 3 条红线），并推 notification 给桌宠</td></tr>
+    </table>
+
+    <div class="grp">人设跟随（越用越准）</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T5.1</td><td><span class="pass">PASS</span></td><td class="evi">手改医疗→金融：红线自动换金融、置信度拉满 1.0、edited 标记，持久化生效</td></tr>
+      <tr><td class="tid">T5.2</td><td><span class="pass">PASS</span></td><td class="evi">扫 2 个医疗项目 →「你主要在做医疗（2 个项目）」、累积 5 项能力</td></tr>
+    </table>
+
+    <div class="grp">桌宠联动 + 容错边界</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T6.1</td><td><span class="pass">PASS</span></td><td class="evi">桌宠 server 在线（端口 23333）</td></tr>
+      <tr><td class="tid">T6.2</td><td><span class="pass">PASS</span></td><td class="evi">thinking/working/error 三状态推送全成功，表情联动</td></tr>
+      <tr><td class="tid">T6.3</td><td><span class="pass">PASS</span></td><td class="evi"><b>只读不改铁律：扫描前后目标项目文件哈希完全一致</b></td></tr>
+      <tr><td class="tid">T6.4</td><td><span class="pass">PASS</span></td><td class="evi">无效目录 → 返回 error 不崩溃</td></tr>
+      <tr><td class="tid">T6.5</td><td><span class="pass">PASS</span></td><td class="evi">缺 root 参数 → 返回「缺少 root」</td></tr>
+      <tr><td class="tid">T6.6</td><td><span class="pass">PASS</span></td><td class="evi">非业务项目 → 行业=未知、置信度 0，不报错</td></tr>
+    </table>
+
+    <div class="grp">工作台前端 + 选文件夹</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T7.1</td><td><span class="pass">PASS</span></td><td class="evi">三块卡 + 阶段解释 + 复用提醒 + 人设条 + 选文件夹按钮，组件全在</td></tr>
+      <tr><td class="tid">T7.2</td><td><span class="pass">PASS</span></td><td class="evi">选文件夹 IPC 通道：preload + main 两端接好</td></tr>
+      <tr><td class="tid">T7.3</td><td><span class="pass">PASS</span></td><td class="evi">工作台窗口已配 preload-coda-eval.js</td></tr>
+      <tr><td class="tid">T7.4</td><td><span class="pass">PASS</span></td><td class="evi">桌宠菜单入口：右键 + 托盘共 4 处「打开小哒工作台」</td></tr>
+      <tr><td class="tid">T7.5</td><td><span class="pass">PASS</span></td><td class="evi">菜单 i18n 覆盖 5 种语言</td></tr>
+      <tr><td class="tid">T7.6</td><td><span class="pass">PASS</span></td><td class="evi">桌宠 5 个改动 JS 文件 node -c 语法全通过</td></tr>
+    </table>
+
+    <div class="grp">后端可换 + CLI</div>
+    <table>
+      <tr><th>用例</th><th>结果</th><th>证据</th></tr>
+      <tr><td class="tid">T8.1</td><td><span class="pass">PASS</span></td><td class="evi">mock 后端：无 key 也能跑通整条链路，返回结构正确</td></tr>
+      <tr><td class="tid">T8.2</td><td><span class="pass">PASS</span></td><td class="evi">CLI <code>python3 scan.py</code> 可用，输出「我猜你是做【医疗】的」</td></tr>
+    </table>
+  </section>
+
+  <section id="safety">
+    <h2><span class="badge">🔒</span>安全与健壮性重点</h2>
+    <table>
+      <tr><th>项</th><th>验证方式</th><th>结果</th></tr>
+      <tr><td>只读不改（产品承诺）</td><td>扫描前后对目标项目全部文件做 md5 哈希比对</td><td><span class="pass">前后一致，未改任何文件</span></td></tr>
+      <tr><td>无 LLM 也可用</td><td>炸场主线（扫盘/画像/复用/提醒）不依赖 LLM</td><td><span class="pass">纯本地、秒出</span></td></tr>
+      <tr><td>异常不崩溃</td><td>无效目录 / 缺参数 / 非业务项目三类边界</td><td><span class="pass">均优雅返回</span></td></tr>
+      <tr><td>桌宠掉线不影响评价</td><td>pet_bridge 推送失败静默忽略</td><td><span class="pass">评价照常跑</span></td></tr>
+      <tr><td>凭证不入库</td><td>LLM key 走环境变量，grep 全仓库</td><td><span class="pass">无硬编码 key</span></td></tr>
+    </table>
+  </section>
+
+  <section id="how">
+    <h2><span class="badge">↻</span>复现方法</h2>
+    <p style="font-size:13.5px;color:var(--sub)">在 <code>hackathon/agent/</code> 目录：</p>
+    <table>
+      <tr><th>步骤</th><th>命令</th></tr>
+      <tr><td>起评价服务</td><td><code>export OPENAI_API_KEY=… OPENAI_BASE_URL=https://api.openai-next.com/v1 CODA_LLM_MODEL=gpt-5 && python3 server.py 8848</code></td></tr>
+      <tr><td>CLI 一条龙</td><td><code>python3 scan.py samples/clinic-demo</code></td></tr>
+      <tr><td>只本地（不花 token）</td><td><code>python3 scan.py samples/clinic-demo --no-llm</code></td></tr>
+      <tr><td>桌宠工作台</td><td>右键小哒 → 「打开小哒工作台」→ 📁 选文件夹</td></tr>
+    </table>
+    <div class="note"><b>测试素材：</b><code>samples/clinic-demo</code>（项目 A，埋红线，入库）+ <code>samples/clinic-new</code>（项目 B，缺轮子，演复用提醒）。</div>
+  </section>
+
+  <footer>小哒 Coda · 功能验证报告 · 24/24 通过 · 2026-06-28 · 回车键团队</footer>
+
+</div>
+</body>
+</html>
