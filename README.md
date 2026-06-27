@@ -1,5 +1,9 @@
 # 回车键 · 黑客松作战中心
 
+[![GitHub](https://img.shields.io/badge/GitHub-enter--key--hackathon-181717?logo=github)](https://github.com/diaojz/enter-key-hackathon)
+[![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](./LICENSE)
+[![赛道](https://img.shields.io/badge/赛道-Coding%20Agent-ff7a00.svg)](#)
+
 > **Enter 一下，世界开始运行**
 > Beyond Prompt: Agents in Action 黑客松 · 北京站 · 微软大厦二号楼
 
