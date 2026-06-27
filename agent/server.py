@@ -18,10 +18,13 @@ import json
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from urllib.parse import urlparse, parse_qs
+
 from scanner import scan_dir, infer_profile
 from review import review_file
 from scan import run as run_pipeline
 from reuse import extract_reusable
+from profile_store import apply_override, set_override, get_override, clear_override
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -45,8 +48,15 @@ class Handler(BaseHTTPRequestHandler):
         self._send(204, {})
 
     def do_GET(self):
-        if self.path == "/health":
+        parsed = urlparse(self.path)
+        if parsed.path == "/health":
             self._send(200, {"ok": True, "service": "coda-eval-agent"})
+        elif parsed.path == "/profile/override":
+            # 读某目录的画像覆盖：GET /profile/override?root=/abs/dir
+            root = (parse_qs(parsed.query).get("root") or [""])[0]
+            if not root:
+                return self._send(400, {"error": "缺少 root 查询参数"})
+            return self._send(200, {"override": get_override(root)})
         else:
             self._send(404, {"error": "not found"})
 
@@ -59,11 +69,27 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if self.path == "/profile":
                 scan = data.get("scan")
-                if scan is None and data.get("root"):
-                    scan = scan_dir(data["root"])
+                root = data.get("root")
+                if scan is None and root:
+                    scan = scan_dir(root)
                 if scan is None:
                     return self._send(400, {"error": "缺少 scan 或 root"})
-                return self._send(200, {"profile": infer_profile(scan)})
+                profile = infer_profile(scan)
+                # 套用用户手改的画像覆盖（按目录），人设跟随
+                profile = apply_override(profile, root or scan.get("root", ""))
+                return self._send(200, {"profile": profile})
+
+            if self.path == "/profile/override":
+                # 保存画像覆盖：{"root","override":{"industry","redlines",...},"editedAt"}
+                root = data.get("root")
+                if not root:
+                    return self._send(400, {"error": "缺少 root"})
+                if data.get("clear"):
+                    clear_override(root)
+                    return self._send(200, {"ok": True, "override": {}})
+                saved = set_override(root, data.get("override") or {},
+                                     edited_at=data.get("editedAt", ""))
+                return self._send(200, {"ok": True, "override": saved})
 
             if self.path == "/review":
                 profile = data.get("profile") or {}
