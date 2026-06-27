@@ -197,30 +197,24 @@ footer.pf { text-align:center; margin-top:52px; font-family:'JetBrains Mono',mon
 @media (max-width:1100px){ .dark-card{padding:44px 40px} .dark-card h2{font-size:2.4rem} .bubble{max-width:100%} }
 
 /* ===== 海报封面（深蓝暖金，全屏）===== */
+/* 横版海报全屏封面 */
 .cover-slide { padding:0 !important; }
-.cover-wrap { width:100%; height:100%; display:grid; grid-template-columns:1.05fr 0.95fr;
-  background:linear-gradient(135deg,#0a1a30 0%,#13243f 55%,#1a2236 100%); position:relative; overflow:hidden; }
-.cover-wrap::before { content:''; position:absolute; inset:0;
-  background:radial-gradient(ellipse 60% 50% at 30% 45%, rgba(232,150,60,.16), transparent 70%); pointer-events:none; }
-.cover-art { position:relative; display:flex; align-items:center; justify-content:center; padding:3vh 2vw; }
-.cover-art img { max-height:94vh; max-width:100%; width:auto; object-fit:contain;
-  border-radius:14px; box-shadow:0 30px 90px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(232,180,110,.18); }
-.cover-side { position:relative; display:flex; flex-direction:column; justify-content:center; padding:0 6vw 0 3vw; color:#f3ece0; }
-.cover-side .eyebrow { font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700;
-  letter-spacing:.12em; text-transform:uppercase; color:#e8a84a; margin-bottom:26px; }
-.cover-side h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(3rem,4.2vw,4.6rem);
-  line-height:1.12; letter-spacing:-.01em; color:#fff; }
-.cover-side h1 .gold { color:#e8a84a; }
-.cover-side .csub { font-size:1.62rem; line-height:1.62; color:#c9d3e0; margin-top:26px; max-width:24em; }
-.cover-side .csub strong { color:#fff; font-weight:600; }
-.cover-side .cstats { display:flex; gap:16px; margin-top:42px; flex-wrap:wrap; }
-.cover-side .cstat { border:1px solid rgba(232,168,74,.4); border-radius:40px; background:rgba(255,255,255,.04);
-  padding:16px 26px; text-align:center; }
-.cover-side .cstat .n { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:900; display:block;
-  color:#e8a84a; line-height:1; font-variant-numeric:tabular-nums; }
-.cover-side .cstat .l { font-family:'JetBrains Mono',monospace; font-size:.95rem; font-weight:600;
-  letter-spacing:.04em; text-transform:uppercase; color:#9fb0c4; margin-top:8px; display:block; }
-@media (max-width:1100px){ .cover-wrap{grid-template-columns:1fr; grid-template-rows:1fr auto} .cover-side{padding:0 6vw 5vh; text-align:center} .cover-side .cstats{justify-content:center} .cover-art img{max-height:60vh} }
+.cover-wrap { width:100%; height:100%; position:relative; overflow:hidden; background:#0a1626; }
+.cover-wrap .bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+/* 底部暗化渐变，让叠字可读 */
+.cover-wrap::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(to bottom, transparent 48%, rgba(8,16,30,.4) 70%, rgba(8,16,30,.92) 100%); }
+.cover-meta { position:absolute; left:0; right:0; bottom:0; z-index:2; padding:0 6vw 5vh; color:#f3ece0; }
+.cover-meta .csub { font-size:1.55rem; line-height:1.6; color:#dbe3ec; max-width:50em; }
+.cover-meta .csub strong { color:#fff; font-weight:600; }
+.cover-meta .csub .gold { color:#e8a84a; font-weight:700; }
+.cover-meta .cstats { display:flex; gap:14px; margin-top:24px; flex-wrap:wrap; }
+.cover-meta .cstat { border:1px solid rgba(232,168,74,.45); border-radius:40px;
+  background:rgba(10,22,40,.55); backdrop-filter:blur(4px); padding:12px 24px; display:flex; align-items:center; gap:10px; }
+.cover-meta .cstat .n { font-size:1.7rem; line-height:1; }
+.cover-meta .cstat .l { font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:700;
+  letter-spacing:.04em; color:#e8d5b8; }
+@media (max-width:1100px){ .cover-meta{padding:0 6vw 6vh} .cover-meta .csub{font-size:1.2rem} }
 
 /* ===== 产品亮相页：左形象卡 + 右定位 ===== */
 .reveal { display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:center; }
@@ -304,16 +298,12 @@ html.projection { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
   <!-- 1 封面（海报全屏） -->
   <section class="slide cover-slide" id="sec-top">
   <div class="cover-wrap">
-    <div class="cover-art">
-      <img src="assets/cover-poster.png" alt="回车键 · Enter 一下，世界开始运行">
-    </div>
-    <div class="cover-side">
-      <div class="eyebrow">Beyond Prompt · Agents in Action · 北京站</div>
-      <h1>一个<span class="gold">常驻桌面</span>、<br>懂你行业的<br>Review 助手</h1>
-      <p class="csub"><strong>小哒 Coda</strong> 授权后<strong>扫一遍你的本地项目</strong>，反推出你是哪行的，用「你那行的话」把代码问题讲给你听、打分给建议——<strong>只读不改</strong>；你越用它越懂你，还能把你攒下的轮子<strong>在新项目里直接复用</strong>。</p>
+    <img class="bg" src="assets/cover-poster-wide.png" alt="回车键 · Enter 一下，世界开始运行">
+    <div class="cover-meta">
+      <p class="csub"><strong>小哒 Coda</strong> · 一个<span class="gold">常驻桌面、懂你行业</span>的 Review 助手——授权后<strong>扫一遍你的本地项目</strong>，反推你是哪行的，用「你那行的话」讲代码问题、打分给建议（<strong>只读不改</strong>）。</p>
       <div class="cstats">
         <div class="cstat"><span class="n">👁</span><span class="l">看得见</span></div>
-        <div class="cstat"><span class="n">🧠</span><span class="l">懂业务</span></div>
+        <div class="cstat"><span class="n">🩺</span><span class="l">懂业务</span></div>
         <div class="cstat"><span class="n">🔁</span><span class="l">能复用</span></div>
       </div>
     </div>
