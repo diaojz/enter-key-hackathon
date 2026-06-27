@@ -16,19 +16,20 @@
 
 ## 🚀 快速直达（点链接打开，本地 clone 后双击即开）
 
-> 📌 **当前阶段：物料就绪 → 待搭真插件仓库 + 桌面助手原型录屏**
+> 📌 **当前阶段：物料就绪 + 已上线（GitHub Pages 在线可看）→ 待搭真插件仓库**
 > ⏰ **下一个硬截止：6/28 14:30 全部提交** · 路演 6/28 16:00（每队 6 min）
+> 🌐 **在线站点：https://diaojz.github.io/enter-key-hackathon/** ← 点链接直接在浏览器打开，图 / GIF 都在
 
-| 看什么 | 文件 | 一句话 |
+| 看什么 | 在线打开（点开即看） | 一句话 |
 |---|---|---|
-| 🎤 **路演 PPT** | [`路演PPT.html`](./路演PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
-| 📋 **产品 PRD** | [`PRD.html`](./PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
-| 🐾 **产品命名 & 形象** | [`产品命名.html`](./产品命名.html) | 小哒 Coda · 萌系形象 + icon 定稿 |
-| 🎯 **选题定稿** | [`选题定稿.html`](./选题定稿.html) | 最终拍板的题目 |
-| 🔗 **GitHub 仓库** | https://github.com/diaojz/enter-key-hackathon | 提交物入口 |
-| 🎨 **海报 Figma 源** | https://www.figma.com/board/qMCO2hgdYGtgK1Kd3rDwA3 | 主视觉可编辑源文件 |
+| 🎤 **路演 PPT** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
+| 📋 **产品 PRD** | [打开 →](https://diaojz.github.io/enter-key-hackathon/PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
+| 🐾 **产品命名 & 形象** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E4%BA%A7%E5%93%81%E5%91%BD%E5%90%8D.html) | 小哒 Coda · 萌系形象 + icon 定稿 |
+| 🎯 **选题定稿** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E9%80%89%E9%A2%98%E5%AE%9A%E7%A8%BF.html) | 最终拍板的题目 |
+| 🔗 **GitHub 仓库** | [github.com/diaojz/enter-key-hackathon](https://github.com/diaojz/enter-key-hackathon) | 提交物入口 |
+| 🎨 **海报 Figma 源** | [figma.com/board/...](https://www.figma.com/board/qMCO2hgdYGtgK1Kd3rDwA3) | 主视觉可编辑源文件 |
 
-> 💡 GitHub 网页上点 `.html` 只看到源码；要看效果请 `git clone` 到本地后双击，或在编辑器里点链接预览。
+> 💡 上面是 GitHub Pages 在线链接，**点开就能在浏览器看效果**（图片、GIF 都正常）。也可 `git clone` 后本地双击 `.html`。
 
 ---
 
