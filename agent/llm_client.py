@@ -64,6 +64,11 @@ def chat(system: str, user: str, *, temperature: float = 0.2, want_json: bool = 
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {key}",
+            # 部分中转站套了 Cloudflare，默认 urllib UA 会被 1010 拦，伪装成常见 UA
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/124.0 Safari/537.36",
+            "Accept": "application/json",
         },
         method="POST",
     )
