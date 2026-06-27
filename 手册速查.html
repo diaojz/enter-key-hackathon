@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond Prompt 黑客松 · 现场速查</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --accent-soft:#f7debc; --line:#ddd5c8;
+    --good:#3f8f5b; --warn:#c9472b; --pill:#f0eadf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6; padding:24px 16px 80px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto}
+  header{margin-bottom:22px}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;
+    font-weight:700;letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:12px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;line-height:1.2;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent);font-weight:700}
+
+  /* 倒计时条 */
+  .clock{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 8px}
+  .clockcard{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:12px 16px;flex:1;min-width:150px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .clockcard .lab{font-size:12px;color:var(--sub);font-weight:600}
+  .clockcard .val{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+  .clockcard.hot .val{color:var(--warn)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:18px}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;
+    border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-size:12px;font-weight:700;letter-spacing:.03em}
+  tr:last-child td{border-bottom:none}
+  .time{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap;color:var(--accent)}
+  .day{background:var(--pill);font-weight:800}
+
+  ul{list-style:none}
+  li{padding:7px 0 7px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  li:last-child{border-bottom:none}
+  li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+
+  .pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .pill{background:var(--pill);border:1px solid var(--line);border-radius:999px;
+    padding:4px 11px;font-size:12.5px;font-weight:600}
+
+  .must{color:var(--warn);font-weight:800}
+  .ok{color:var(--good);font-weight:800}
+
+  .track{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:#fffefb}
+  .track h3{font-size:16px;margin-bottom:4px}
+  .track .tags{color:var(--sub);font-size:13px}
+
+  .callout{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;
+    padding:12px 14px;font-size:14px;margin-top:12px}
+  .callout b{color:var(--accent)}
+
+  /* 提交清单勾选 */
+  .checkrow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .checkrow:last-child{border-bottom:none}
+  .checkrow input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .checkrow label{cursor:pointer;font-size:14.5px}
+  .checkrow .tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;margin-left:6px}
+  .tag.req{background:#fbe1da;color:var(--warn)}
+  .tag.rec{background:#e4efe6;color:var(--good)}
+  .checked{text-decoration:line-through;color:var(--sub)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}h1{font-size:26px}}
+  .kv{background:var(--pill);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .kv b{display:block;color:var(--sub);font-size:11.5px;margin-bottom:2px;font-weight:700}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="kicker">BEYOND PROMPT · AGENTS IN ACTION · 北京站</span>
+  <h1>黑客松现场速查手册</h1>
+  <p class="meta">48 小时极限开发 · 评委只看一件事：<b>你是否真把它做出来了，并能讲明白</b></p>
+
+  <div class="clock">
+    <div class="clockcard hot">
+      <div class="lab">距「全部提交截止」(6/28 14:30)</div>
+      <div class="val" id="cd-submit">--</div>
+    </div>
+    <div class="clockcard">
+      <div class="lab">距「正式路演」(6/28 16:00)</div>
+      <div class="val" id="cd-pitch">--</div>
+    </div>
+  </div>
+  <p class="meta" id="now" style="font-size:12px"></p>
+</header>
+
+<nav>
+  <a href="#time">赛程</a>
+  <a href="#submit">必交清单</a>
+  <a href="#track">赛道</a>
+  <a href="#judge">评审标准</a>
+  <a href="#tips">打法</a>
+  <a href="#info">福利/红线</a>
+</nav>
+
+<section id="time">
+  <h2><span class="badge">⏱</span>关键赛程</h2>
+  <table>
+    <tr class="day"><td colspan="2">6/27 周六 · 集结与启程</td></tr>
+    <tr><td class="time">9:00–9:50</td><td>签到 / 组队 / 领牌</td></tr>
+    <tr><td class="time">9:50–11:05</td><td>致辞 + <b>赛题发布</b> + 评审说明</td></tr>
+    <tr><td class="time">11:05–22:00</td><td>开发</td></tr>
+    <tr class="day"><td colspan="2">6/28 周日 · 冲刺与高光</td></tr>
+    <tr><td class="time">9:00–14:30</td><td>开发 · <span class="must">14:30 提交全部截止</span></td></tr>
+    <tr><td class="time">14:30–16:00</td><td>开放评审（评委下场体验）+ 并行 Workshop</td></tr>
+    <tr><td class="time">16:00–17:30</td><td><b>正式路演</b>：每队 6 min（4 讲 + 2 答）</td></tr>
+    <tr><td class="time">18:00–18:30</td><td>颁奖 🏆</td></tr>
+  </table>
+</section>
+
+<section id="submit">
+  <h2><span class="badge">📤</span>必交清单 · 截止 6/28 14:30</h2>
+  <p class="meta" style="margin-bottom:8px">勾选状态自动存本地，刷新不丢。全部走表单上传。</p>
+  <div id="checklist">
+    <div class="checkrow">
+      <input type="checkbox" id="c1"><label for="c1">路演 PPT（≤7 页，可 HTML，别嵌视频，用截图）<span class="tag rec">强烈建议</span></label>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="c2"><label for="c2">Demo 公网可访问链接（比赛期间保持稳定）<span class="tag req">必须</span></label>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="c3"><label for="c3">完整 Demo 录屏（录屏即可，不求高规格）<span class="tag req">必须</span></label>
+    </div>
+    <div class="checkrow">
+      <input type="checkbox" id="c4"><label for="c4">说明文档 + <b>GitHub 链接</b>（场景一句话 + 技术架构）<span class="tag req">必须</span></label>
+    </div>
+  </div>
+  <div class="callout">
+    <b>Plan B：</b>Demo 现场可能崩 → 提前备好 录屏 / 关键截图 / 口头说明。评委按实际展示内容评分。<br>
+    主电脑 14:30 前放到成果展示区桌上。
+  </div>
+</section>
+
+<section id="track">
+  <h2><span class="badge">🛣</span>三条赛道 · 选一条，不可跨</h2>
+  <div class="track">
+    <h3>① Coding Agent</h3>
+    <p class="tags">多人协作 · 移动端开发 · 智能 Code Review</p>
+  </div>
+  <div class="track">
+    <h3>② 垂直数据分析 Agent</h3>
+    <p class="tags">电商 / 金融 / 法律 · 专业级分析报告生成</p>
+  </div>
+  <div class="track">
+    <h3>③ ToB 场景 AI Agent（开放赛道）</h3>
+    <p class="tags">HR / 销售 / 供应链 · 自主定义企业痛点</p>
+  </div>
+  <div class="callout">
+    <b>⚠️ 红线：</b>禁止拿赛前成品参赛，禁止「拿来主义」，一经发现劝退。评审只看<b>活动期间实际完成的工作</b>。偏离赛道核心可能被调出或不纳入评选。
+  </div>
+</section>
+
+<section id="judge">
+  <h2><span class="badge">⚖</span>评审 5 维度（评委视角）</h2>
+  <table>
+    <tr><th>维度</th><th>评委在想什么</th></tr>
+    <tr><td><b>场景创新性</b></td><td>这问题值不值得做？是换壳还是真新视角？</td></tr>
+    <tr><td><b>产品完成度</b></td><td>关键流程真跑通了，还是只演固定路径？</td></tr>
+    <tr><td><b>技术深度</b></td><td>只是简单调 API，还是有清晰 Agent 设计 / 工程逻辑？</td></tr>
+    <tr><td><b>商业潜力</b></td><td>谁会用？为什么用？能不能落地？</td></tr>
+    <tr><td><b>Demo 表现</b></td><td>短时间讲清楚了吗？问答能体现真实理解吗？</td></tr>
+  </table>
+</section>
+
+<section id="tips">
+  <h2><span class="badge">💡</span>现场打法（实操建议）</h2>
+  <ul>
+    <li><b>核心流程跑通 &gt; 功能堆砌</b> —— 完成度评分的命门，砍掉一切非核心功能。</li>
+    <li>赛题一公布<b>立刻锁赛道</b>，全程对着赛道描述做，定期回看别跑偏。</li>
+    <li>技术深度要露出来：让评委看到<b>清晰的 Agent 设计</b>，不要只是一层 API 调用。</li>
+    <li><b>录屏 + GitHub 别拖到最后</b>，提前 1 小时开始整理提交物。</li>
+    <li>路演前<b>至少演练 2 次</b>，死卡 4 分钟，2 分钟问答想好高频问题。</li>
+    <li>讲清楚「谁会用、为什么用」——商业潜力维度往往拉开差距。</li>
+  </ul>
+</section>
+
+<section id="info">
+  <h2><span class="badge">ℹ</span>福利 · 红线 · 信息</h2>
+  <div class="grid2">
+    <div class="kv"><b>地点</b>微软大厦二号楼 · 海淀善缘街5号<br>地铁 4 号线大兴线 中关村站 C 口，步行 8 分钟</div>
+    <div class="kv"><b>餐饮</b>两天共 6 顿（早/中/晚 + 下午茶），现场统一供应</div>
+    <div class="kv"><b>休息</b>不提供住宿；现场 2 间会议室可午休</div>
+    <div class="kv"><b>交通补贴</b>到达北京机票/高铁，上限 200 元/人，需普通发票</div>
+    <div class="kv"><b>发票抬头</b>北京鸿润嘉诚企业管理咨询有限公司<br>税号 91110107091899823M</div>
+    <div class="kv"><b>组队</b>1–3 人，每人仅限一队，不可重复参赛</div>
+  </div>
+  <div class="callout" style="margin-top:14px">
+    <b>红线：</b>禁烟（含电子烟）· 禁入未开放区域 · 私自离场视为弃赛 · 损坏照价赔偿 · 有健康隐患提前告知，别硬扛。
+  </div>
+</section>
+
+<footer>本地速查页 · 数据存在你浏览器里 · 有问题直接问 Claude</footer>
+
+</div>
+
+<script>
+// 倒计时
+const T_SUBMIT = new Date(2026,5,28,14,30,0).getTime(); // 月份从0计
+const T_PITCH  = new Date(2026,5,28,16,0,0).getTime();
+function fmt(ms){
+  if(ms<=0) return "已截止";
+  const h=Math.floor(ms/3.6e6), m=Math.floor(ms%3.6e6/6e4);
+  const d=Math.floor(h/24);
+  if(d>=1) return d+"天 "+(h%24)+"小时 "+m+"分";
+  return h+"小时 "+m+"分";
+}
+function tick(){
+  const now=Date.now();
+  document.getElementById('cd-submit').textContent=fmt(T_SUBMIT-now);
+  document.getElementById('cd-pitch').textContent=fmt(T_PITCH-now);
+  document.getElementById('now').textContent="当前：" + new Date().toLocaleString('zh-CN');
+}
+tick(); setInterval(tick,30000);
+
+// 勾选持久化
+document.querySelectorAll('#checklist input').forEach(cb=>{
+  const k='hack_'+cb.id;
+  cb.checked = localStorage.getItem(k)==='1';
+  cb.closest('.checkrow').querySelector('label').classList.toggle('checked',cb.checked);
+  cb.addEventListener('change',()=>{
+    localStorage.setItem(k, cb.checked?'1':'0');
+    cb.closest('.checkrow').querySelector('label').classList.toggle('checked',cb.checked);
+  });
+});
+</script>
+</body>
+</html>

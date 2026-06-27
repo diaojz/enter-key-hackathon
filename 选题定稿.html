@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回车键 · 选题定稿</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf; --warn:#c9472b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:22px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .hero{background:linear-gradient(135deg,#fff6ee,#fdeee2);border:1px solid #f0d4c0}
+  .oneliner{font-size:19px;font-weight:800;line-height:1.5;margin:8px 0}
+  .oneliner .hl{color:var(--accent)}
+  .slogan{font-size:14px;color:var(--sub)}
+
+  ul{list-style:none}
+  li{padding:8px 0 8px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  li:last-child{border-bottom:none}
+  li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  li b{color:var(--accent)}
+
+  /* demo 分镜 */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .fstep{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .fstep:last-child{border-bottom:none}
+  .fno{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+  .fbody .ft{font-size:15px;font-weight:700}
+  .fbody .fd{font-size:13px;color:var(--sub);margin-top:2px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-size:12px;font-weight:700}
+  tr:last-child td{border-bottom:none}
+  .w{font-weight:800;color:var(--accent);white-space:nowrap}
+
+  .arch{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:760px){.arch{grid-template-columns:1fr 1fr}}
+  .ac{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fffefb;text-align:center}
+  .ac .icon{font-size:22px}
+  .ac .t{font-size:13px;font-weight:700;margin-top:4px}
+  .ac .d{font-size:11.5px;color:var(--sub);margin-top:2px}
+
+  .timeline .tl{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .timeline .tl:last-child{border-bottom:none}
+  .timeline .tt{font-weight:800;color:var(--accent);white-space:nowrap;font-size:13px;min-width:130px}
+  .timeline .tc{font-size:14px}
+
+  .roles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:680px){.roles{grid-template-columns:1fr}}
+  .role{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--pill)}
+  .role b{display:block;color:var(--accent);margin-bottom:4px}
+
+  .verdict{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:14px 16px;font-size:14px}
+  .verdict b{color:var(--good)}
+  .risk{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:14px;margin-top:10px}
+  .risk b{color:var(--accent)}
+
+  .badge2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--pill);color:var(--sub);margin-left:6px}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">回车键 · 选题定稿 · CODING AGENT</span>
+  <h1>选题定稿</h1>
+  <p class="meta">脑暴已收敛 · 本文档是<b>开发依据 + PPT 底稿</b> · 截止 6/28 14:30</p>
+
+  <nav>
+    <a href="#core">一句话定位</a>
+    <a href="#demo">Demo 主线</a>
+    <a href="#score">五维打分</a>
+    <a href="#compete">竞品验证</a>
+    <a href="#arch">技术架构</a>
+    <a href="#plan">48h 计划</a>
+    <a href="#role">分工</a>
+  </nav>
+
+  <section id="core" class="hero">
+    <h2><span class="badge">🎯</span>一句话定位</h2>
+    <p class="oneliner">让<span class="hl">不懂代码的行业专业人士</span>，用<span class="hl">自己行业的大白话</span>说一句诉求 → <span class="hl">一回车</span> → 自动生成一个<span class="hl">真能跑、能上线、能扫码分享</span>的小工具。</p>
+    <p class="slogan">回车键 · Enter 一下，世界开始运行</p>
+    <ul style="margin-top:12px">
+      <li><b>目标用户</b>：行业专家 + Coding 新手（背着 AI 指标、要给团队做提效工具的非程序员）</li>
+      <li><b>不做</b>：专业开发者的 IDE 增强、不做又一个 AI Code Review、不做纯聊天套壳</li>
+      <li><b>商业逻辑</b>：卖铲子（不抢大模型地盘）+ 嵌入式（做工作流的一块）+ 直接交付成果</li>
+    </ul>
+  </section>
+
+  <section id="demo">
+    <h2><span class="badge">🎬</span>Demo 主线（路演就演这条）</h2>
+    <div class="flow">
+      <div class="fstep"><div class="fno">1</div><div class="fbody">
+        <div class="ft">说行话 · 用户输入行业大白话</div>
+        <div class="fd">例：「我是做社区诊所的，想要一个让患者扫码登记预约、按时段排号的小页面」——全程不提一个技术词。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">2</div><div class="fbody">
+        <div class="ft">回车 · AI 用你的行业语言确认理解</div>
+        <div class="fd">产品反问/确认用的是医疗行业的话（"预约时段、排号、患者信息"），不是"数据库表、API"。这是差异化护城河。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">3</div><div class="fbody">
+        <div class="ft">生成 · Agent 自动写出可运行代码</div>
+        <div class="fd">调用 Agent API 的 Code 能力，多步：意图→方案→代码→自检。屏幕上能看到 Agent 在干活（露技术深度）。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">4</div><div class="fbody">
+        <div class="ft">交付 · 直接产出公网链接 + 二维码</div>
+        <div class="fd">不是给代码、不是给 Demo，是一个<b>当场扫码就能用</b>的成品。评委手机扫一下就能操作——全场最炸的瞬间。</div>
+      </div></div>
+    </div>
+    <div class="risk" style="margin-top:14px"><b>录屏兜底：</b>AI 有不确定性，同一句话现场可能出不来。<b>提前录一条完美的全流程录屏</b>，现场网络/出图异常时切录屏，评委按实际展示评分。</div>
+  </section>
+
+  <section id="score">
+    <h2><span class="badge">⚖</span>对着五维权重逐条打（这就是为什么选它）</h2>
+    <table>
+      <tr><th>维度</th><th>权重</th><th>怎么命中</th></tr>
+      <tr><td>创新性</td><td class="w">①最高</td><td>「行业语言确认 + 直接出可上线成品」是 v0/豆包没做齐的组合——它们要么给代码（小白看不懂），要么给 Demo（上不了线）。</td></tr>
+      <tr><td>产品完成度</td><td class="w">②次高</td><td>场景收窄到「生成单页可用小工具」，48h <b>能真跑通</b>，不是演固定路径。</td></tr>
+      <tr><td>技术深度</td><td class="w">③</td><td>清晰 Agent 链路：意图理解→行业类比→代码生成→<b>自动部署</b>，正好吃 Agent API 的 Code 能力。</td></tr>
+      <tr><td>商业价值</td><td class="w">④</td><td>卖铲子：服务背 AI 指标、要给团队做工具的行业人；嵌入式留扩展。</td></tr>
+      <tr><td>Demo 表现</td><td class="w">⑤放大器</td><td>「一句话→回车→扫码就能用」30 秒讲清、当场可体验，最炸。</td></tr>
+    </table>
+  </section>
+
+  <section id="compete">
+    <h2><span class="badge">🔍</span>竞品验证 <span class="badge2">基于已知信息，联网复核待补</span></h2>
+    <ul>
+      <li><b>v0 / bolt.new / Lovable / Replit Agent</b>：都能"自然语言→生成可运行前端/全栈+部署链接"，是最接近的赛道。但它们面向<b>会描述技术需求的人</b>，交互语言是产品/技术语，<b>不做行业语言类比</b>，也不假设用户是某行业专家。</li>
+      <li><b>Claude Artifacts / 豆包 / 扣子(Coze)</b>：能生成小工具/卡片，但多停在<b>会话内 Demo</b>，缺"一键出公网可访问成品 + 嵌入用户工作流"。</li>
+      <li><b>Cursor / Trae / 通义灵码</b>：面向<b>专业开发者</b>的 IDE 增强，跟我们用户群正交，不撞。</li>
+    </ul>
+    <div class="verdict"><b>结论：</b>三点齐全（① 行业大白话输入 ② 自动部署出公网链接 ③ 面向非程序员行业专家）的产品<b>暂未见到</b>，差异化空位成立。<b>最该强调的差异点 = 「行业语言层」</b>——这让我们是"垂域 &gt; 通用"，而不是"又一个 v0 套壳"。务必让评委记住这一点。</div>
+    <div class="risk"><b>避坑：</b>别把 demo 做成"自然语言生成网页"——那跟 v0 撞且打不过。<b>开场第一句就强调"用户说的是行业黑话，不是需求文档"</b>，把行业翻译层做成全场记忆点。</div>
+  </section>
+
+  <section id="arch">
+    <h2><span class="badge">🧱</span>技术架构（最小可跑）</h2>
+    <div class="arch">
+      <div class="ac"><div class="icon">💬</div><div class="t">行业意图层</div><div class="d">采集行业背景 + 用行业语言确认需求（prompt 工程 + 行业模板）</div></div>
+      <div class="ac"><div class="icon">🤖</div><div class="t">生成层</div><div class="d">Agent API / Claude 的 Code 能力，多步生成单页应用代码</div></div>
+      <div class="ac"><div class="icon">🚀</div><div class="t">部署层</div><div class="d">自动部署到公网（如 Vercel/静态托管），返回 URL</div></div>
+      <div class="ac"><div class="icon">📱</div><div class="t">交付层</div><div class="d">生成二维码 + 移动端可访问的成品页</div></div>
+    </div>
+    <ul style="margin-top:12px">
+      <li><b>优先复用</b>主办方 <b>Agent API（自带 Code 能力 + 会话流）</b>，省自己搭编排框架的力气。</li>
+      <li>MVP 把生成目标<b>收窄到"单页 HTML 小工具"</b>（表单/登记/计算器/展示类），最容易 48h 跑通且能真部署。</li>
+    </ul>
+  </section>
+
+  <section id="plan">
+    <h2><span class="badge">⏱</span>48h 开发计划</h2>
+    <div class="timeline">
+      <div class="tl"><div class="tt">6/27 今晚</div><div class="tc">新建仓库 + 打通主链路骨架：输入→调 Agent 生成 HTML→部署出链接（先不管行业翻译，先让"一回车出成品"跑通）</div></div>
+      <div class="tl"><div class="tt">6/27 深夜</div><div class="tc">接入行业意图层：行业背景采集 + 用行业语言确认需求（差异化核心）</div></div>
+      <div class="tl"><div class="tt">6/28 上午</div><div class="tc">打磨一个<b>黄金行业场景</b>端到端跑顺（如社区诊所/餐饮/教培选一个），做二维码交付 + 移动端适配</div></div>
+      <div class="tl"><div class="tt">6/28 12:00 前</div><div class="tc"><b>录全流程录屏（兜底）</b> + 冻结功能，不再加新东西</div></div>
+      <div class="tl"><div class="tt">6/28 12:00–14:30</div><div class="tc">写 GitHub README + 说明文档 + 部署稳定可访问 + 提交四件套</div></div>
+      <div class="tl"><div class="tt">6/28 14:30 后</div><div class="tc">做 PPT（≤7 页）+ 路演演练 ≥2 次，卡 4 分钟</div></div>
+    </div>
+  </section>
+
+  <section id="role">
+    <h2><span class="badge">👥</span>分工</h2>
+    <div class="roles">
+      <div class="role"><b>队长 · 主 Coding + PM</b>核心生成层 + 部署层链路；把控主链路跑通</div>
+      <div class="role"><b>队员 · 产品+Coding</b>行业意图层 / 前端交付页 / 移动端适配</div>
+      <div class="role"><b>队员 · PPT + 录屏</b>路演 PPT（≤7 页，含成品截图）+ 全流程录屏兜底</div>
+    </div>
+  </section>
+
+  <footer>选题定稿 · 据脑暴收敛整理 · 开发依据 + PPT 底稿</footer>
+
+</div>
+</body>
+</html>

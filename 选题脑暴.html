@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回车键 · 选题脑暴白板</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf;
+    --a:#3f7d8f; --b:#7a5fa3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:30px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  ul{list-style:none}
+  li{padding:8px 0 8px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  li:last-child{border-bottom:none}
+  li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  li b{color:var(--accent)}
+
+  .pain{border-left:4px solid var(--accent);background:#fbeee6;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+  .pain h3{font-size:16px;margin-bottom:6px;color:var(--accent)}
+  .pain p{font-size:13.5px;color:#4a443c}
+
+  .turn{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:16px;margin:12px 0}
+  .turn b{color:var(--good)}
+  .turn .big{font-size:17px;font-weight:800;color:var(--ink);margin:6px 0}
+
+  /* 三层上升 */
+  .layers{display:flex;flex-direction:column;gap:8px}
+  .layer{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:#fffefb}
+  .layer .lv{font-size:11px;font-weight:800;color:#fff;background:var(--accent);padding:3px 10px;border-radius:999px;white-space:nowrap}
+  .layer.l1{margin-left:0} .layer.l2{margin-left:28px} .layer.l3{margin-left:56px}
+  .layer .t{font-size:14.5px}
+  .layer .t b{color:var(--accent)}
+
+  /* 两候选 */
+  .cands{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.cands{grid-template-columns:1fr}}
+  .cand{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fffefb}
+  .cand.a{border-top:4px solid var(--a)}
+  .cand.b{border-top:4px solid var(--b)}
+  .cand h3{font-size:16px;margin-bottom:6px}
+  .cand .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--pill);color:var(--sub);margin-left:6px}
+  .cand p{font-size:13.5px;color:#4a443c;margin-top:4px}
+  .lean{font-size:12px;color:var(--good);font-weight:700;margin-top:8px}
+
+  .principle{background:var(--pill);border-radius:10px;padding:12px 14px;font-size:13.5px;margin-top:8px}
+  .principle b{color:var(--accent)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .kv{background:var(--pill);border-radius:10px;padding:12px 14px;font-size:13.5px}
+  .kv b{display:block;color:var(--accent);font-size:12px;margin-bottom:3px}
+
+  .status{text-align:center;background:#fff3e8;border:1px dashed var(--accent);border-radius:12px;padding:14px;font-size:14px;color:var(--accent);font-weight:700;margin-top:10px}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">回车键 · CODING AGENT · 选题脑暴白板</span>
+  <h1>选题脑暴 · 思考脉络</h1>
+  <p class="meta">流程：<b>发散 → 收敛 → 开发时再发散 → 再收</b>（两轮）· 当前：午饭后待收敛</p>
+
+  <nav>
+    <a href="#principle">底层原则</a>
+    <a href="#pain">小白两痛点</a>
+    <a href="#turn">关键转向</a>
+    <a href="#layers">三层上升</a>
+    <a href="#cands">两候选方向</a>
+    <a href="#moat">护城河</a>
+    <a href="#todo">待办</a>
+  </nav>
+
+  <section id="principle">
+    <h2><span class="badge">🧭</span>底层原则（创业经验）</h2>
+    <div class="principle"><b>反脆弱：</b>不在 AI 必经之路上做创新——不卷提示词这类（模型一更新就白做）。要做 <b>利用 AI、且 AI 越强我们越强</b> 的层面。</div>
+    <div class="principle"><b>创新自检两条：</b>① 通用产品没做的功能你做了 = 创新；② 通用产品有的基础你做得更强（垂域 &gt; 通用）= 有意义。</div>
+    <div class="principle"><b>目标：</b>奔一等奖（综合）· 紧抓最高权重「创新性」· 聚焦解一个问题 · 路演要有真能演示的成品 + 录屏兜底。</div>
+  </section>
+
+  <section id="pain">
+    <h2><span class="badge">🩹</span>起点：小白用户的两大痛点</h2>
+    <div class="pain">
+      <h3>痛点 1 · 单工具内项目堆叠混乱</h3>
+      <p>用同一个工具（如 Claude）做了一堆项目，散乱堆着，非专业整理不出来。诉求：<b>自动归类 + 整理 + 可视化</b>，不越写越乱。进阶：想做 A 自动定位到 A 接着做，聊到 C 自动切回 C 的上下文。</p>
+    </div>
+    <div class="pain">
+      <h3>痛点 2 · 多工具分散，无法整合</h3>
+      <p>薅羊毛/探索，同时用 Codex、Claude、Trae……同一项目多工具试。诉求：把各工具的成果<b>搂到一块儿</b>，不用 A 干完再去 B 复述一遍。跨平台整合是真需求，也是巨头盲区。</p>
+    </div>
+  </section>
+
+  <section id="turn">
+    <h2><span class="badge">🔑</span>关键转向：重新定义用户</h2>
+    <div class="turn">
+      <b>不是"小白"，而是——</b>
+      <div class="big">行业专家 + Coding 新手 · 想成为「Coding 驾驭者 / 转型者」</div>
+      <p style="font-size:13.5px;color:#4a443c">能在此刻接触 AI Coding 的人，大概率是<b>某行业的资深专家</b>（做管道的、做某垂直业务的），只是对 Coding 不懂。他在自己领域有完整方法论：工作路径、好坏标准、行业历史、人才标准——不该被当小白。</p>
+    </div>
+    <div class="principle" style="margin-top:0">
+      <b>核心机制 = 行业类比：</b>用户先说行业背景 → 产品用他熟悉的领域语言<b>打比方</b>解释 Coding（"这个在你的领域相当于 X"），把 Coding 逻辑 ↔ 专业领域逻辑匹配起来。
+    </div>
+  </section>
+
+  <section id="layers">
+    <h2><span class="badge">📈</span>三层价值上升（商业闭环）</h2>
+    <div class="layers">
+      <div class="layer l1"><span class="lv">技术层</span><span class="t">理解 <b>Coding 本身</b></span></div>
+      <div class="layer l2"><span class="lv">逻辑层</span><span class="t">用<b>专业类比</b>理解 Coding 逻辑（语言的可视化 / 说行话，不只图形）</span></div>
+      <div class="layer l3"><span class="lv">个人/客户层</span><span class="t">能用<b>自己行业的语言</b>，向领导/客户/下属描绘并解释</span></div>
+    </div>
+    <div class="principle">→ 商业化接近闭环。这类用户多是行业先驱，背负"教团队用"的任务 → 教会 1 个能<b>裂变</b>教会一群（自带传播），受众更广、赛道更长。</div>
+  </section>
+
+  <section id="cands">
+    <h2><span class="badge">🔀</span>两条候选主线（午饭后二选一 / 融合）</h2>
+    <div class="cands">
+      <div class="cand a">
+        <h3>线 A<span class="tag">之前收敛的</span></h3>
+        <p><b>跨工具项目可视化整合器</b></p>
+        <p>自动归类 + 识别 + 连接 + 可视化散乱的 AI 项目；跨工具跨平台聚合视图；移动端可看。逻辑层可视化（能做）→ 技术层可视化（更厉害）。</p>
+      </div>
+      <div class="cand b">
+        <h3>线 B<span class="tag">本轮新增</span></h3>
+        <p><b>行业专家的 Coding 转型助手</b></p>
+        <p>行业语言类比，把 Coding 翻译成你的领域话；伴随用户从小白成长到专业；帮你向领导/客户解释。</p>
+        <div class="lean">★ 队长情绪上更被这条打动</div>
+      </div>
+    </div>
+    <div class="principle"><b>共同商业锚点：</b>把 Demo 往前推一步到「准生产级」。B 端用户专业挑剔、有显性对手（"我为什么不用豆包？"）；推到准生产 → 才敢给 B 端看 → 才能收反馈 → 正循环。本次先只解决<b>可视化</b>这一个问题。</div>
+  </section>
+
+  <section id="moat">
+    <h2><span class="badge">🏰</span>为什么巨头不做（护城河）</h2>
+    <ul>
+      <li><b>跨工具整合是巨头盲区</b>：Cursor / Trae / Codex / Claude 各自是孤岛，没动力帮你整合竞品——"不方便做"，不是不能做。</li>
+      <li>本机 / 第三方工具反而能干净地做这件事。</li>
+      <li>垂域 Agent 必须<b>比通用 Agent 强几个百分点</b>，否则没意义。</li>
+    </ul>
+  </section>
+
+  <section id="todo">
+    <h2><span class="badge">✅</span>待办 & 下一步</h2>
+    <ul>
+      <li>用 <b>AI 搜索验证</b>：这个方向市场上有没有人做过（创新性硬验证）。</li>
+      <li><b>研究同赛道对手</b>在做什么（Coding 赛道 62 人报名，成队的少）。</li>
+      <li>展开讨论"张艺那样的用户"（受众更广、赛道更长）。</li>
+      <li>在 <b>线 A / 线 B</b> 间收敛到一个最核心问题，然后实现它。</li>
+    </ul>
+    <div class="status">⏸ 当前状态：发散基本完成，午饭后收敛到单一选题 · 先别开始实现</div>
+  </section>
+
+  <section>
+    <h2><span class="badge">⏰</span>倒计时锚点</h2>
+    <div class="grid2">
+      <div class="kv"><b>提交截止</b>6/28 14:30 · Demo链接 / 录屏 / GitHub / PPT</div>
+      <div class="kv"><b>正式路演</b>6/28 16:00 · 每队 6min（4讲+2答）</div>
+    </div>
+  </section>
+
+  <footer>选题脑暴白板 · 据现场讨论实时整理 · 持续更新中</footer>
+
+</div>
+</body>
+</html>

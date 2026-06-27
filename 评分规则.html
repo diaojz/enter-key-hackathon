@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评分规则 · 奖项机制 · 现场速查</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf;
+    --gold:#c79a3b; --silver:#9aa0a6; --bronze:#b07a4f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:30px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  /* 维度权重条 */
+  .dim{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .dim:last-child{border-bottom:none}
+  .dim .rank{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;
+    font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+  .dim .body{flex:1}
+  .dim .name{font-size:16px;font-weight:800}
+  .dim .hint{font-size:12.5px;color:var(--sub);margin-top:1px}
+  .wbar{height:10px;border-radius:999px;background:var(--pill);margin-top:6px;overflow:hidden}
+  .wbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f0a07a);border-radius:999px}
+  .wtag{font-size:11px;font-weight:700;color:var(--accent);white-space:nowrap}
+
+  .callout{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;
+    padding:13px 15px;font-size:14px;margin-top:14px}
+  .callout b{color:var(--accent)}
+
+  /* 奖项 */
+  .awards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:680px){.awards{grid-template-columns:1fr}}
+  .award{border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;background:#fffefb}
+  .award .medal{font-size:26px}
+  .award .lv{font-size:15px;font-weight:800;margin-top:4px}
+  .award .ct{font-size:12.5px;color:var(--sub)}
+  .award.g{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+  .award.s{border-color:var(--silver)}
+  .award.b{border-color:var(--bronze)}
+
+  .trackgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+  @media(max-width:680px){.trackgrid{grid-template-columns:1fr}}
+  .tk{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--pill)}
+  .tk b{display:block;font-size:14px;margin-bottom:2px}
+  .tk span{font-size:12.5px;color:var(--sub)}
+
+  ul{list-style:none}
+  li{padding:8px 0 8px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  li:last-child{border-bottom:none}
+  li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  li b{color:var(--accent)}
+
+  .strat{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:13px 15px;font-size:14px;margin-top:12px}
+  .strat b{color:var(--good)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-size:12px;font-weight:700}
+  tr:last-child td{border-bottom:none}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">BEYOND PROMPT · 北京站 · 评审规则</span>
+  <h1>评分规则 & 奖项机制</h1>
+  <p class="meta">总分是<b>唯一评选依据</b> · 五维权重<b>依次递减</b> · 双轨奖项（综合 + 单项）</p>
+
+  <nav>
+    <a href="#dim">五维权重</a>
+    <a href="#award">奖项设置</a>
+    <a href="#track">单项赛道</a>
+    <a href="#read">规则解读</a>
+    <a href="#strat">作战策略</a>
+  </nav>
+
+  <section id="dim">
+    <h2><span class="badge">⚖</span>五个评分维度（权重依次递减）</h2>
+    <div class="dim">
+      <div class="rank">1</div>
+      <div class="body">
+        <div class="name">创新性 <span class="wtag">最高权重</span></div>
+        <div class="hint">这个问题值不值得做？是换壳，还是真正的新视角？</div>
+        <div class="wbar"><i style="width:100%"></i></div>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="rank">2</div>
+      <div class="body">
+        <div class="name">产品完成度 <span class="wtag">次高</span></div>
+        <div class="hint">关键流程真跑通了，还是只演了一条固定路径？</div>
+        <div class="wbar"><i style="width:82%"></i></div>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="rank">3</div>
+      <div class="body">
+        <div class="name">技术深度</div>
+        <div class="hint">只是简单调 API，还是有清晰的 Agent 设计 / 工程逻辑？</div>
+        <div class="wbar"><i style="width:64%"></i></div>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="rank">4</div>
+      <div class="body">
+        <div class="name">商业价值</div>
+        <div class="hint">谁会用？为什么用？是否有落地可能？</div>
+        <div class="wbar"><i style="width:46%"></i></div>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="rank">5</div>
+      <div class="body">
+        <div class="name">现场 Demo 表现 <span class="wtag">放大器</span></div>
+        <div class="hint">短时间讲清楚了吗？问答是否体现真实理解？</div>
+        <div class="wbar"><i style="width:30%"></i></div>
+      </div>
+    </div>
+    <p class="meta" style="margin-top:10px;font-size:12px">※ 进度条为权重相对示意，主办方未公布具体分值；唯一确定的是「依次递减」。</p>
+  </section>
+
+  <section id="award">
+    <h2><span class="badge">🏆</span>奖项一：综合奖（按总积分排名）</h2>
+    <div class="awards">
+      <div class="award g"><div class="medal">🥇</div><div class="lv">一等奖</div><div class="ct">1 名</div></div>
+      <div class="award s"><div class="medal">🥈</div><div class="lv">二等奖</div><div class="ct">2 名</div></div>
+      <div class="award b"><div class="medal">🥉</div><div class="lv">三等奖</div><div class="ct">3 名</div></div>
+    </div>
+    <div class="callout">综合奖共 <b>6 个名额</b>，完全按五维加权后的<b>综合总分排名</b>确定，五维都不能瘸腿。</div>
+  </section>
+
+  <section id="track">
+    <h2><span class="badge">🎯</span>奖项二：单项赛道奖（按单一维度评优）</h2>
+    <p class="meta" style="margin-bottom:8px">四个维度各对应一个单项奖，奖励在<b>某一维度做到全场尖端</b>的队伍——即使综合排名不进前 6，也有机会拿单项。</p>
+    <div class="trackgrid">
+      <div class="tk"><b>🌟 创新性奖</b><span>视角最新、问题最值得做</span></div>
+      <div class="tk"><b>✅ 产品完成度奖</b><span>核心流程真跑通、最稳</span></div>
+      <div class="tk"><b>🔬 技术深度奖</b><span>Agent 设计 / 工程逻辑最硬</span></div>
+      <div class="tk"><b>💰 商业价值奖</b><span>落地路径最清晰、最能赚钱</span></div>
+    </div>
+    <div class="callout">单项奖给三人小队一条<b>更现实的夺奖路径</b>：集中火力把一个维度打到极致。</div>
+  </section>
+
+  <section id="read">
+    <h2><span class="badge">🔍</span>规则解读（这条排序在告诉你什么）</h2>
+    <ul>
+      <li><b>创新性是第一权重</b>：选题撞车（又一个 AI Code Review）起跑就输；题目的新视角比写多少代码都值钱。</li>
+      <li><b>产品完成度第二、最该死磕</b>：评委会区分「真跑通」还是「演固定路径」。<b>核心流程端到端能跑 &gt; 功能堆多</b>。</li>
+      <li><b>技术深度第三</b>：不能只是套壳调 API，要露出清晰的 Agent 设计——规划、工具调用、多步推理、记忆。</li>
+      <li><b>商业价值第四</b>：讲清「谁用、为什么用、怎么落地」，一两句话点透即可，不必长篇。</li>
+      <li><b>Demo 是放大器</b>：权重虽低，但做出来讲不清，会把前四项的分一起拖塌。提前演练、备 Plan B。</li>
+    </ul>
+  </section>
+
+  <section id="strat">
+    <h2><span class="badge">♟</span>三人队作战策略</h2>
+    <table>
+      <tr><th>打法</th><th>目标</th><th>适合</th></tr>
+      <tr><td><b>冲综合奖</b></td><td>五维均衡、总分高</td><td>能力均衡、时间充裕</td></tr>
+      <tr><td><b>冲单项奖</b></td><td>单一维度做到全场尖端</td><td>三人队更现实，集中火力</td></tr>
+    </table>
+    <div class="strat">
+      <b>推荐：主攻「创新性」单项 + 顺带冲综合。</b><br>
+      创新性是最高权重，做到极致既吃单项奖，又给综合总分打底。三人队拼不过大队的功能广度，但<b>一个足够锋利的新视角是公平竞争</b>。把战术顺序定为：<b>选题创新 → 核心流程跑通 → 露出 Agent 技术深度 → 一句话商业价值 → 演练 Demo</b>。
+    </div>
+  </section>
+
+  <footer>本地速查页 · 据现场评审讲解整理 · 有问题直接问 Claude</footer>
+
+</div>
+</body>
+</html>

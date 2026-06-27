@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 资源 · Search & Agent · 接入速查</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf;
+    --search:#3f7d8f; --agent:#7a5fa3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:30px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:680px){.steps{grid-template-columns:1fr 1fr}}
+  .step{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fffefb;position:relative}
+  .step .no{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:8px}
+  .step .t{font-size:15px;font-weight:800}
+  .step .d{font-size:12.5px;color:var(--sub);margin-top:3px}
+
+  .callout{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;
+    padding:13px 15px;font-size:14px;margin-top:14px}
+  .callout b{color:var(--accent)}
+  .good{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:13px 15px;font-size:14px;margin-top:14px}
+  .good b{color:var(--good)}
+
+  .prods{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.prods{grid-template-columns:1fr}}
+  .prod{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fffefb}
+  .prod.s{border-top:4px solid var(--search)}
+  .prod.a{border-top:4px solid var(--agent)}
+  .prod h3{font-size:17px;margin-bottom:4px}
+  .prod .sub{font-size:12.5px;color:var(--sub);margin-bottom:10px}
+  .prod ul{list-style:none}
+  .prod li{padding:6px 0 6px 22px;position:relative;font-size:13.5px;border-bottom:1px dashed var(--line)}
+  .prod li:last-child{border-bottom:none}
+  .prod li::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:800}
+  .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--pill);color:var(--sub)}
+
+  ul.plain{list-style:none}
+  ul.plain li{padding:8px 0 8px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  ul.plain li:last-child{border-bottom:none}
+  ul.plain li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  ul.plain li b{color:var(--accent)}
+
+  code{background:var(--pill);padding:1px 6px;border-radius:5px;font-size:13px;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  .credits{display:flex;gap:10px;flex-wrap:wrap}
+  .cc{flex:1;min-width:150px;background:var(--pill);border-radius:12px;padding:14px 16px}
+  .cc .n{font-size:22px;font-weight:800}
+  .cc .l{font-size:12.5px;color:var(--sub)}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">BEYOND PROMPT · 北京站 · 技术资源</span>
+  <h1>API 资源速查 · Search & Agent</h1>
+  <p class="meta">主办方提供 <b>Search API</b> + <b>Agent API</b> credits，外加奇迹算力 Token · 四步即可接入</p>
+
+  <nav>
+    <a href="#steps">四步接入</a>
+    <a href="#credits">额度</a>
+    <a href="#prods">两个产品</a>
+    <a href="#agent">Agent 调用要点</a>
+    <a href="#other">奇迹算力</a>
+    <a href="#todo">行动清单</a>
+  </nav>
+
+  <section id="steps">
+    <h2><span class="badge">🧊</span>接入四步（把大象装冰箱）</h2>
+    <div class="steps">
+      <div class="step"><div class="no">1</div><div class="t">注册</div><div class="d">没注册的找工作人员要二维码，注册后即开通现场使用</div></div>
+      <div class="step"><div class="no">2</div><div class="t">领 Key</div><div class="d">进自助平台控制台 → 左侧产品页 → 领取各自 API Key 并复制</div></div>
+      <div class="step"><div class="no">3</div><div class="t">看文档</div><div class="d">群里有 API 文档链接；Search / Agent 文档都在控制台可查</div></div>
+      <div class="step"><div class="no">4</div><div class="t">调用</div><div class="d">代码直调，或先在 Playground / Request Composer 调试体验</div></div>
+    </div>
+    <div class="callout"><b>两个入口：</b>进控制台后，主要就是 <b>Search API</b> 和 <b>Agent API</b> 两款，左侧产品页分别领 Key。</div>
+  </section>
+
+  <section id="credits">
+    <h2><span class="badge">💳</span>额度 · Credits</h2>
+    <div class="credits">
+      <div class="cc"><div class="n">$20</div><div class="l">默认额度（每人/账号）</div></div>
+      <div class="cc"><div class="n">Search</div><div class="l">提供 Search credits</div></div>
+      <div class="cc"><div class="n">Agent</div><div class="l">提供 Agent API credits</div></div>
+    </div>
+    <div class="good"><b>额度不够随时说：</b>任务量大、跑得猛把 $20 用完了，直接找现场工作人员沟通追加，别卡在额度上。</div>
+  </section>
+
+  <section id="prods">
+    <h2><span class="badge">📦</span>两个产品怎么选</h2>
+    <div class="prods">
+      <div class="prod s">
+        <h3>🔎 Search API</h3>
+        <div class="sub">旗舰级 · 轻量、智能、单接口</div>
+        <ul>
+          <li><b>只有一个接口</b>，上手最快</li>
+          <li>固定参数：<code>query</code> · <code>sorting</code> · <code>filter</code></li>
+          <li>定位：给应用提供高质量检索能力</li>
+          <li>也是 Agent 背后的检索引擎</li>
+        </ul>
+        <div class="tagrow"><span class="tag">轻量</span><span class="tag">即调即用</span><span class="tag">做检索/RAG 首选</span></div>
+      </div>
+      <div class="prod a">
+        <h3>🤖 Agent API</h3>
+        <div class="sub">复杂任务 · 云端自动化 · 极简调用</div>
+        <ul>
+          <li>核心是符合 <code>opencli</code> 规范的 <code>responses</code></li>
+          <li>为应用构建<b>持续会话流</b>，抛问题它云端自动干完</li>
+          <li>能力：Deep / Advanced / Academic Research、Code 等</li>
+          <li>参数多，但有极简默认；用 Preset 快速起步</li>
+        </ul>
+        <div class="tagrow"><span class="tag">多步推理</span><span class="tag">会话连续性</span><span class="tag">记忆/Skill</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="agent">
+    <h2><span class="badge">⚙</span>Agent API 调用要点</h2>
+    <ul class="plain">
+      <li><b>Request Composer</b>：控制台里的 API 体验台，先在这调参数、点 Run 看效果，再落到代码。</li>
+      <li><b>Preset 是关键</b>：默认 <code>Deep Research</code>。多数场景只需填一个 <code>query</code> + 点 Run，资料收集与分析全在云端自动完成。</li>
+      <li><b>示例 query</b>：「帮我分析微软最近一年市场业绩表现、强劲部分、创新点、与竞品的突出差异」→ 直接 Run 即出调研报告。</li>
+      <li><b>高阶能力</b>：会话连续性、关联存储、记忆、Skill 都可叠加，针对自己场景做 <b>customization</b>，开放度高。</li>
+      <li><b>两种调试路径</b>：① 代码按文档直调；② Playground / Request Composer 手动调参体验。</li>
+    </ul>
+    <div class="callout"><b>给 Coding Agent 方向的提示：</b>Agent API 自带「持续会话流 + Code 能力 + 记忆/Skill」，正好是 Coding Agent 的地基——可以省去自己搭 Agent 编排框架的力气，把创新和完成度押在产品层。</div>
+  </section>
+
+  <section id="other">
+    <h2><span class="badge">⚡</span>奇迹算力 Token</h2>
+    <ul class="plain">
+      <li>主办方另外提供<b>奇迹算力的 Token</b>，现场有专门工作人员。</li>
+      <li>需要算力的，<b>现场领取或找工作人员咨询</b>。</li>
+    </ul>
+  </section>
+
+  <section id="todo">
+    <h2><span class="badge">✅</span>立刻要做的事</h2>
+    <ul class="plain">
+      <li>确认<b>三个人都注册完成</b>，各自领到 Search + Agent 的 API Key。</li>
+      <li>把<b>群里的 API 文档链接</b>存好，Search 和 Agent 文档各过一遍。</li>
+      <li>进 <b>Request Composer</b> 用默认 Preset 跑一次，确认 Key 通、额度在。</li>
+      <li>领<b>奇迹算力 Token</b>（如方案需要算力）。</li>
+      <li>额度 $20 不够，<b>随时找工作人员追加</b>。</li>
+    </ul>
+  </section>
+
+  <footer>本地速查页 · 据现场技术资源讲解整理 · 有问题直接问 Claude</footer>
+
+</div>
+</body>
+</html>
