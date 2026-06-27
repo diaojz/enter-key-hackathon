@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>回车键 · 选题定稿</title>
+<title>回车键 · 选题定稿 v4 · 小哒 Coda</title>
 <style>
   :root{
     --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
@@ -30,6 +30,7 @@
     padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
   section h2{font-family:Georgia,"Songti SC",serif;font-size:22px;margin-bottom:14px;
     display:flex;align-items:center;gap:10px}
+  section h3{font-size:16px;font-weight:800;margin:16px 0 8px}
   .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
     display:inline-flex;align-items:center;justify-content:center;font-weight:800}
 
@@ -44,7 +45,6 @@
   li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
   li b{color:var(--accent)}
 
-  /* demo 分镜 */
   .flow{display:flex;flex-direction:column;gap:0}
   .fstep{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line)}
   .fstep:last-child{border-bottom:none}
@@ -52,6 +52,7 @@
     display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
   .fbody .ft{font-size:15px;font-weight:700}
   .fbody .fd{font-size:13px;color:var(--sub);margin-top:2px}
+  .fbody .fd b{color:var(--ink)}
 
   table{width:100%;border-collapse:collapse;font-size:14px}
   th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -59,17 +60,14 @@
   tr:last-child td{border-bottom:none}
   .w{font-weight:800;color:var(--accent);white-space:nowrap}
 
-  .arch{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  @media(max-width:760px){.arch{grid-template-columns:1fr 1fr}}
-  .ac{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fffefb;text-align:center}
+  .arch{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media(max-width:760px){.arch{grid-template-columns:1fr}}
+  .ac{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fffefb}
   .ac .icon{font-size:22px}
-  .ac .t{font-size:13px;font-weight:700;margin-top:4px}
-  .ac .d{font-size:11.5px;color:var(--sub);margin-top:2px}
-
-  .timeline .tl{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
-  .timeline .tl:last-child{border-bottom:none}
-  .timeline .tt{font-weight:800;color:var(--accent);white-space:nowrap;font-size:13px;min-width:130px}
-  .timeline .tc{font-size:14px}
+  .ac .t{font-size:14px;font-weight:800;margin-top:4px}
+  .ac .d{font-size:12px;color:var(--sub);margin-top:4px}
+  .ac .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;margin-top:8px;color:#fff}
+  .tag.real{background:var(--good)} .tag.lite{background:#c98a2b}
 
   .roles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
   @media(max-width:680px){.roles{grid-template-columns:1fr}}
@@ -81,120 +79,186 @@
   .risk{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:14px;margin-top:10px}
   .risk b{color:var(--accent)}
 
+  .map{background:#fffefb;border:1px solid var(--line);border-radius:12px;padding:14px;margin:8px 0}
+  .map .ml{display:block;font-size:13.5px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .map .ml:last-child{border-bottom:none}
+  .map .code{color:var(--sub)} .map .arrow{color:var(--accent);font-weight:800;margin:0 6px}
+  .map .biz{color:var(--ink);font-weight:600}
+
   .badge2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--pill);color:var(--sub);margin-left:6px}
   footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+  .delta{background:#fbeee6;border:1px solid #f0d4c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--sub);margin-top:10px}
+  .delta b{color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <span class="kicker">回车键 · 选题定稿 · CODING AGENT</span>
-  <h1>选题定稿</h1>
-  <p class="meta">脑暴已收敛 · 本文档是<b>开发依据 + PPT 底稿</b> · 截止 6/28 14:30</p>
+  <span class="kicker">回车键 · 选题定稿 v4 · CODING AGENT</span>
+  <h1>选题定稿 · 小哒 Coda</h1>
+  <p class="meta"><b>开发依据 + PPT 底稿</b> · v4 收口（主线由「插件裂变」改为「扫盘 Review / 行业画像」）· 与 <a href="PRD.html" style="color:var(--accent)">PRD</a> / <a href="路演PPT.html" style="color:var(--accent)">路演 PPT</a> 衔接</p>
 
   <nav>
     <a href="#core">一句话定位</a>
+    <a href="#cap">三能力</a>
     <a href="#demo">Demo 主线</a>
-    <a href="#score">五维打分</a>
-    <a href="#compete">竞品验证</a>
+    <a href="#scope">真做 vs 演钩子</a>
     <a href="#arch">技术架构</a>
-    <a href="#plan">48h 计划</a>
+    <a href="#score">五维打分</a>
     <a href="#role">分工</a>
   </nav>
 
   <section id="core" class="hero">
     <h2><span class="badge">🎯</span>一句话定位</h2>
-    <p class="oneliner">让<span class="hl">不懂代码的行业专业人士</span>，用<span class="hl">自己行业的大白话</span>说一句诉求 → <span class="hl">一回车</span> → 自动生成一个<span class="hl">真能跑、能上线、能扫码分享</span>的小工具。</p>
+    <p class="oneliner"><span class="hl">小哒 Coda</span> 是一个<span class="hl">常驻桌面、懂你行业</span>的 Review 助手——授权后它<span class="hl">扫一遍你的本地项目</span>，反推出你是哪行的，用<span class="hl">「你那行的话」</span>把代码问题讲给你听、打分给建议（<span class="hl">只读不改</span>）；你越用它越懂你，还能把你攒下的轮子在<span class="hl">新项目里直接复用</span>。</p>
     <p class="slogan">回车键 · Enter 一下，世界开始运行</p>
     <ul style="margin-top:12px">
-      <li><b>目标用户</b>：行业专家 + Coding 新手（背着 AI 指标、要给团队做提效工具的非程序员）</li>
-      <li><b>不做</b>：专业开发者的 IDE 增强、不做又一个 AI Code Review、不做纯聊天套壳</li>
-      <li><b>商业逻辑</b>：卖铲子（不抢大模型地盘）+ 嵌入式（做工作流的一块）+ 直接交付成果</li>
+      <li><b>目标用户</b>：用 AI 写代码、但跨项目/跨阶段的代码越攒越乱的<b>行业从业者</b>（既有刚入行的，也有深耕某领域的专业人士）。他们手里有外部工具，缺的是一个「懂业务、拿着鞭子帮我管代码」的助手。</li>
+      <li><b>不做</b>：又一个代码生成器（类 v0/bolt）、又一个只懂技术维度的 AI Code Review、纯聊天套壳。它<b>不是代码生成器，是小助手</b>。</li>
+      <li><b>核心价值</b>：把跨项目、跨阶段的烂代码，用<b>你那行的语言</b>翻译成你看得懂的问题 + 改法；并让你在同领域的积累<b>跨项目复用</b>，不再重复造轮子。</li>
     </ul>
+    <div class="delta"><b>v4 相对 v3.0 的关键调整：</b>① Demo 高潮由「插件打包→同行装机→装前装后对比」<b>改为</b>「扫存量项目→反推行业画像→行业翻译报告」；② 「懂业务」由纸面/PPT <b>升为现场真做</b>（半干活：翻译+打分+改法建议，只读不改）；③ 「能裂变（给同行分享插件）」<b>改为</b>「能复用（同一人跨项目复用轮子）」，做医疗最小切片；④ 实时监听<b>收窄</b>到自己的触发场景，降为锦上添花。</div>
+  </section>
+
+  <section id="cap">
+    <h2><span class="badge">⚡</span>三个能力（主次已重排）</h2>
+    <div class="arch">
+      <div class="ac">
+        <div class="icon">👀</div>
+        <div class="t">看得见</div>
+        <div class="d">桌宠常驻桌面、状态即形象。实时监听<b>收窄到自己的触发场景</b>，踩到行业红线才弹窗。</div>
+        <span class="tag lite">锦上添花 · hook 抽风不影响</span>
+      </div>
+      <div class="ac">
+        <div class="icon">🩺</div>
+        <div class="t">懂业务 ← 新主线</div>
+        <div class="d">扫盘→反推画像→把代码问题<b>翻译成行业语言</b>+打分+改法建议。这是炸场点，也是 Review 的真正落点。</div>
+        <span class="tag real">现场真做（半干活·只读不改）</span>
+      </div>
+      <div class="ac">
+        <div class="icon">🔁</div>
+        <div class="t">能复用</div>
+        <div class="d">同一人、同领域，从老项目抽出的轮子进<b>行业能力库</b>；新项目命中同行业 → 提醒「有现成的，直接用」。</div>
+        <span class="tag real">医疗最小切片真做</span>
+      </div>
+    </div>
   </section>
 
   <section id="demo">
-    <h2><span class="badge">🎬</span>Demo 主线（路演就演这条）</h2>
+    <h2><span class="badge">🎬</span>Demo 主线（路演就演这条 · 全真）</h2>
+    <h3>第一幕 · 主角 · 炸场（扫盘 → 画像 → 行业翻译）</h3>
     <div class="flow">
       <div class="fstep"><div class="fno">1</div><div class="fbody">
-        <div class="ft">说行话 · 用户输入行业大白话</div>
-        <div class="fd">例：「我是做社区诊所的，想要一个让患者扫码登记预约、按时段排号的小页面」——全程不提一个技术词。</div>
+        <div class="ft">授权 · 用户给一个本地项目目录</div>
+        <div class="fd">现场 open 一个<b>医疗类</b>项目（项目 A）。强调<b>只读不可改</b>——系统承诺只看、不删不改任何代码。</div>
       </div></div>
       <div class="fstep"><div class="fno">2</div><div class="fbody">
-        <div class="ft">回车 · AI 用你的行业语言确认理解</div>
-        <div class="fd">产品反问/确认用的是医疗行业的话（"预约时段、排号、患者信息"），不是"数据库表、API"。这是差异化护城河。</div>
+        <div class="ft">扫盘 · 关键词拆解</div>
+        <div class="fd">遍历目录，扫变量名 / 文件名 / 注释 / 字符串里的中英文行业词。</div>
       </div></div>
       <div class="fstep"><div class="fno">3</div><div class="fbody">
-        <div class="ft">生成 · Agent 自动写出可运行代码</div>
-        <div class="fd">调用 Agent API 的 Code 能力，多步：意图→方案→代码→自检。屏幕上能看到 Agent 在干活（露技术深度）。</div>
+        <div class="ft">炸场点 · 反推职业画像</div>
+        <div class="fd">「我猜你是做<b>医疗</b>的」+ 证据（命中了 <code>patient / 就诊 / 药品 / 禁忌症</code> 等词）。评委一眼看懂「看得见 + 懂业务」。</div>
       </div></div>
       <div class="fstep"><div class="fno">4</div><div class="fbody">
-        <div class="ft">交付 · 直接产出公网链接 + 二维码</div>
-        <div class="fd">不是给代码、不是给 Demo，是一个<b>当场扫码就能用</b>的成品。评委手机扫一下就能操作——全场最炸的瞬间。</div>
+        <div class="ft">行业语言映射报告 + 打分</div>
+        <div class="fd">把 3~5 个代码问题翻译成「医疗行话」，每条带红线等级 + 评分。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">5</div><div class="fbody">
+        <div class="ft">每条问题挂「建议怎么改」</div>
+        <div class="fd">给文字改法（<b>不自动改</b>）。这就是「半干活」——显得能干活，又不碰用户代码，安全叙事完整。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">6</div><div class="fbody">
+        <div class="ft">画像卡片 · 可手改</div>
+        <div class="fd">画像可编辑，改完下次扫盘按新画像走——演「越用越懂你」的最小闭环。</div>
       </div></div>
     </div>
-    <div class="risk" style="margin-top:14px"><b>录屏兜底：</b>AI 有不确定性，同一句话现场可能出不来。<b>提前录一条完美的全流程录屏</b>，现场网络/出图异常时切录屏，评委按实际展示评分。</div>
+
+    <h3>行业语言映射示例（报告长这样）</h3>
+    <div class="map">
+      <div class="ml"><span class="code">订单状态机缺一步校验</span><span class="arrow">→</span><span class="biz">病历流转少了「医嘱复核」，可能漏掉禁忌症</span></div>
+      <div class="ml"><span class="code">患者字段明文存 localStorage</span><span class="arrow">→</span><span class="biz">患者隐私字段裸奔，违反医疗数据红线</span></div>
+      <div class="ml"><span class="code">时段并发未加锁</span><span class="arrow">→</span><span class="biz">同一就诊时段会被重复挂号，候诊顺序会乱</span></div>
+    </div>
+
+    <h3>第二幕 · 升华 · 克制（跨项目复用 · 医疗最小切片真做）</h3>
+    <div class="flow">
+      <div class="fstep"><div class="fno">7</div><div class="fbody">
+        <div class="ft">授权项目 B（另一个医疗新项目）</div>
+        <div class="fd">扫盘命中同行业 → 小哒「你做过类似的项目」。</div>
+      </div></div>
+      <div class="fstep"><div class="fno">8</div><div class="fbody">
+        <div class="ft">提醒「有现成轮子」 → 点击给出代码片段</div>
+        <div class="fd">行业能力库里有从项目 A 真实抽出的 1~2 个轮子（如<b>患者 ID 校验</b> / <b>就诊状态机</b>），当场给出可复用片段。证明「越用越懂你 + 跨项目复用」。</div>
+      </div></div>
+    </div>
+
+    <div class="risk" style="margin-top:14px"><b>录屏兜底：</b>扫盘 / 画像 / 翻译报告全流程<b>提前录一条完美录屏</b>，现场网络或 Agent 输出异常时切录屏。第二幕需<b>预备两个医疗项目素材</b>（项目 A 已扫、轮子已入库；项目 B 当场扫）——抽取与匹配是当场真跑，素材是合理的 demo 准备。</div>
   </section>
 
-  <section id="score">
-    <h2><span class="badge">⚖</span>对着五维权重逐条打（这就是为什么选它）</h2>
-    <table>
-      <tr><th>维度</th><th>权重</th><th>怎么命中</th></tr>
-      <tr><td>创新性</td><td class="w">①最高</td><td>「行业语言确认 + 直接出可上线成品」是 v0/豆包没做齐的组合——它们要么给代码（小白看不懂），要么给 Demo（上不了线）。</td></tr>
-      <tr><td>产品完成度</td><td class="w">②次高</td><td>场景收窄到「生成单页可用小工具」，48h <b>能真跑通</b>，不是演固定路径。</td></tr>
-      <tr><td>技术深度</td><td class="w">③</td><td>清晰 Agent 链路：意图理解→行业类比→代码生成→<b>自动部署</b>，正好吃 Agent API 的 Code 能力。</td></tr>
-      <tr><td>商业价值</td><td class="w">④</td><td>卖铲子：服务背 AI 指标、要给团队做工具的行业人；嵌入式留扩展。</td></tr>
-      <tr><td>Demo 表现</td><td class="w">⑤放大器</td><td>「一句话→回车→扫码就能用」30 秒讲清、当场可体验，最炸。</td></tr>
-    </table>
-  </section>
-
-  <section id="compete">
-    <h2><span class="badge">🔍</span>竞品验证 <span class="badge2">基于已知信息，联网复核待补</span></h2>
-    <ul>
-      <li><b>v0 / bolt.new / Lovable / Replit Agent</b>：都能"自然语言→生成可运行前端/全栈+部署链接"，是最接近的赛道。但它们面向<b>会描述技术需求的人</b>，交互语言是产品/技术语，<b>不做行业语言类比</b>，也不假设用户是某行业专家。</li>
-      <li><b>Claude Artifacts / 豆包 / 扣子(Coze)</b>：能生成小工具/卡片，但多停在<b>会话内 Demo</b>，缺"一键出公网可访问成品 + 嵌入用户工作流"。</li>
-      <li><b>Cursor / Trae / 通义灵码</b>：面向<b>专业开发者</b>的 IDE 增强，跟我们用户群正交，不撞。</li>
-    </ul>
-    <div class="verdict"><b>结论：</b>三点齐全（① 行业大白话输入 ② 自动部署出公网链接 ③ 面向非程序员行业专家）的产品<b>暂未见到</b>，差异化空位成立。<b>最该强调的差异点 = 「行业语言层」</b>——这让我们是"垂域 &gt; 通用"，而不是"又一个 v0 套壳"。务必让评委记住这一点。</div>
-    <div class="risk"><b>避坑：</b>别把 demo 做成"自然语言生成网页"——那跟 v0 撞且打不过。<b>开场第一句就强调"用户说的是行业黑话，不是需求文档"</b>，把行业翻译层做成全场记忆点。</div>
+  <section id="scope">
+    <h2><span class="badge">▢</span>48h 取舍 · 真做 vs 演钩子</h2>
+    <div class="verdict"><b>核心取舍：</b>火力压在<b>第一幕（扫盘→画像→翻译报告+打分建议）</b>——这是当场能演真的、且最不依赖 hook 稳定性的主线。第二幕复用收窄到<b>医疗 + 1~2 个轮子的最小可信切片</b>（真扫、真抽、真匹配、真给片段），不做通用抽象引擎。实时监听降为锦上添花。</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div style="background:#eef3ec;border:1px solid #cfe0d2;border-radius:12px;padding:14px">
+        <h3 style="color:var(--good);margin-top:0">✓ 真做（当场演真的）</h3>
+        <ul>
+          <li>扫盘引擎：遍历目录 + 中英文关键词库 + 反推画像</li>
+          <li>Agent 行业翻译 + 打分 + 改法建议（只读不改）</li>
+          <li>画像卡可手改，改完下次生效</li>
+          <li>医疗行业能力库 + 跨项目复用 1~2 个轮子</li>
+        </ul>
+      </div>
+      <div style="background:#fbeee6;border:1px solid #f0d4c0;border-radius:12px;padding:14px">
+        <h3 style="color:var(--accent);margin-top:0">✕ 明确不做</h3>
+        <ul>
+          <li>自动改用户代码 / 自动重构（与「只读不改」冲突）</li>
+          <li>通用跨项目抽象复用引擎（生产级，做不出真的）</li>
+          <li>全量监听任何通知（收窄到自己的触发场景）</li>
+          <li>多智能体 / 多用户协同 / 给同行分享（二期）</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <section id="arch">
     <h2><span class="badge">🧱</span>技术架构（最小可跑）</h2>
-    <div class="arch">
-      <div class="ac"><div class="icon">💬</div><div class="t">行业意图层</div><div class="d">采集行业背景 + 用行业语言确认需求（prompt 工程 + 行业模板）</div></div>
-      <div class="ac"><div class="icon">🤖</div><div class="t">生成层</div><div class="d">Agent API / Claude 的 Code 能力，多步生成单页应用代码</div></div>
-      <div class="ac"><div class="icon">🚀</div><div class="t">部署层</div><div class="d">自动部署到公网（如 Vercel/静态托管），返回 URL</div></div>
-      <div class="ac"><div class="icon">📱</div><div class="t">交付层</div><div class="d">生成二维码 + 移动端可访问的成品页</div></div>
+    <div class="arch" style="grid-template-columns:repeat(3,1fr)">
+      <div class="ac"><div class="icon">🔍</div><div class="t">扫盘引擎</div><div class="d">遍历指定本地目录 + 中英文行业关键词匹配，反推 <code>{行业, 证据词, 文件清单}</code>。<b>本地纯遍历，只读。</b></div></div>
+      <div class="ac"><div class="icon">🤖</div><div class="t">Agent 层</div><div class="d">意图识别 + 行业映射 + 改法建议，导出两个 API：<code>/profile</code> 反推画像、<code>/review</code> 出翻译问题+打分+改法。</div></div>
+      <div class="ac"><div class="icon">🖥</div><div class="t">前端 / 桌宠</div><div class="d">暖米编辑风：桌宠入口 + 画像卡可编辑 + 报告页 + 复用提醒弹窗。对齐既有页配色。</div></div>
     </div>
-    <ul style="margin-top:12px">
-      <li><b>优先复用</b>主办方 <b>Agent API（自带 Code 能力 + 会话流）</b>，省自己搭编排框架的力气。</li>
-      <li>MVP 把生成目标<b>收窄到"单页 HTML 小工具"</b>（表单/登记/计算器/展示类），最容易 48h 跑通且能真部署。</li>
+    <h3>Agent 两个 API（给 Agent 同学的接口契约）</h3>
+    <ul>
+      <li><code>POST /profile</code>　入参：扫盘结果；出参：行业画像 + 可编辑字段</li>
+      <li><code>POST /review</code>　入参：画像上下文 + 单个文件/片段；出参：<code>[{问题, 行业语言翻译, 红线等级, 改法建议}]</code></li>
     </ul>
+    <p style="font-size:13px;color:var(--sub)">详细入参/出参/医疗示例见 <a href="Agent接口契约.html" style="color:var(--accent)">Agent 接口契约</a>。</p>
   </section>
 
-  <section id="plan">
-    <h2><span class="badge">⏱</span>48h 开发计划</h2>
-    <div class="timeline">
-      <div class="tl"><div class="tt">6/27 今晚</div><div class="tc">新建仓库 + 打通主链路骨架：输入→调 Agent 生成 HTML→部署出链接（先不管行业翻译，先让"一回车出成品"跑通）</div></div>
-      <div class="tl"><div class="tt">6/27 深夜</div><div class="tc">接入行业意图层：行业背景采集 + 用行业语言确认需求（差异化核心）</div></div>
-      <div class="tl"><div class="tt">6/28 上午</div><div class="tc">打磨一个<b>黄金行业场景</b>端到端跑顺（如社区诊所/餐饮/教培选一个），做二维码交付 + 移动端适配</div></div>
-      <div class="tl"><div class="tt">6/28 12:00 前</div><div class="tc"><b>录全流程录屏（兜底）</b> + 冻结功能，不再加新东西</div></div>
-      <div class="tl"><div class="tt">6/28 12:00–14:30</div><div class="tc">写 GitHub README + 说明文档 + 部署稳定可访问 + 提交四件套</div></div>
-      <div class="tl"><div class="tt">6/28 14:30 后</div><div class="tc">做 PPT（≤7 页）+ 路演演练 ≥2 次，卡 4 分钟</div></div>
-    </div>
+  <section id="score">
+    <h2><span class="badge">⚖</span>对着五维权重逐条打</h2>
+    <table>
+      <tr><th>维度</th><th>权重</th><th>怎么命中</th></tr>
+      <tr><td>创新性</td><td class="w">①最高</td><td>「扫存量代码→反推行业画像→用行业语言翻译问题」是通用 Review 工具没做的组合——它们只懂技术维度，不懂你的业务红线。</td></tr>
+      <tr><td>产品完成度</td><td class="w">②次高</td><td>主线（扫盘→画像→翻译报告）48h 能真跑通，评委随便给个项目目录都能扫，不是固定路径表演。</td></tr>
+      <tr><td>技术深度</td><td class="w">③</td><td>清晰 Agent 链路：扫盘反推 → 意图识别 → 行业映射 → 打分改法；两个 API 边界清晰。</td></tr>
+      <tr><td>商业价值</td><td class="w">④</td><td>卖铲子：服务跨项目/跨阶段代码越攒越乱的行业从业者，付费意愿高；复用线指向「越用越懂你」的留存。</td></tr>
+      <tr><td>Demo 表现</td><td class="w">⑤放大器</td><td>「扫一眼就猜出你是哪行的 + 用你的行话讲问题」当场可体验，反差感最炸。</td></tr>
+    </table>
+    <div class="risk"><b>避坑：</b>别让 demo 退回「自然语言生成网页」（撞 v0 且打不过），也别让它停在「只报信不干活」。<b>开场就把「扫存量代码→反推行业」打出来</b>，把行业翻译层做成全场记忆点。</div>
   </section>
 
   <section id="role">
     <h2><span class="badge">👥</span>分工</h2>
     <div class="roles">
-      <div class="role"><b>队长 · 主 Coding + PM</b>核心生成层 + 部署层链路；把控主链路跑通</div>
-      <div class="role"><b>队员 · 产品+Coding</b>行业意图层 / 前端交付页 / 移动端适配</div>
-      <div class="role"><b>队员 · PPT + 录屏</b>路演 PPT（≤7 页，含成品截图）+ 全流程录屏兜底</div>
+      <div class="role"><b>扫盘引擎</b>遍历目录 + 中英文关键词库 + 反推画像；输出 <code>{行业, 证据词, 文件清单}</code></div>
+      <div class="role"><b>Agent 层</b>意图识别 + 行业映射 + 改法建议；导出 <code>/profile</code> 与 <code>/review</code> 两个 API</div>
+      <div class="role"><b>前端 / 桌宠</b>桌宠入口 + 画像卡可编辑 + 报告页 + 复用提醒；暖米编辑风对齐既有页</div>
     </div>
   </section>
 
-  <footer>选题定稿 · 据脑暴收敛整理 · 开发依据 + PPT 底稿</footer>
+  <footer>选题定稿 v4 · 小哒 Coda · 主线 = 扫盘 Review / 行业画像（真做）+ 跨项目复用（医疗最小切片）· 开发依据 + PPT 底稿</footer>
 
 </div>
 </body>

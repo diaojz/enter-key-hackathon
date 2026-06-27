@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回车键 · 小哒 Coda · Agent 接口契约</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf; --warn:#c9472b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:22px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  section h3{font-size:15px;font-weight:800;margin:16px 0 8px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+  .method{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;color:#fff;background:var(--good);margin-right:8px;vertical-align:middle}
+
+  .hero{background:linear-gradient(135deg,#fff6ee,#fdeee2);border:1px solid #f0d4c0}
+  p{font-size:14.5px;margin:8px 0}
+  ul{list-style:none}
+  li{padding:7px 0 7px 24px;position:relative;font-size:14px;border-bottom:1px dashed var(--line)}
+  li:last-child{border-bottom:none}
+  li::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:800}
+  li b{color:var(--accent)}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--pill);padding:1px 5px;border-radius:4px}
+
+  pre{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:#2b2723;color:#f3ede2;
+    border-radius:10px;padding:16px;margin:10px 0;white-space:pre;overflow-x:auto;line-height:1.6}
+  pre .k{color:#e0a07a} .pre .s{color:#8fc99a}
+  .label{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--sub);text-transform:uppercase;margin:12px 0 4px}
+  .in{color:#c98a2b} .out{color:var(--good)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-size:11.5px;font-weight:700}
+  tr:last-child td{border-bottom:none}
+  .f{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;color:var(--accent);white-space:nowrap}
+
+  .verdict{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:14px 16px;font-size:14px}
+  .verdict b{color:var(--good)}
+  .risk{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:14px;margin-top:10px}
+  .risk b{color:var(--accent)}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">小哒 Coda · Agent 接口契约</span>
+  <h1>Agent 接口契约</h1>
+  <p class="meta">给 <b>Agent 同学</b>照着搭 · 两个 API · 医疗金样本示例 · 与 <a href="选题定稿.html" style="color:var(--accent)">选题定稿 v4</a> 衔接</p>
+
+  <nav>
+    <a href="#why">设计原则</a>
+    <a href="#profile">/profile</a>
+    <a href="#review">/review</a>
+    <a href="#reuse">复用提醒</a>
+    <a href="#kw">医疗关键词库</a>
+  </nav>
+
+  <section id="why" class="hero">
+    <h2><span class="badge">📐</span>设计原则（先读这条）</h2>
+    <ul>
+      <li><b>只读不改</b>：Agent 永远只输出「问题 + 翻译 + 改法建议」文本，<b>绝不</b>返回会自动落盘的 diff。安全承诺是产品叙事的一部分。</li>
+      <li><b>半干活</b>：要给「怎么改」的具体文字方案（够显得能干活），但<b>不替用户改</b>。</li>
+      <li><b>说人话</b>：所有面向用户的 <code>问题</code> 字段必须用<b>用户那一行的话</b>，技术细节放进单独字段，用户可展开看。</li>
+      <li><b>画像驱动</b>：<code>/review</code> 的入参一定带 <code>profile</code> 上下文，没有画像就不该 review——这是「越用越懂你」的技术体现。</li>
+    </ul>
+  </section>
+
+  <section id="profile">
+    <h2><span class="badge">①</span><span class="method">POST</span><code>/profile</code> · 扫盘结果 → 行业画像</h2>
+    <p>入参是<b>扫盘引擎</b>（队友本地遍历产物）的结果，出参是可编辑的行业画像。前端把出参渲染成「画像卡片」，用户可手改，改完回写。</p>
+
+    <div class="label in">▼ 入参 Request</div>
+    <pre>{
+  "scan": {
+    "root": "/Users/x/projects/clinic-system",
+    "fileCount": 184,
+    "hits": [
+      { "term": "patient",    "count": 47, "where": ["models/patient.ts", "..."] },
+      { "term": "就诊",        "count": 23, "where": ["services/visit.ts"] },
+      { "term": "禁忌症",      "count": 6,  "where": ["rules/medication.ts"] },
+      { "term": "挂号",        "count": 31, "where": ["api/register.ts"] }
+    ],
+    "langs": ["TypeScript", "Vue"],
+    "sampleSnippets": ["function validatePatientId(id) {...}", "..."]
+  }
+}</pre>
+
+    <div class="label out">▼ 出参 Response</div>
+    <pre>{
+  "profile": {
+    "industry": "医疗",
+    "confidence": 0.92,
+    "evidence": ["patient×47", "就诊×23", "禁忌症×6", "挂号×31"],
+    "subDomain": "社区诊所 / 门诊管理",
+    "roleGuess": "懂临床流程的开发者 / 诊所数字化负责人",
+    "editable": true,
+    "redlines": [
+      "患者隐私字段不得明文存储",
+      "就诊/挂号时段需防并发重复",
+      "用药需校验禁忌症"
+    ]
+  }
+}</pre>
+
+    <table>
+      <tr><th>字段</th><th>说明</th></tr>
+      <tr><td class="f">industry</td><td>反推出的行业，用于驱动 <code>/review</code> 的翻译口径</td></tr>
+      <tr><td class="f">confidence</td><td>0~1，低于阈值时前端提示用户手动确认</td></tr>
+      <tr><td class="f">evidence</td><td>炸场用：命中的证据词，前端直接展示「我凭这些猜你是医疗的」</td></tr>
+      <tr><td class="f">redlines</td><td>行业红线清单，<code>/review</code> 据此判定红线等级</td></tr>
+      <tr><td class="f">editable</td><td>画像卡可手改；改后的画像作为后续 <code>/review</code> 的上下文</td></tr>
+    </table>
+  </section>
+
+  <section id="review">
+    <h2><span class="badge">②</span><span class="method">POST</span><code>/review</code> · 画像 + 文件 → 翻译问题 + 打分 + 改法</h2>
+    <p>入参带 <code>profile</code> 上下文 + 单个文件/片段，出参是「行业语言翻译后的问题列表」。这是<b>报告页</b>的数据源，也是 demo 第一幕第 4、5 步的核心。</p>
+
+    <div class="label in">▼ 入参 Request</div>
+    <pre>{
+  "profile": { "industry": "医疗", "redlines": ["患者隐私字段不得明文存储", "..."] },
+  "file": {
+    "path": "services/visit.ts",
+    "content": "localStorage.setItem('patient', JSON.stringify(p)); ..."
+  }
+}</pre>
+
+    <div class="label out">▼ 出参 Response</div>
+    <pre>{
+  "score": 62,
+  "issues": [
+    {
+      "problem": "患者隐私字段裸奔了，违反医疗数据红线",   // 行业话，给用户看
+      "techDetail": "patient 对象明文 JSON 存进 localStorage", // 技术细节，可展开
+      "redlineLevel": "high",                              // high | mid | low
+      "fix": "敏感字段不落本地存储；若必须缓存，先脱敏+加密，患者 ID 用不可逆哈希",
+      "loc": { "file": "services/visit.ts", "line": 12 }
+    },
+    {
+      "problem": "同一就诊时段会被重复挂号，候诊顺序会乱",
+      "techDetail": "时段并发写未加锁/未做唯一约束",
+      "redlineLevel": "mid",
+      "fix": "挂号写入加乐观锁或时段唯一索引，冲突时返回「该时段已满」",
+      "loc": { "file": "api/register.ts", "line": 40 }
+    }
+  ]
+}</pre>
+
+    <table>
+      <tr><th>字段</th><th>说明</th></tr>
+      <tr><td class="f">score</td><td>本文件/项目代码质量打分（0~100），对应「代码分析与打分」诉求</td></tr>
+      <tr><td class="f">problem</td><td><b>必须是行业话</b>，前端主展示。这是产品差异点，别写成技术 bug 描述</td></tr>
+      <tr><td class="f">techDetail</td><td>技术细节，前端折叠，用户想看再展开</td></tr>
+      <tr><td class="f">redlineLevel</td><td>红线等级，前端用颜色区分（high 红 / mid 橙 / low 灰）</td></tr>
+      <tr><td class="f">fix</td><td>改法建议文本——<b>只给建议，不自动改</b>（半干活 + 只读不改）</td></tr>
+    </table>
+  </section>
+
+  <section id="reuse">
+    <h2><span class="badge">③</span>复用提醒（demo 第二幕 · 医疗最小切片）</h2>
+    <p>不新增独立 API，复用 <code>/profile</code> 的行业判定即可。当扫描<b>项目 B</b> 命中与历史相同的行业、且代码里出现与<b>行业能力库</b>已有轮子相似的意图时，触发提醒。</p>
+    <div class="label out">▼ 提醒数据（前端弹窗用）</div>
+    <pre>{
+  "reuseHint": {
+    "matchedIndustry": "医疗",
+    "message": "你做过类似的医疗项目，行业库里有现成轮子",
+    "candidates": [
+      {
+        "name": "患者 ID 校验",
+        "fromProject": "clinic-system",
+        "snippet": "function validatePatientId(id) { /* 校验 + 脱敏 */ }"
+      },
+      {
+        "name": "就诊状态机",
+        "fromProject": "clinic-system",
+        "snippet": "const visitFSM = { 待就诊→就诊中→已完成→复诊 }"
+      }
+    ]
+  }
+}</pre>
+    <div class="verdict"><b>边界：</b>行业能力库就是一个 <code>JSON + 代码片段</code> 文件，轮子由项目 A 真实扫出后<b>人工/半自动</b>入库 1~2 个即可。<b>不做</b>通用自动抽象——那是生产级工程，48h 做不出真的。</div>
+  </section>
+
+  <section id="kw">
+    <h2><span class="badge">🔑</span>医疗关键词库（扫盘 + 反推用 · 可直接抄）</h2>
+    <table>
+      <tr><th>类别</th><th>中文词</th><th>英文/变量名特征</th></tr>
+      <tr><td class="f">患者/对象</td><td>患者、就诊人、病人、家属</td><td>patient、visitor、caseId、mrn（病案号）</td></tr>
+      <tr><td class="f">就诊流程</td><td>挂号、候诊、就诊、复诊、出诊、转诊</td><td>register、queue、visit、followup、referral</td></tr>
+      <tr><td class="f">临床</td><td>主诉、诊断、医嘱、处方、用药、禁忌症</td><td>diagnosis、prescription、medication、contraindication</td></tr>
+      <tr><td class="f">组织</td><td>科室、门诊、住院、床位、排班</td><td>department、outpatient、inpatient、ward、schedule</td></tr>
+      <tr><td class="f">合规/红线</td><td>隐私、脱敏、知情同意、病历</td><td>privacy、desensitize、consent、medicalRecord</td></tr>
+    </table>
+    <div class="risk"><b>给扫盘引擎同学：</b>命中权重按「类别覆盖广度 ＞ 单词高频」算——命中 3 个不同类别比单个词出现 50 次更能说明是医疗。证据词回传时<b>带出现文件</b>，前端才能点开溯源，炸场更有说服力。</div>
+  </section>
+
+  <footer>小哒 Coda · Agent 接口契约 · /profile + /review 两个 API · 只读不改 · 半干活 · 医疗金样本</footer>
+
+</div>
+</body>
+</html>
