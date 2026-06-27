@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主办方 · 小宿科技 · 速查</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf;
+    --search:#3f7d8f; --agent:#7a5fa3; --gold:#b8893a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:30px;margin-bottom:6px}
+  .lead{color:var(--sub);font-size:14.5px;max-width:640px}
+  .lead b{color:var(--accent)}
+
+  nav{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;
+    display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:18px 0}
+  nav a{font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  /* 一句话定位卡 */
+  .hero{display:flex;gap:18px;flex-wrap:wrap;align-items:stretch}
+  .hero .big{flex:2;min-width:240px}
+  .hero .big .tag{display:inline-block;background:var(--pill);color:var(--sub);font-size:11px;font-weight:700;
+    padding:3px 9px;border-radius:999px;margin-bottom:8px}
+  .hero .big p{font-size:15px}
+  .hero .big p b{color:var(--accent)}
+  .quote{background:#fbeee6;border-left:4px solid var(--accent);border-radius:10px;padding:14px 16px;margin-top:12px;
+    font-family:Georgia,"Songti SC",serif;font-size:16px;font-style:italic}
+
+  /* 数字栏 */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}
+  .stat{background:var(--pill);border-radius:14px;padding:16px 14px;text-align:center}
+  .stat .n{font-size:26px;font-weight:800;font-family:Georgia,serif;color:var(--accent)}
+  .stat .l{font-size:12px;color:var(--sub);margin-top:4px}
+
+  /* 产品对照 */
+  .prods{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.prods{grid-template-columns:1fr}}
+  .prod{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fffefb}
+  .prod.s{border-top:4px solid var(--search)}
+  .prod.a{border-top:4px solid var(--agent)}
+  .prod h3{font-size:17px;margin-bottom:2px}
+  .prod .dom{font-size:12.5px;color:var(--sub);font-family:"SF Mono",Menlo,monospace;margin-bottom:8px}
+  .prod .map{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--pill);color:var(--sub);display:inline-block;margin-bottom:10px}
+  .prod ul{list-style:none}
+  .prod li{padding:6px 0 6px 22px;position:relative;font-size:13.5px;border-bottom:1px dashed var(--line)}
+  .prod li:last-child{border-bottom:none}
+  .prod li::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:800}
+
+  ul.plain{list-style:none}
+  ul.plain li{padding:8px 0 8px 26px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+  ul.plain li:last-child{border-bottom:none}
+  ul.plain li::before{content:"›";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  ul.plain li b{color:var(--accent)}
+
+  .callout{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;
+    padding:13px 15px;font-size:14px;margin-top:14px}
+  .callout b{color:var(--accent)}
+  .good{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:13px 15px;font-size:14px;margin-top:14px}
+  .good b{color:var(--good)}
+
+  code{background:var(--pill);padding:1px 6px;border-radius:5px;font-size:13px;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+
+  .srcs{display:flex;gap:8px;flex-wrap:wrap}
+  .srcs a{font-size:12px;color:var(--search);text-decoration:none;background:var(--pill);
+    padding:5px 11px;border-radius:999px;border:1px solid var(--line)}
+  .srcs a:hover{background:var(--search);color:#fff;border-color:var(--search)}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">BEYOND PROMPT · 北京站 · 主办方</span>
+  <h1>主办方速查 · 小宿科技</h1>
+  <p class="lead">本场 <b>Beyond Prompt: Agents in Action</b> 黑客松的主办方。专为 AI Agent 做<b>实时搜索 + 模型调度</b>基础设施的创业公司 —— 现场发的 Search / Agent API，都是它家的产品。</p>
+
+  <nav>
+    <a href="#who">一句话</a>
+    <a href="#stats">数字</a>
+    <a href="#prods">两款产品</a>
+    <a href="#team">团队</a>
+    <a href="#play">打法启示</a>
+    <a href="#srcs">资料来源</a>
+  </nav>
+
+  <section id="who">
+    <h2><span class="badge">①</span>它是谁</h2>
+    <div class="hero">
+      <div class="big">
+        <span class="tag">AGENT INFRA · 卖铲人</span>
+        <p>AI Agent 时代的<b>「卖铲人」</b>：不自己做应用，而是给所有做 Agent 的开发者卖「铲子」—— <b>实时搜索数据</b> 和 <b>多模型智能调度</b>，让 Agent 应用更快、更便宜地跑起来。</p>
+        <div class="quote">「我们现在处于 Agent 元年的第一天，早上 6:05。」<br>—— 小宿科技 杜知恒</div>
+      </div>
+    </div>
+    <div class="callout"><b>为什么和我们有关：</b>它最擅长的就是<b>搜索（检索/RAG）+ 模型路由</b>。选题若能重度用上 Search API，既对评委胃口，也最容易现场拿到技术支持。</div>
+  </section>
+
+  <section id="stats">
+    <h2><span class="badge">②</span>关键数字</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">$25M+</div><div class="l">年经常性收入 ARR</div></div>
+      <div class="stat"><div class="n">$5/千次</div><div class="l">搜索 API 定价 · Bing 的 1/3</div></div>
+      <div class="stat"><div class="n">100+</div><div class="l">已接入全球大模型</div></div>
+      <div class="stat"><div class="n">50%+</div><div class="l">国内头部 AI 应用客户覆盖</div></div>
+    </div>
+    <div class="good"><b>为什么现场只发 $20 还够用：</b>搜索单价 $5/千次、只有 Bing 的 1/3，所以小额度也能跑不少调用。真用完了直接找工作人员追加。</div>
+  </section>
+
+  <section id="prods">
+    <h2><span class="badge">③</span>两款产品 = 现场那两套 API</h2>
+    <div class="prods">
+      <div class="prod s">
+        <h3>🔎 小宿智能搜索</h3>
+        <div class="dom">cloudsway.ai</div>
+        <span class="map">≡ 现场的 Search API</span>
+        <ul>
+          <li>专为 <b>Agent</b> 设计的搜索服务</li>
+          <li>多语言 · 实时更新 · 合规</li>
+          <li>也是 Agent 背后的<b>检索引擎</b></li>
+          <li>做检索 / RAG 的首选</li>
+        </ul>
+      </div>
+      <div class="prod a">
+        <h3>🤖 SkyRouter</h3>
+        <div class="dom">skyrouter.ai</div>
+        <span class="map">≡ 现场的 Agent API</span>
+        <ul>
+          <li>大模型<b>聚合 / 调度</b>平台</li>
+          <li>已接入 <b>100+</b> 全球模型</li>
+          <li>分布式推理 + 边缘部署</li>
+          <li>多语言、可定制化</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout"><b>对应关系记牢：</b>资料里说「Search API 也是 Agent 背后的检索引擎」—— 正是小宿的产品架构：<code>SkyRouter</code> 调度模型，<code>cloudsway</code> 喂检索。</div>
+  </section>
+
+  <section id="team">
+    <h2><span class="badge">④</span>团队 & 商业模式</h2>
+    <ul class="plain">
+      <li><b>技术团队 70% 是研发</b>，核心成员来自 <b>百度、360</b> 等搜索公司，有万亿级数据处理 + 低延迟全球服务经验。</li>
+      <li>关键人物：<b>杜知恒</b>（多场访谈对谈对象）。</li>
+      <li>收入来源：<b>API 调用</b> + 基础设施订阅 + 集成服务费。</li>
+      <li>客户含<b>昆仑天工、Mindverse</b> 等国内头部 AI-native 应用。</li>
+    </ul>
+  </section>
+
+  <section id="play">
+    <h2><span class="badge">⑤</span>对我们打法的启示</h2>
+    <ul class="plain">
+      <li><b>顺着主办方能力打</b>：主办方最强的是「搜索 + 多模型调度」。Coding Agent 选题若重度用 <b>Search API 做检索 / RAG</b>，或用 Agent API 的多模型路由，更对评委胃口。</li>
+      <li><b>呼应价值主张</b>：主办方看重「Agent 的<b>真实落地应用</b>」，正好契合评分「创新性 &gt; 完成度」的导向 —— 核心流程跑通 &gt; 功能堆多。</li>
+      <li><b>现场就有人</b>：搜索 / 调度遇到坑，主办方就是这方面专家，别自己硬磕，直接问工作人员。</li>
+    </ul>
+  </section>
+
+  <section id="srcs">
+    <h2><span class="badge">⑥</span>资料来源</h2>
+    <div class="srcs">
+      <a href="https://zhuanlan.zhihu.com/p/1931914375389754757" target="_blank">知乎 · 百亿美金新巨头？</a>
+      <a href="https://www.xiaoyuzhoufm.com/episode/687d09d9a9dec925004249b4" target="_blank">小宇宙 · 对谈杜知恒</a>
+      <a href="https://www.aigc.bar/%E5%A4%A7%E6%A8%A1%E5%9E%8BAPI%E6%95%99%E7%A8%8B/2025/07/29/xiaosu-tech-ai-agent-api-infrastructure" target="_blank">AIGC · 卖铲人</a>
+      <a href="https://market.aliyun.com/detail/cmapi00072421" target="_blank">阿里云市场 · 小宿智能搜索</a>
+    </div>
+  </section>
+
+  <footer>本地速查页 · 据公开资料整理 · 数字以现场口径为准 · 有问题直接问 Claude</footer>
+
+</div>
+</body>
+</html>

@@ -1,5 +1,9 @@
 # 回车键 · 黑客松作战中心
 
+<p align="center">
+  <img src="./poster.png" alt="回车键 · Enter 一下，世界开始运行" width="420">
+</p>
+
 [![GitHub](https://img.shields.io/badge/GitHub-enter--key--hackathon-181717?logo=github)](https://github.com/diaojz/enter-key-hackathon)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](./LICENSE)
 [![赛道](https://img.shields.io/badge/赛道-Coding%20Agent-ff7a00.svg)](#)
@@ -19,6 +23,7 @@
 |---|---|---|
 | `手册速查.html` | 选手手册速查（赛程/必交清单/赛道/评审/福利红线） | 带倒计时 + 提交清单可勾选（状态存浏览器本地） |
 | `评分规则.html` | 评分五维权重 + 双轨奖项机制 + 三人队作战策略 | 对照查漏，明确该往哪投资源 |
+| `主办方.html` | 主办方「小宿科技」公司速查（定位/数字/产品/打法启示） | 了解主办方能力，顺着它打选题 |
 | `API资源.html` | 主办方 Search / Agent API 接入速查 | 四步接入流程 + 两产品调用要点 |
 | `选手名册.html` | 73 名参赛选手名册 | 可搜索、可按赛道/组队状态筛选（找队友/看对手） |
 | `选题脑暴.html` | 选题脑暴白板（思考脉络） | 收口选题前的发散记录 |
@@ -58,6 +63,7 @@
 - **口号**：Enter 一下，世界开始运行
 
 ### 团队海报
+- 成品主视觉：[`poster.png`](./poster.png)（GPT 生成，已用作 README 顶图）
 - Figma 源文件（可编辑）：https://www.figma.com/board/qMCO2hgdYGtgK1Kd3rDwA3
 - 视觉：暖米→深蓝渐变 + 发光 Enter 键主视觉 + 橙色药丸口号（暖米编辑风）
 
