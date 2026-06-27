@@ -26,6 +26,7 @@ from scan import run as run_pipeline
 from reuse import extract_reusable
 from profile_store import apply_override, set_override, get_override, clear_override
 from explain import explain_concept, explain_stage
+from notify import fire as fire_notify
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -136,6 +137,14 @@ class Handler(BaseHTTPRequestHandler):
                 profile = data.get("profile") or apply_override(
                     infer_profile(scan), root or scan.get("root", ""))
                 return self._send(200, {"stage": explain_stage(profile, scan)})
+
+            if self.path == "/notify":
+                # 主动提醒：扫目录算出该提醒的事 + 推桌宠通知。{"root","toPet":true}
+                root = data.get("root")
+                if not root:
+                    return self._send(400, {"error": "缺少 root"})
+                to_pet = data.get("toPet", True)
+                return self._send(200, fire_notify(root, to_pet=to_pet))
 
             return self._send(404, {"error": f"未知路径 {self.path}"})
         except (NotADirectoryError, FileNotFoundError) as e:
