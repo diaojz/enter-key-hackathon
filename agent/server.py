@@ -59,6 +59,10 @@ class Handler(BaseHTTPRequestHandler):
             if not root:
                 return self._send(400, {"error": "缺少 root 查询参数"})
             return self._send(200, {"override": get_override(root)})
+        elif parsed.path == "/persona":
+            # 读全局人设摘要（跨项目累积，越用越准）
+            from persona import summary
+            return self._send(200, {"persona": summary()})
         else:
             self._send(404, {"error": "not found"})
 

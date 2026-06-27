@@ -75,6 +75,13 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
             r["file"] = rel
             result["reviews"].append(r)
 
+    # 人设跟随：用本次扫描产出反向丰富全局人设（越用越准）
+    try:
+        from persona import enrich
+        enrich(scan, profile, reuse=reuse, reviews=result["reviews"])
+    except Exception:
+        pass
+
     # 收尾：发现红线 → 慌张报错脸；否则 → 欢呼
     if pet:
         has_redline = any(
