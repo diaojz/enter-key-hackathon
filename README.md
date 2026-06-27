@@ -1,7 +1,7 @@
 # 回车键 · 黑客松作战中心
 
 <p align="center">
-  <img src="./poster.png" alt="回车键 · Enter 一下，世界开始运行" width="420">
+  <img src="./assets/cover-poster-wide.png" alt="回车键 · Enter 一下，世界开始运行" width="760">
 </p>
 
 [![GitHub](https://img.shields.io/badge/GitHub-enter--key--hackathon-181717?logo=github)](https://github.com/diaojz/enter-key-hackathon)
@@ -78,7 +78,8 @@
 | [`产品命名.html`](./产品命名.html) | 产品命名定稿（小哒 / Coda · 竞品参照 / 候选方案 / 形象设定，含 icon） |
 | [`选题脑暴.html`](./选题脑暴.html) | 选题脑暴白板（思考脉络） |
 | [`选题定稿.html`](./选题定稿.html) | 选题定稿（最终拍板的题目） |
-| `assets/cover-poster.png` | 路演主视觉海报（深蓝暖金 + 发光 Enter 键） |
+| `assets/cover-poster-wide.png` | **横版主视觉海报**（16:9 宽屏 · README 顶图 / PPT / Figma 用） |
+| `assets/cover-poster.png` | 竖版主视觉海报（3:4 · PPT 封面左栏用） |
 | `assets/coda-icon.png` | 产品吉祥物「小哒 / Coda」3D icon（暖橙萌精灵，米色底） |
 | `assets/coda-icon-transparent.png` | 同款 icon 透明底版（叠任意背景 / 做桌宠动画母版） |
 
