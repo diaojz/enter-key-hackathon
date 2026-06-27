@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒 Coda · 回车键作战中心</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --gold:#c98a2b; --navy:#13243f; --line:#ddd5c8; --pill:#f0eadf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:32px 18px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+
+  /* 顶部 hero */
+  .hero{background:linear-gradient(135deg,#0a1626,#13243f 60%,#1a2236);border-radius:22px;
+    padding:40px 38px;color:#f3ece0;position:relative;overflow:hidden;
+    box-shadow:0 24px 60px -22px rgba(10,22,40,.5)}
+  .hero::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 55% 60% at 85% 20%,rgba(232,150,60,.18),transparent 65%)}
+  .hero .row{position:relative;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .hero img{width:96px;height:96px;object-fit:contain;flex-shrink:0;
+    filter:drop-shadow(0 10px 24px rgba(232,168,74,.4))}
+  .hero .kick{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:#e8a84a;margin-bottom:8px}
+  .hero h1{font-family:Georgia,"Songti SC",serif;font-size:32px;line-height:1.15;color:#fff;margin-bottom:8px}
+  .hero h1 .g{color:#e8a84a}
+  .hero p{font-size:14.5px;color:#c9d3e0;max-width:46em;position:relative}
+  .hero p strong{color:#fff}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:relative}
+  .tag{background:rgba(255,255,255,.07);border:1px solid rgba(232,168,74,.35);border-radius:999px;
+    padding:5px 14px;font-size:12.5px;color:#e8d5b8;font-weight:600}
+
+  .sec-h{font-family:Georgia,"Songti SC",serif;font-size:18px;margin:34px 4px 14px;
+    display:flex;align-items:center;gap:10px}
+  .sec-h::before{content:'';width:4px;height:18px;background:var(--accent);border-radius:2px}
+
+  /* 卡片网格 */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:20px 22px;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  a.card:hover{border-color:var(--accent);transform:translateY(-3px);
+    box-shadow:0 14px 30px -12px rgba(120,90,55,.25)}
+  a.card .ico{font-size:24px;margin-bottom:8px}
+  a.card .t{font-size:16px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px}
+  a.card .t .arr{color:var(--accent);font-size:14px;transition:.2s}
+  a.card:hover .t .arr{transform:translateX(4px)}
+  a.card .d{font-size:13px;color:var(--sub);margin-top:5px;line-height:1.5}
+  a.card.primary{background:linear-gradient(135deg,#fff6ee,#fdeee2);border-color:#f0d4c0}
+  a.card.ext{background:var(--pill)}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:36px;line-height:1.7}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="row">
+      <img src="assets/coda-icon-transparent.png" alt="小哒 Coda">
+      <div>
+        <div class="kick">Beyond Prompt · Agents in Action · 北京站</div>
+        <h1><span class="g">小哒 Coda</span> · 回车键作战中心</h1>
+      </div>
+    </div>
+    <p style="margin-top:18px"><strong>小哒 Coda</strong> 是一个常驻桌面、懂你行业的 Coding Agent 助手——它盯着你的 Coding Agent <strong>实时反馈进度</strong>（看得见），带<strong>业务维度</strong>帮你 Review（懂业务），还能把行业经验<strong>打包成插件一键分享</strong>给同行（能裂变）。</p>
+    <div class="tags">
+      <span class="tag">队名 回车键</span>
+      <span class="tag">Coding Agent 赛道</span>
+      <span class="tag">3 人小队 · 48H</span>
+      <span class="tag">Enter 一下，世界开始运行</span>
+    </div>
+  </div>
+
+  <div class="sec-h">🎤 路演核心物料</div>
+  <div class="grid">
+    <a class="card primary" href="路演PPT.html">
+      <div class="ico">🎤</div>
+      <div class="t">路演 PPT <span class="arr">→</span></div>
+      <div class="d">8 页 · 深蓝暖金 · 浏览器按 <code>P</code> 进投影、<code>←→</code> 翻页</div>
+    </a>
+    <a class="card primary" href="PRD.html">
+      <div class="ico">📋</div>
+      <div class="t">产品 PRD v3.0 <span class="arr">→</span></div>
+      <div class="d">产品中心版 · 桌面助手 + 看得见/懂业务/能裂变</div>
+    </a>
+    <a class="card" href="产品命名.html">
+      <div class="ico">🐾</div>
+      <div class="t">产品命名 & 形象 <span class="arr">→</span></div>
+      <div class="d">小哒 Coda · 萌系形象 + icon 定稿</div>
+    </a>
+    <a class="card" href="选题定稿.html">
+      <div class="ico">🎯</div>
+      <div class="t">选题定稿 <span class="arr">→</span></div>
+      <div class="d">最终拍板的题目</div>
+    </a>
+  </div>
+
+  <div class="sec-h">📚 现场速查（赛事资料）</div>
+  <div class="grid">
+    <a class="card" href="手册速查.html"><div class="t">📖 手册速查 <span class="arr">→</span></div><div class="d">赛程 / 必交清单 / 赛道 / 评审 / 福利红线</div></a>
+    <a class="card" href="评分规则.html"><div class="t">⚖️ 评分规则 <span class="arr">→</span></div><div class="d">五维权重 + 双轨奖项 + 三人队作战策略</div></a>
+    <a class="card" href="主办方.html"><div class="t">🏢 主办方速查 <span class="arr">→</span></div><div class="d">小宿科技 · 定位 / 数字 / 产品 / 打法启示</div></a>
+    <a class="card" href="API资源.html"><div class="t">🔌 API 资源 <span class="arr">→</span></div><div class="d">Search / Agent API 接入速查</div></a>
+    <a class="card" href="选手名册.html"><div class="t">👥 选手名册 <span class="arr">→</span></div><div class="d">73 名参赛选手（可搜索、可筛选）</div></a>
+    <a class="card" href="选题脑暴.html"><div class="t">💡 选题脑暴 <span class="arr">→</span></div><div class="d">选题脑暴白板（思考脉络）</div></a>
+  </div>
+
+  <div class="sec-h">🔗 外部入口</div>
+  <div class="grid">
+    <a class="card ext" href="https://github.com/diaojz/enter-key-hackathon" target="_blank"><div class="t">🐙 GitHub 仓库 <span class="arr">↗</span></div><div class="d">源码 + 提交物入口</div></a>
+    <a class="card ext" href="https://www.figma.com/board/qMCO2hgdYGtgK1Kd3rDwA3" target="_blank"><div class="t">🎨 海报 Figma 源 <span class="arr">↗</span></div><div class="d">主视觉可编辑源文件</div></a>
+  </div>
+
+  <footer>
+    小哒 Coda（回车键团队）· Enter 一下，世界开始运行<br>
+    本作战中心所有页面均为单文件 HTML · 由 Claude Code 协助维护
+  </footer>
+
+</div>
+</body>
+</html>
