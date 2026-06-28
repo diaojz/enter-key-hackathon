@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒 Coda · 部署与打包速查</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fff; --ink:#2b2620; --sub:#6b6256;
+    --accent:#ff7a00; --accent-soft:#f6b25a; --line:#e3dccf;
+    --ok:#3f8f5f; --warn:#c9742a; --danger:#c0432f; --pill:#f3ede2;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7;padding:40px 20px;}
+  .wrap{max-width:880px;margin:0 auto;}
+  h1{font-size:30px;margin:0 0 4px;font-weight:800;letter-spacing:-.5px;}
+  .lead{color:var(--sub);margin:0 0 28px;font-size:15px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:24px 26px;margin-bottom:20px;box-shadow:0 1px 0 rgba(0,0,0,.02);}
+  .card h2{font-size:20px;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+  .step-badge{display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;
+    font-weight:800;font-size:15px;flex:0 0 auto;}
+  .card .hint{color:var(--sub);font-size:13.5px;margin:0 0 16px;}
+  ol,ul{padding-left:22px;margin:10px 0;}
+  li{margin:7px 0;}
+  code{background:var(--pill);padding:2px 7px;border-radius:6px;font-size:13px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;color:#9a4a00;}
+  pre{background:#2b2620;color:#f3ede2;padding:14px 16px;border-radius:10px;
+    overflow-x:auto;font-size:12.5px;line-height:1.6;
+    font-family:"SF Mono",Menlo,Consolas,monospace;}
+  pre code{background:none;color:inherit;padding:0;}
+  .pill{display:inline-block;background:var(--pill);border:1px solid var(--line);
+    border-radius:999px;padding:2px 11px;font-size:12px;color:var(--sub);margin-right:6px;}
+  .warn{background:#fbf1e4;border-left:4px solid var(--warn);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0;font-size:13.5px;}
+  .danger{background:#fbe9e6;border-left:4px solid var(--danger);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0;font-size:13.5px;}
+  .ok{background:#eaf4ee;border-left:4px solid var(--ok);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0;font-size:13.5px;}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);}
+  th{color:var(--sub);font-weight:600;font-size:12.5px;}
+  .flow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px;}
+  .flow span{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:8px 13px;font-size:13px;font-weight:600;}
+  .flow .arrow{border:none;background:none;color:var(--accent);font-weight:800;
+    display:flex;align-items:center;padding:0 2px;}
+  a{color:var(--accent);}
+  .kbd{font-family:"SF Mono",monospace;background:#fff;border:1px solid var(--line);
+    border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚀 小哒 Coda · 部署与打包速查</h1>
+  <p class="lead">交付形态：<b>公网托管 Python 后端（内置 key）+ 只发桌宠安装包</b>。评委下载安装包 → 双击装 → 双击用，全部功能可用，零配置。</p>
+
+  <div class="flow">
+    <span>① 推代码到 GitHub</span><span class="arrow">→</span>
+    <span>② Render 部署后端</span><span class="arrow">→</span>
+    <span>③ 桌宠填云端地址</span><span class="arrow">→</span>
+    <span>④ 出安装包</span><span class="arrow">→</span>
+    <span>⑤ 上传 + 写下载链接</span>
+  </div>
+
+  <!-- 阶段一 -->
+  <div class="card">
+    <h2><span class="step-badge">1</span> 推后端代码到 GitHub</h2>
+    <p class="hint">已改好的文件：<code>agent/server.py</code>（支持 PORT 环境变量 + 访问令牌护栏）、<code>render.yaml</code>、<code>agent/requirements.txt</code>。<b>密钥不在仓库里</b>，部署时在 Render 控制台填。</p>
+    <pre><code>cd /Users/diaoye/Desktop/hackathon
+git add agent/server.py agent/requirements.txt render.yaml 部署与打包.html
+git commit -m "feat: 后端支持公网托管(PORT+令牌护栏) + Render 部署蓝图"
+git push origin main</code></pre>
+  </div>
+
+  <!-- 阶段二 -->
+  <div class="card">
+    <h2><span class="step-badge">2</span> 在 Render 部署后端</h2>
+    <p class="hint">后端零三方依赖、纯 Python 标准库，Render 免费层即可。</p>
+    <ol>
+      <li>打开 <a href="https://dashboard.render.com/" target="_blank">dashboard.render.com</a> → 注册/登录（可用 GitHub 账号）</li>
+      <li>右上 <span class="kbd">New +</span> → <b>Blueprint</b>（蓝图，读仓库里的 <code>render.yaml</code>）</li>
+      <li>连接 GitHub → 选 <code>diaojz/enter-key-hackathon</code> 仓库 → Render 自动识别 <code>render.yaml</code>，建出名为 <code>coda-agent</code> 的 Web Service</li>
+      <li><b>填环境变量</b>（Environment 标签，最关键的一步）：
+        <table>
+          <tr><th>变量名</th><th>填什么</th></tr>
+          <tr><td><code>OPENAI_API_KEY</code></td><td>主办方中转站那把 key（<code>sk-DY7H…</code>，控制台「API Key」标签）</td></tr>
+          <tr><td><code>CODA_ACCESS_TOKEN</code></td><td>自己编一串随机字符串，如 <code>coda-2026-xxxx</code>（护栏，防额度被刷）</td></tr>
+          <tr><td><code>OPENAI_BASE_URL</code></td><td><code>https://api.openai-next.com/v1</code>（蓝图已预填，确认即可）</td></tr>
+          <tr><td><code>CODA_LLM_MODEL</code></td><td><code>gpt-4o-mini</code> 或 <code>gpt-5</code>（蓝图已预填）</td></tr>
+          <tr><td><code>CODA_LLM_BACKEND</code></td><td><code>openai</code>（蓝图已预填）</td></tr>
+        </table>
+      </li>
+      <li>点 <b>Deploy</b>，等 1～2 分钟出绿色 Live</li>
+      <li>记下分配的域名，形如 <code>https://coda-agent.onrender.com</code></li>
+    </ol>
+    <div class="ok"><b>验证：</b>浏览器打开 <code>https://你的域名/health</code>，看到 <code>{"ok": true}</code> 即后端上线。</div>
+    <div class="danger"><b>⚠ 免费层会休眠：</b>15 分钟没人访问会睡，下次访问要等约 30 秒冷启动。<b>路演前 5 分钟先打开一次 <code>/health</code> 唤醒它</b>，避免评委点扫盘时卡在冷启动。</div>
+    <div class="warn"><b>🔒 key 暴露提醒：</b>内置 key 托管在公网，已加 <code>CODA_ACCESS_TOKEN</code> 护栏（请求要带 <code>x-coda-token</code> 头）。桌宠会自动带这个头，但 token 值要和下面步骤③填的一致。</div>
+  </div>
+
+  <!-- 阶段三 -->
+  <div class="card">
+    <h2><span class="step-badge">3</span> 桌宠填入云端地址 + 令牌</h2>
+    <p class="hint">桌宠源码：<code>/Users/diaoye/Desktop/coda-desktop</code>。改造已做好，只需把两个常量改成真值。</p>
+    <ol>
+      <li>打开 <code>src/coda-eval.html</code>，在文件顶部找到这两个常量（带中文注释，很显眼）：
+        <pre><code>const CODA_CLOUD_API   = 'https://coda-agent.onrender.com'; // ← 改成步骤②的真实域名
+const CODA_ACCESS_TOKEN = '';                              // ← 改成步骤②填的 token</code></pre>
+      </li>
+      <li>把 <code>CODA_CLOUD_API</code> 改成 Render 给的真实域名（<b>结尾不要带斜杠</b>）</li>
+      <li>把 <code>CODA_ACCESS_TOKEN</code> 改成步骤②里 <code>CODA_ACCESS_TOKEN</code> 的同一串值</li>
+      <li>保存</li>
+    </ol>
+  </div>
+
+  <!-- 阶段四 -->
+  <div class="card">
+    <h2><span class="step-badge">4</span> 出 Windows / Mac 安装包</h2>
+    <p class="hint">桌宠用 electron-builder，打包脚本现成。<span class="pill">在 coda-desktop 目录执行</span></p>
+    <pre><code>cd /Users/diaoye/Desktop/coda-desktop
+npm install            # 首次需要，装 electron 等
+
+# Mac 安装包（.dmg）—— 在 Mac 上直接出
+npm run build:mac
+
+# Windows 安装包（.exe）—— Mac 上也能交叉构建
+npm run build:win
+
+# 产物在 dist/ 目录</code></pre>
+    <div class="warn"><b>若 Win 包在 Mac 上构建失败：</b>多半是 sidecar 二进制或签名问题。兜底办法：找队友的 Windows 机器跑 <code>npm run build:win</code>，或先只交 Mac 包 + 录屏，路演当天用 Mac 演示。</div>
+    <div class="ok"><b>验证：</b>本机装一次产出的包，双击打开桌宠，点开工作台→扫盘，确认能连云端、出「医疗 88%」+ AI 评审。<b>务必在干净状态下验一遍</b>，模拟评委首次使用。</div>
+  </div>
+
+  <!-- 阶段五 -->
+  <div class="card">
+    <h2><span class="step-badge">5</span> 上传安装包 + 写下载链接</h2>
+    <ol>
+      <li>把 <code>dist/</code> 里的 <code>.dmg</code> 和 <code>.exe</code> 传到 <b>GitHub Release</b>（仓库 → Releases → Draft new release → 拖文件上传），或网盘</li>
+      <li>把下载链接写进提交说明 + <code>README.md</code> 的「快速直达」区</li>
+      <li>提交物清单里「Demo 公网可访问链接」= 安装包下载链接（+ 后端 <code>/health</code> 作为在线证明）</li>
+    </ol>
+  </div>
+
+  <div class="card" style="background:#fbf6ee;">
+    <h2 style="font-size:18px;">📌 路演当天 5 分钟检查单</h2>
+    <ul>
+      <li>☐ 提前打开 <code>https://后端域名/health</code> <b>唤醒后端</b>（免费层防休眠）</li>
+      <li>☐ 演示机上桌宠已安装、能打开工作台</li>
+      <li>☐ 点一次扫盘，确认出「医疗 88%」+ AI 评审内容（不是 mock 兜底）</li>
+      <li>☐ 评委下载链接可点开、能下到包</li>
+      <li>☐ 备好录屏作兜底（万一现场网络抽风）</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

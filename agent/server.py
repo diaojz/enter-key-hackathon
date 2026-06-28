@@ -15,6 +15,7 @@
 """
 
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -28,6 +29,10 @@ from profile_store import apply_override, set_override, get_override, clear_over
 from explain import explain_concept, explain_stage
 from notify import fire as fire_notify
 
+# 公网托管护栏：设了 CODA_ACCESS_TOKEN 就要求请求头 x-coda-token 匹配，
+# 防止内置 LLM key 被公网扫描器刷爆额度。本地/未设则不校验（demo 友好）。
+ACCESS_TOKEN = os.environ.get("CODA_ACCESS_TOKEN", "").strip()
+
 
 class Handler(BaseHTTPRequestHandler):
     def _send(self, code, payload):
@@ -35,7 +40,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, x-coda-token")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -46,10 +51,25 @@ class Handler(BaseHTTPRequestHandler):
         raw = self.rfile.read(length) if length else b"{}"
         return json.loads(raw.decode("utf-8") or "{}")
 
+    def _guard_ok(self):
+        """护栏：设了 ACCESS_TOKEN 就校验请求头。未设或路径白名单则放行。"""
+        if not ACCESS_TOKEN:
+            return True
+        parsed = urlparse(self.path)
+        if parsed.path == "/health":  # 健康检查不挡（Render 探活用）
+            return True
+        token = (self.headers.get("x-coda-token") or "").strip()
+        if token == ACCESS_TOKEN:
+            return True
+        self._send(401, {"error": "缺少或错误的访问令牌 x-coda-token"})
+        return False
+
     def do_OPTIONS(self):
         self._send(204, {})
 
     def do_GET(self):
+        if not self._guard_ok():
+            return
         parsed = urlparse(self.path)
         if parsed.path == "/health":
             self._send(200, {"ok": True, "service": "coda-eval-agent"})
@@ -67,6 +87,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, {"error": "not found"})
 
     def do_POST(self):
+        if not self._guard_ok():
+            return
         try:
             data = self._read_json()
         except json.JSONDecodeError:
@@ -161,9 +183,15 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8848
+    # 端口优先级：命令行参数 > PORT 环境变量（Render/云平台注入）> 8848（本地默认）
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = int(os.environ.get("PORT", "8848"))
     srv = ThreadingHTTPServer(("0.0.0.0", port), Handler)
-    print(f"🐾 小哒 Coda 评价 Agent 已启动 → http://localhost:{port}")
+    print(f"🐾 小哒 Coda 评价 Agent 已启动 → http://0.0.0.0:{port}")
+    if ACCESS_TOKEN:
+        print("   🔒 已开启访问令牌护栏（请求需带 x-coda-token）")
     print(f"   POST /profile  /review  /scan  /reuse   ·   GET /health")
     print("   Ctrl-C 停止")
     try:

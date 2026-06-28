@@ -1,0 +1,27 @@
+# 小哒 Coda · 评价 Agent —— Render 一键部署蓝图
+# 用法：把本仓库连到 Render（New → Blueprint），它会读这个文件自动建服务。
+# 真正的密钥（OPENAI_API_KEY / CODA_ACCESS_TOKEN）在 Render 控制台 Environment 里填，
+# 绝不写进本文件、绝不进仓库。
+services:
+  - type: web
+    name: coda-agent
+    runtime: python
+    rootDir: agent            # 后端代码都在 agent/ 子目录
+    plan: free                # demo 够用；免费实例会休眠，路演前先访问一次唤醒
+    # 后端零三方依赖（纯标准库），build 阶段无需装包
+    buildCommand: "echo no-deps"
+    # Render 通过 $PORT 注入端口，server.py 已支持读 PORT 环境变量
+    startCommand: "python server.py"
+    healthCheckPath: /health
+    envVars:
+      # —— 以下在 Render 控制台手动填值，sync:false 表示不从本文件同步 ——
+      - key: CODA_LLM_BACKEND
+        value: openai
+      - key: OPENAI_BASE_URL
+        value: https://api.openai-next.com/v1
+      - key: CODA_LLM_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY      # 中转站 key，控制台填，别进仓库
+        sync: false
+      - key: CODA_ACCESS_TOKEN   # 访问令牌护栏，控制台填一串随机字符串
+        sync: false
