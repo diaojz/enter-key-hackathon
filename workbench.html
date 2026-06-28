@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 英文别名页：把干净链接 .../workbench.html 跳到中文主文件，并透传 query 参数 -->
+<!-- 无脚本兜底：1 秒后由浏览器跳转到不带参数的工作台 -->
+<meta http-equiv="refresh" content="1; url=%E5%B7%A5%E4%BD%9C%E5%8F%B0.html">
+<title>小哒 Coda · 工作台</title>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #ece7de;
+    color: #6b6258;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 24px;
+  }
+  .paw { font-size: 40px; }
+  .msg { font-size: 14px; }
+  .spinner {
+    width: 22px; height: 22px;
+    border: 2.5px solid #ddd5c8;
+    border-top-color: #e0623a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  a { color: #e0623a; font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="paw">🐾</div>
+  <div class="spinner"></div>
+  <div class="msg">正在打开「小哒 Coda · 工作台」…</div>
+  <div class="msg">没有自动跳转？<a id="fallback" href="%E5%B7%A5%E4%BD%9C%E5%8F%B0.html">点这里手动进入 →</a></div>
+</div>
+<script>
+// 即时跳到中文主文件，并把 ?apiBase= / ?root= / ?port= 等参数原样透传
+(function () {
+  var target = '工作台.html' + (window.location.search || '') + (window.location.hash || '');
+  var link = document.getElementById('fallback');
+  if (link) link.href = target;
+  window.location.replace(target);
+})();
+</script>
+</body>
+</html>

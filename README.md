@@ -22,7 +22,7 @@
 
 | 看什么 | 在线打开（点开即看） | 一句话 |
 |---|---|---|
-| 🐾 **工作台（网页兜底版）** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E5%B7%A5%E4%BD%9C%E5%8F%B0.html) | **装不上 App 也能用** · 点「医疗诊所 A/B」即真扫真评，浏览器内看完整画像/评分/复用/映射 |
+| 🐾 **工作台（网页兜底版）** | [打开 →](https://diaojz.github.io/enter-key-hackathon/workbench.html) | **装不上 App 也能用** · 点「医疗诊所 A/B」即真扫真评，浏览器内看完整画像/评分/复用/映射 |
 | 🎤 **路演 PPT** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
 | 🗣️ **路演逐字稿** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94%E7%A8%BF.html) | 对齐 PPT · 约 5 分半 · 含时间码 + 语气提示 + 商业模式口播 |
 | 📋 **产品 PRD** | [打开 →](https://diaojz.github.io/enter-key-hackathon/PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
