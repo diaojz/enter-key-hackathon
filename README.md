@@ -26,7 +26,9 @@
 | 📋 **产品 PRD** | [打开 →](https://diaojz.github.io/enter-key-hackathon/PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
 | 🐾 **产品命名 & 形象** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E4%BA%A7%E5%93%81%E5%91%BD%E5%90%8D.html) | 小哒 Coda · 萌系形象 + icon 定稿 |
 | 🎯 **选题定稿** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E9%80%89%E9%A2%98%E5%AE%9A%E7%A8%BF.html) | 最终拍板的题目 |
+| 🏆 **代码资产盘点** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E4%BB%A3%E7%A0%81%E8%B5%84%E4%BA%A7.html) | 6 个跨行业项目实测可视化 · 六维雷达 + 行业/技术栈占比 + 关联图谱 |
 | 🔗 **GitHub 仓库** | [github.com/diaojz/enter-key-hackathon](https://github.com/diaojz/enter-key-hackathon) | 提交物入口 |
+| 🧪 **示例代码库集** | [github.com/diaojz/industry-demo-repos](https://github.com/diaojz/industry-demo-repos) | 6 个跨行业 demo 项目（扫盘演示素材） |
 | 🎨 **海报 Figma 源** | [figma.com/board/...](https://www.figma.com/board/qMCO2hgdYGtgK1Kd3rDwA3) | 主视觉可编辑源文件 |
 
 > 💡 上面是 GitHub Pages 在线链接，**点开就能在浏览器看效果**（图片、GIF 都正常）。也可 `git clone` 后本地双击 `.html`。
@@ -93,6 +95,7 @@
 | [`路演PPT.html`](./路演PPT.html) | 路演演讲稿 · 8 页 · 深蓝暖金风 · ✅ 已对齐 v4（扫盘 Review）· 横版海报全屏封面 |
 | [`PRD.html`](./PRD.html) | 产品需求文档 v4 · 扫盘 Review 主线 · ✅ 已同步（评价 / 解释 / 复用） |
 | [`产品命名.html`](./产品命名.html) | 产品命名定稿（小哒 / Coda · 竞品参照 / 候选方案 / 形象设定，含 icon） |
+| [`代码资产.html`](./代码资产.html) | **代码资产盘点**（成就栏目）· 6 个跨行业项目实测可视化：六维能力雷达 + 行业分布 + 技术栈占比 + 关联图谱 + 对外话术 |
 | [`选题脑暴.html`](./选题脑暴.html) | 选题脑暴白板（思考脉络） |
 | `assets/cover-poster-wide.png` | **横版主视觉海报**（16:9 宽屏 · README 顶图 / PPT / Figma 用） |
 | `assets/cover-poster.png` | 竖版主视觉海报（3:4 · PPT 封面左栏用） |
@@ -108,6 +111,23 @@
 | [`API资源.html`](./API资源.html) | 主办方 Search / Agent API 接入速查 |
 | [`选手名册.html`](./选手名册.html) | 73 名参赛选手名册（可搜索、可筛选） |
 | `feishu-auth-qr.png` | 飞书读取授权二维码（一次性，已用完可删） |
+
+---
+
+## 🧪 示例代码库集（扫盘演示素材）
+
+为「扫盘 Review / 行业画像」准备的一组**跨行业、可编译/可运行**的 demo 项目，单独成库：
+**[github.com/diaojz/industry-demo-repos](https://github.com/diaojz/industry-demo-repos)**（monorepo，本地副本在 `../industry-demo-repos/`）。
+
+| 子项目 | 行业 | 技术栈 |
+|---|---|---|
+| `med-his-platform` / `med-lis-lab` | 医疗（HIS / LIS） | Java / Spring Boot |
+| `fin-trade-risk` | 金融（交易风控） | Go |
+| `growth-marketing-platform` | 消费互联网（营销中台） | TypeScript |
+| `vehicle-aftersales-iot` | 汽车 / 物流（车联网售后） | Python |
+| `edu-academic-saas` | 教育 / SaaS（在线教务） | Java / Spring Boot |
+
+每个项目都内置**行业行话 + 演示用埋点**（SQL 注入 / 明文凭证 / 并发超卖等），供扫盘引擎「反推行业 → 用行话讲问题 → 打分给改法」演示。配置中的密钥 / 口令**均为编造值**，非真实凭据。[`代码资产.html`](./代码资产.html) 是这 6 个项目的可视化盘点页。
 
 ---
 
