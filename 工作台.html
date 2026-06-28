@@ -1817,30 +1817,21 @@ function clearDetail() {
   el('mapping-content').innerHTML = '<div class="placeholder">扫描后，这里把项目里的代码文件翻译成你那行的行话</div>';
 }
 
-// ── 核心：扫描单个项目（写进它的槽位）──
+// ── 核心：流式扫描单个项目（两段式，不再一把梭 /scan 黑盒转圈）──
+// ① POST /scan/plan：本地秒出画像/复用/待评清单（不调 LLM），立刻渲染详情区；
+// ② 逐个 POST /review：每回一条就插进 reviews 并重渲染评审区，评审“边出边看”。
+// 这样无论后端用多重的模型（gpt-5.5 等），用户都先秒见画像，评审逐条冒出来，绝不黑盒转圈。
 function scanProject(root) {
   var p = findProject(root);
   if (!p) return Promise.resolve();
   p.status = 'scanning';
   p.error = '';
   renderProjects();
-
-  // 冷启动友好提示：扫描中随等待时长升级文案，让评委知道是在正常加载而非卡死
-  var waited = 0;
-  var spin = '<span class="spinner"></span> ';
-  function tick() {
-    if (root !== _activeRoot) return;
-    var msg;
-    if (waited < 10)      msg = spin + '扫描「' + escHtml(p.name) + '」中…';
-    else if (waited < 25) msg = spin + 'AI 正在逐文件评审「' + escHtml(p.name) + '」，马上就好…';
-    else                  msg = spin + '快好了，正在汇总画像与可复用模块…';
-    setStatus(msg);
+  if (root === _activeRoot) {
+    setStatus('<span class="spinner"></span> 扫描「' + escHtml(p.name) + '」中…');
   }
-  tick();
-  var progressTimer = setInterval(function() { waited += 5; tick(); }, 5000);
-  function stopProgress() { clearInterval(progressTimer); }
 
-  return fetch(getApiBase() + '/scan', {
+  return fetch(getApiBase() + '/scan/plan', {
     method: 'POST',
     headers: buildHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ root: root })
@@ -1853,21 +1844,84 @@ function scanProject(root) {
     }
     return res.json();
   })
-  .then(function(data) {
-    stopProgress();
-    p.status = 'done';
+  .then(function(plan) {
+    // 用 plan 拼出完整 result 骨架（reviews 暂空，逐条填充）
+    var data = {
+      scan_summary: plan.scan_summary || {},
+      profile: plan.profile || {},
+      reuse: plan.reuse || null,
+      reuseHint: plan.reuseHint || null,
+      mapping: plan.mapping || { industry: (plan.profile || {}).industry || '未知', concepts: [] },
+      stage: plan.stage || null,
+      reviews: []
+    };
     p.result = data;
-    renderProjects();
+    var targets = plan.targets || [];
+    var total = plan.reviewCount != null ? plan.reviewCount : targets.length;
+
+    // 画像/复用先渲染——本地算的，秒出，详情区不再空白。
     if (root === _activeRoot) {
       _scanResult = data;
-      var fc = data.scan_summary && data.scan_summary.fileCount;
-      setStatus('✓ 「' + escHtml(p.name) + '」扫描完成（' + (fc != null ? fc + ' 个文件' : '') + '）', 'success');
       renderDetail(data);
     }
-    loadPersona();
+
+    var fc = data.scan_summary && data.scan_summary.fileCount;
+    var fcStr = fc != null ? '（' + fc + ' 个文件）' : '';
+
+    // 行业阶段 + 行业映射时间线是 LLM 产物，plan 里没有；秒出画像后并行单拉，
+    // 不阻塞评审、回来一个渲染一个。
+    if (data.profile && data.profile.industry && data.profile.industry !== '未知') {
+      fetch(getApiBase() + '/explain/mapping', {
+        method: 'POST', headers: buildHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ root: root, profile: data.profile })
+      }).then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(m){
+          if (m && m.mapping) { data.mapping = m.mapping;
+            if (root === _activeRoot) renderMapping(data.mapping); }
+        }).catch(function(){});
+      fetch(getApiBase() + '/explain/stage', {
+        method: 'POST', headers: buildHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ root: root, profile: data.profile })
+      }).then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(s){
+          if (s && s.stage) { data.stage = s.stage;
+            // stage 由 renderProfile→renderStageHtml 渲染（读 _scanResult.stage）
+            if (root === _activeRoot) { _scanResult = data; renderProfile(data.profile); } }
+        }).catch(function(){});
+    }
+
+    if (!total) { finishScan(p, root, fcStr); return; }
+
+    var done = 0;
+    function reviewOne(i) {
+      if (i >= targets.length) { finishScan(p, root, fcStr); return; }
+      if (root === _activeRoot) {
+        setStatus('<span class="spinner"></span> AI 逐文件评审「' + escHtml(p.name) + '」… '
+          + done + '/' + total);
+      }
+      var t = targets[i];
+      return fetch(getApiBase() + '/review', {
+        method: 'POST',
+        headers: buildHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ profile: data.profile, file: { path: t.file, content: t.content } })
+      })
+      .then(function(res) { return res.ok ? res.json() : { score: null, issues: [], error: 'HTTP ' + res.status }; })
+      .catch(function() { return { score: null, issues: [], error: '评审请求失败' }; })
+      .then(function(rv) {
+        rv.file = t.file;
+        data.reviews.push(rv);
+        done++;
+        if (root === _activeRoot) {
+          _scanResult = data;
+          renderReviews(data.reviews);
+          renderProjects();
+        }
+        return reviewOne(i + 1);
+      });
+    }
+    return reviewOne(0);
   })
   .catch(function(err) {
-    stopProgress();
     p.status = 'error';
     var isNetErr = err instanceof TypeError;
     p.error = isNetErr ? '评价服务没连上' : err.message;
@@ -1883,6 +1937,17 @@ function scanProject(root) {
       }
     }
   });
+}
+
+// 扫描收尾：置 done、刷新状态栏、拉人设。
+function finishScan(p, root, fcStr) {
+  p.status = 'done';
+  renderProjects();
+  if (root === _activeRoot) {
+    setStatus('✓ 「' + escHtml(p.name) + '」扫描完成' + fcStr, 'success');
+    renderDetail(p.result);
+  }
+  loadPersona();
 }
 
 // ── 扫全部（未扫的逐个扫）──

@@ -34,8 +34,18 @@ class LLMError(Exception):
     pass
 
 
-def chat(system: str, user: str, *, temperature: float = 0.2, want_json: bool = True) -> str:
-    """发一轮对话，返回模型文本。want_json=True 时要求模型只输出 JSON。"""
+# 快模型：画像/阶段/映射这类「秒出首屏」的调用走它，稳定低延迟优先于深度。
+# 评审（review）不传 model，仍走默认主模型（CODA_LLM_MODEL，质量优先）。
+FAST_MODEL = os.environ.get("CODA_LLM_FAST_MODEL", "gpt-4o-mini")
+
+
+def chat(system: str, user: str, *, temperature: float = 0.2, want_json: bool = True,
+         model: str = "") -> str:
+    """发一轮对话，返回模型文本。want_json=True 时要求模型只输出 JSON。
+
+    model 留空时走后端默认模型；传入（如 FAST_MODEL）则本次调用用指定模型，
+    用于「画像/映射用快模型保首屏、评审用主模型保质量」的分级。
+    """
     if BACKEND == "mock":
         return _mock(user)
 
@@ -48,7 +58,7 @@ def chat(system: str, user: str, *, temperature: float = 0.2, want_json: bool = 
         raise LLMError(f"环境变量 {cfg['key_env']} 未设置——无法调用 {BACKEND}")
 
     body = {
-        "model": cfg["model"],
+        "model": model or cfg["model"],
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},

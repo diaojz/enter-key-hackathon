@@ -10,7 +10,7 @@ PRD 排名第二的功能。两种用法：
 
 import json
 
-from llm_client import chat, LLMError
+from llm_client import chat, LLMError, FAST_MODEL
 
 EXPLAIN_SYSTEM = """你是「小哒 Coda」，一个懂用户行业的助手。你的任务是把程序员的技术黑话，
 翻译成【用户那一行的人能秒懂的大白话和类比】。
@@ -98,7 +98,7 @@ def explain_mapping(profile: dict, scan: dict) -> dict:
     }
     user = json.dumps(signal, ensure_ascii=False)
     try:
-        data = json.loads(chat(MAPPING_SYSTEM, user, want_json=True))
+        data = json.loads(chat(MAPPING_SYSTEM, user, want_json=True, model=FAST_MODEL))
         concepts = data.get("concepts", [])
         if not isinstance(concepts, list) or not concepts:
             raise ValueError("empty concepts")
@@ -111,7 +111,7 @@ def explain_concept(profile: dict, term: str) -> dict:
     industry = profile.get("industry", "通用")
     user = json.dumps({"industry": industry, "term": term}, ensure_ascii=False)
     try:
-        data = json.loads(chat(EXPLAIN_SYSTEM, user, want_json=True))
+        data = json.loads(chat(EXPLAIN_SYSTEM, user, want_json=True, model=FAST_MODEL))
         data.setdefault("term", term)
         return data
     except (LLMError, json.JSONDecodeError):
@@ -131,7 +131,7 @@ def explain_stage(profile: dict, scan: dict) -> dict:
     }
     user = json.dumps(signal, ensure_ascii=False)
     try:
-        data = json.loads(chat(STAGE_SYSTEM, user, want_json=True))
+        data = json.loads(chat(STAGE_SYSTEM, user, want_json=True, model=FAST_MODEL))
         return data
     except (LLMError, json.JSONDecodeError):
         return _fallback_stage(industry, cats)

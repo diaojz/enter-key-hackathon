@@ -48,14 +48,20 @@ def review_file(profile: dict, file_path: str, content: str) -> dict:
         "file": {"path": file_path, "content": content[:8000]},
     }, ensure_ascii=False)
 
-    try:
-        raw = chat(REVIEW_SYSTEM, user, want_json=True)
-        data = json.loads(raw)
-    except (LLMError, json.JSONDecodeError) as e:
+    # 中转站对重模型偶发 401/超时/坏 JSON——重试一次即可自愈，不让单次抖动毁掉整条评审。
+    last_err = None
+    data = None
+    for _attempt in range(2):
+        try:
+            data = json.loads(chat(REVIEW_SYSTEM, user, want_json=True))
+            break
+        except (LLMError, json.JSONDecodeError) as e:
+            last_err = e
+    if data is None:
         return {
             "score": None,
             "issues": [],
-            "error": f"评审失败：{e}",
+            "error": f"评审失败：{last_err}",
         }
 
     # 兜底字段

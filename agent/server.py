@@ -173,6 +173,20 @@ class Handler(BaseHTTPRequestHandler):
                     infer_profile(scan), root or scan.get("root", ""))
                 return self._send(200, {"stage": explain_stage(profile, scan)})
 
+            if self.path == "/explain/mapping":
+                # 行业映射时间线：{"root"} 或 {"scan","profile"}。
+                # 前端走流式扫描时，plan 秒出画像后再并行单拉这个，与逐文件 review 同时进行。
+                from explain import explain_mapping
+                scan = data.get("scan")
+                root = data.get("root")
+                if scan is None and root:
+                    scan = scan_dir(root)
+                if scan is None:
+                    return self._send(400, {"error": "缺少 scan 或 root"})
+                profile = data.get("profile") or apply_override(
+                    infer_profile(scan), root or scan.get("root", ""))
+                return self._send(200, {"mapping": explain_mapping(profile, scan)})
+
             if self.path == "/notify":
                 # 主动提醒：扫目录算出该提醒的事 + 推桌宠通知。{"root","toPet":true}
                 root = data.get("root")

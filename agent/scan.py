@@ -53,29 +53,59 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
     }, "profile": profile, "reviews": [], "reuse": reuse, "reuseHint": reuse_hint,
         "mapping": {"industry": profile.get("industry", "未知"), "concepts": []}}
 
-    # ②解释：项目阶段 + 行业映射（用行业语言讲透关键概念）。只在能调 LLM + 行业已知时跑。
-    if use_llm and profile["industry"] != "未知":
-        try:
-            from explain import explain_stage, explain_mapping
-            result["stage"] = explain_stage(profile, scan)
-            result["mapping"] = explain_mapping(profile, scan)
-        except Exception:
-            result["stage"] = None
-
+    # ②解释 + ③评审：原本是 5 次串行 LLM（explain_stage / explain_mapping / 3×review_file），
+    # 每次重模型往返数秒，串起来能拖到一两分钟。这些调用彼此独立，并发发出去后取最慢的一次，
+    # 总耗时从「∑ 单次」压到「max 单次」。只在能调 LLM + 行业已知时跑。
     if use_llm and profile["industry"] != "未知":
         if pet:
             push_state("working", event="评价中", cwd=scan["root"])  # 专注干活
+
+        from concurrent.futures import ThreadPoolExecutor
+
+        # 先把待评文件内容读出来（本地 IO，串行也快），LLM 调用部分才并发。
         targets = pick_review_targets(scan, profile, limit=review_limit)
+        review_inputs = []  # [(rel, content)]
         for rel in targets:
             full = os.path.join(scan["root"], rel)
             try:
                 with open(full, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read(8000)
+                    review_inputs.append((rel, f.read(8000)))
             except OSError:
                 continue
+
+        def _do_stage():
+            from explain import explain_stage
+            return explain_stage(profile, scan)
+
+        def _do_mapping():
+            from explain import explain_mapping
+            return explain_mapping(profile, scan)
+
+        def _do_review(rel, content):
             r = review_file(profile, rel, content)
             r["file"] = rel
-            result["reviews"].append(r)
+            return r
+
+        # 2 次 explain + N 次 review 一把并发；线程数取实际任务数（最多 5）。
+        with ThreadPoolExecutor(max_workers=min(2 + len(review_inputs), 5)) as pool:
+            f_stage = pool.submit(_do_stage)
+            f_mapping = pool.submit(_do_mapping)
+            f_reviews = [pool.submit(_do_review, rel, c) for rel, c in review_inputs]
+
+            try:
+                result["stage"] = f_stage.result()
+            except Exception:
+                result["stage"] = None
+            try:
+                result["mapping"] = f_mapping.result()
+            except Exception:
+                pass  # 保留 scan_summary 里给的默认 mapping
+            # 按 targets 原顺序收集评审结果，跳过抛异常的那个文件
+            for f in f_reviews:
+                try:
+                    result["reviews"].append(f.result())
+                except Exception:
+                    continue
 
     # 人设跟随：用本次扫描产出反向丰富全局人设（越用越准）
     try:
