@@ -134,6 +134,15 @@ class Handler(BaseHTTPRequestHandler):
                 use_llm = data.get("useLlm", True)
                 return self._send(200, run_pipeline(root, use_llm=use_llm))
 
+            if self.path == "/scan/plan":
+                # 扫盘「计划」：本地秒出画像+待评文件列表，不调 LLM。
+                # 前端拿 targets 逐个调 /review，每评完一个渲染一条+推进进度条。
+                from scan import plan
+                root = data.get("root")
+                if not root:
+                    return self._send(400, {"error": "缺少 root"})
+                return self._send(200, plan(root))
+
             if self.path == "/reuse":
                 # 支持两种入参：{"root": "..."} 或 {"scan": {...}}
                 scan = data.get("scan")

@@ -98,6 +98,60 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
     return result
 
 
+def plan(root: str, review_limit: int = 3, pet: bool = True):
+    """扫盘「计划」——本地秒出，不调 LLM。给前端做「先出画像+进度条，再逐文件评」用。
+
+    返回：画像 / 复用 / 复用提醒 / 待评文件列表（含文件内容，前端拿去逐个调 /review）。
+    评审本身由前端逐个调 /review 完成，每评完一个就能渲染一条 + 推进进度。
+    """
+    if pet:
+        push_state("thinking", event="扫盘中", cwd=os.path.abspath(root))
+
+    scan = scan_dir(root)
+    profile = infer_profile(scan)
+    profile = apply_override(profile, scan["root"])
+    reuse = extract_reusable(scan, profile)
+
+    reuse_hint = {"matchedIndustry": profile.get("industry"), "message": "", "candidates": []}
+    try:
+        from reuse_store import match_reuse_hint, deposit
+        ind = profile.get("industry")
+        cur_cands = reuse.get("candidates", [])
+        reuse_hint = match_reuse_hint(ind, cur_cands, scan["root"])
+        deposit(ind, cur_cands)
+    except Exception:
+        pass
+
+    # 待评文件列表（含内容），前端逐个 POST /review
+    targets = []
+    if profile["industry"] != "未知":
+        for rel in pick_review_targets(scan, profile, limit=review_limit):
+            full = os.path.join(scan["root"], rel)
+            try:
+                with open(full, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read(8000)
+            except OSError:
+                continue
+            targets.append({"file": rel, "content": content})
+
+    # 评价即将开始 → 桌宠进入专注干活态（前端逐个评时一直保持）
+    if pet and targets:
+        push_state("working", event="评价中", cwd=scan["root"])
+
+    return {
+        "scan_summary": {
+            "root": scan["root"],
+            "fileCount": scan["fileCount"],
+            "langs": scan["langs"],
+        },
+        "profile": profile,
+        "reuse": reuse,
+        "reuseHint": reuse_hint,
+        "targets": targets,           # [{file, content}]，前端逐个调 /review
+        "reviewCount": len(targets),  # 进度条总数
+    }
+
+
 def print_pretty(result: dict):
     p = result["profile"]
     s = result["scan_summary"]
