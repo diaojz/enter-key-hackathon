@@ -23,6 +23,7 @@
 | 看什么 | 在线打开（点开即看） | 一句话 |
 |---|---|---|
 | 🐾 **工作台（网页兜底版）** | [打开 →](https://diaojz.github.io/enter-key-hackathon/workbench.html) | **装不上 App 也能用** · 点「医疗诊所 A/B」即真扫真评，浏览器内看完整画像/评分/复用/映射 |
+| 🐕 **小哒 Coda 后端（可跑）** | [看源码 →](https://github.com/diaojz/enter-key-hackathon/tree/main/coda) | Node 零依赖 · `cd coda && node server.js` → `localhost:8848` · 扫盘反推行业 + 评分/行话/复用 + 知识图谱 |
 | 🎤 **路演 PPT** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
 | 🗣️ **路演逐字稿** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94%E7%A8%BF.html) | 对齐 PPT · 约 5 分半 · 含时间码 + 语气提示 + 商业模式口播 |
 | 📋 **产品 PRD** | [打开 →](https://diaojz.github.io/enter-key-hackathon/PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
@@ -106,6 +107,29 @@
 | `assets/cover-poster.png` | 竖版主视觉海报（3:4 · PPT 封面左栏用） |
 | `assets/coda-icon.png` | 产品吉祥物「小哒 / Coda」3D icon（暖橙萌精灵，米色底） |
 | `assets/coda-icon-transparent.png` | 同款 icon 透明底版（叠任意背景 / 做桌宠动画母版） |
+
+### 小哒 Coda 后端实现（Node · 可跑）
+> 合并自 `feat/claude-coda-side-implementation`（Claude 侧实现）· 全部落在 [`coda/`](./coda) 目录 · **零三方依赖**（纯 Node 内置模块），无需 `npm install`。
+
+```bash
+cd coda
+node server.js                 # 启动本地服务器（默认 :8848）
+# 浏览器开 http://localhost:8848 → 点「项目A·诊所挂号 / 项目B·体检中心」演两幕
+# 知识图谱可视化：http://localhost:8848/graph.html
+node cli.js scan   fixtures/clinic-booking   # 无界面也能跑：扫盘反推行业
+node cli.js review fixtures/clinic-booking   # 评审打分 + 行话翻译
+```
+
+| 文件 / 目录 | 用途 |
+|---|---|
+| [`coda/server.js`](./coda/server.js) | 本地服务器（serve 前端 + `/scan` `/review` `/reuse` `/persona` `/kg/*` 等接口） |
+| [`coda/cli.js`](./coda/cli.js) | 命令行：`scan` / `review` / `reuse` / `extract`，无界面也能跑 |
+| [`coda/scanner/`](./coda/scanner) | 扫盘引擎（只读遍历 + 词库匹配 + 权重反推行业，**0 LLM、不改任何文件**） |
+| [`coda/agent/`](./coda/agent) | Agent 层：评分 / 复用 / 人设持久化 / 知识图谱 / 耦合度 / 真 LLM 集成 |
+| [`coda/web/`](./coda/web) | 前端（暖米编辑风）+ 知识图谱力导向可视化 `graph.html` |
+| [`coda/dict/`](./coda/dict) | 行业词库（医疗厚 + 电商/教育/金融） |
+| [`coda/fixtures/`](./coda/fixtures) | Demo 素材：`clinic-booking`（项目A）/ `clinic-checkup`（项目B，演跨项目复用） |
+| [`coda/README.md`](./coda/README.md) | Coda 后端完整说明（架构 / 权重算法 / 只读承诺 / 知识图谱层） |
 
 ### 现场速查（赛事资料）
 | 文件 | 用途 |
