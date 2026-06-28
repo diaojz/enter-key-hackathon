@@ -43,6 +43,70 @@ STAGE_SYSTEM = """你是「小哒 Coda」。根据一个项目的扫描结果，
 }"""
 
 
+MAPPING_SYSTEM = """你是「小哒 Coda」，专门帮【会自己行业、但不懂代码】的人看懂他用 AI 写出来的项目。
+
+任务：从扫描信号里，挑出这个项目【最关键的 3 到 5 个概念或模块】，用【用户那一行的话】讲透：
+这块代码在你这行相当于什么、起什么作用。目的是让用户理解「行业需求 ↔ 代码」是怎么对应的，
+进而知道怎么用 AI 把自己行业的项目落地。
+
+铁律：
+1. 只挑【关键的、成体系的】概念，不要逐个文件、不要碎词罗列；用户不需要懂所有细节。
+2. 每个概念按【业务发生的先后顺序】排（像讲一条业务流程：先做什么、再做什么）。
+3. industryName 用 industry 行业的事物命名（如医疗的「病历流转」「挂号核身」「复诊提醒」），
+   codeName 用代码侧的技术叫法（如「状态机」「鉴权中间件」「定时任务」）。
+4. role 一句话讲清「这块在你这行是干嘛的、为什么重要」，亲切、具体、不堆术语。
+5. files 填最能代表这个概念的 1-2 个文件路径（从 fileHints 里挑，挑不到就留空数组）。
+
+只输出 JSON：
+{
+  "concepts": [
+    {
+      "industryName": "<行业侧叫法>",
+      "codeName": "<代码侧技术名>",
+      "role": "<一句行话：这块在你这行干嘛、为什么重要>",
+      "files": ["<最相关的文件路径>"]
+    }
+  ]
+}
+按业务先后顺序排列 concepts，3-5 个。"""
+
+
+def explain_mapping(profile: dict, scan: dict) -> dict:
+    """挑关键概念，用行业语言讲透「代码 ↔ 行业」映射（②解释的可视化产出）。
+
+    给 LLM 的信号：行业、命中的类别、命中词、以及「词→出现文件」的线索（供它给概念挑代表文件）。
+    LLM 不可用或行业未知时给规则兜底。
+    """
+    industry = profile.get("industry", "通用")
+    if industry == "未知":
+        return {"industry": industry, "concepts": []}
+
+    cats = sorted({h.get("category", "") for h in scan.get("hits", []) if h.get("category")})
+    # 词 -> 出现的文件（给 LLM 当挑代表文件的线索）
+    file_hints = {}
+    for h in scan.get("hits", [])[:20]:
+        if h.get("where"):
+            file_hints[h["term"]] = h["where"][:2]
+
+    signal = {
+        "industry": industry,
+        "subDomain": profile.get("subDomain", ""),
+        "langs": scan.get("langs", []),
+        "hitCategories": cats,
+        "topTerms": [h["term"] for h in scan.get("hits", [])[:12]],
+        "fileHints": file_hints,
+    }
+    user = json.dumps(signal, ensure_ascii=False)
+    try:
+        data = json.loads(chat(MAPPING_SYSTEM, user, want_json=True))
+        concepts = data.get("concepts", [])
+        if not isinstance(concepts, list) or not concepts:
+            raise ValueError("empty concepts")
+        return {"industry": industry, "concepts": concepts[:5]}
+    except (LLMError, json.JSONDecodeError, ValueError):
+        return _fallback_mapping(industry, scan)
+
+
 def explain_concept(profile: dict, term: str) -> dict:
     industry = profile.get("industry", "通用")
     user = json.dumps({"industry": industry, "term": term}, ensure_ascii=False)
@@ -99,3 +163,39 @@ def _fallback_stage(industry: str, cats) -> dict:
         "next": "接好 LLM 后这里会给出更贴合你行业的阶段判断。",
         "fallback": True,
     }
+
+
+# 类别 → 行业侧叫法/代码侧叫法的规则兜底（LLM 不可用时保证映射卡有内容）
+_CAT_NAMING = {
+    "就诊流程": ("就诊流转", "状态机 / 流程编排", "病人从挂号到完成的整条路怎么走，错一步流程就乱。"),
+    "患者/对象": ("患者档案", "数据模型 / 实体", "把每个病人的信息存成档案，后面所有操作都认它。"),
+    "临床": ("临床处置", "业务规则", "开方、用药这些和病人安全直接相关的判断逻辑。"),
+    "合规/红线": ("合规红线", "校验 / 权限控制", "隐私和资质这类碰不得的线，代码里得拦住。"),
+    "组织": ("机构/科室", "组织结构建模", "诊所、科室、人员的归属关系怎么组织。"),
+    "交易": ("交易流水", "事务 / 订单", "一笔业务要么全成、要么全不动，不能做一半。"),
+    "风控": ("风控核身", "校验 / 风控规则", "确认是本人、额度合规这类把关逻辑。"),
+}
+
+
+def _fallback_mapping(industry: str, scan: dict) -> dict:
+    cats = []
+    seen = set()
+    for h in scan.get("hits", []):
+        c = h.get("category", "")
+        if c and c not in seen:
+            seen.add(c)
+            cats.append((c, h.get("where", [])[:1]))
+    concepts = []
+    for c, files in cats[:5]:
+        naming = _CAT_NAMING.get(c)
+        if naming:
+            ind_name, code_name, role = naming
+        else:
+            ind_name, code_name, role = c, "业务模块", f"项目里和「{c}」相关的一块逻辑。"
+        concepts.append({
+            "industryName": ind_name,
+            "codeName": code_name,
+            "role": role,
+            "files": files,
+        })
+    return {"industry": industry, "concepts": concepts, "fallback": True}
