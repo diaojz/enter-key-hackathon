@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒 Coda · 90 秒录屏脚本</title>
+<style>
+  :root{
+    --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+    --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf; --warn:#c9472b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.6;padding:24px 16px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.08em;padding:4px 12px;border-radius:999px;margin-bottom:10px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:32px;margin-bottom:6px}
+  .meta{color:var(--sub);font-size:14px}
+  .meta b{color:var(--accent)}
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  section h2{font-family:Georgia,"Songti SC",serif;font-size:21px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px}
+  .badge{background:var(--accent);color:#fff;font-size:13px;width:26px;height:26px;border-radius:8px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .hero{background:linear-gradient(135deg,#fff6ee,#fdeee2);border:1px solid #f0d4c0}
+  .hero p{font-size:14.5px;margin:6px 0}
+  .hero b{color:var(--accent)}
+
+  .shot{border:1px solid var(--line);border-radius:14px;padding:0;margin-bottom:14px;overflow:hidden;background:#fffefb}
+  .shot-head{display:flex;align-items:center;gap:12px;background:var(--pill);padding:10px 16px;border-bottom:1px solid var(--line)}
+  .shot-no{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+  .shot-title{font-weight:800;font-size:15px;flex:1}
+  .shot-time{font-family:"SF Mono",Menlo,monospace;font-size:12px;color:var(--sub);background:#fff;
+    border:1px solid var(--line);padding:2px 10px;border-radius:999px;white-space:nowrap}
+  .shot-body{padding:14px 16px}
+  .row{display:flex;gap:10px;font-size:13.5px;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .k{font-weight:800;color:var(--accent);min-width:64px;flex-shrink:0}
+  .row .v{flex:1}
+  .row .v .say{font-style:italic;color:#384a3a}
+  code{background:var(--pill);padding:1px 6px;border-radius:5px;font-size:12.5px;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+
+  .prep{background:#eef3ec;border-left:4px solid var(--good);border-radius:8px;padding:14px 16px;font-size:13.5px}
+  .prep b{color:var(--good)}
+  .prep ul{list-style:none;margin-top:6px}
+  .prep li{padding:4px 0 4px 22px;position:relative}
+  .prep li::before{content:"☐";position:absolute;left:0;color:var(--good)}
+  .warn{background:#fbeee6;border-left:4px solid var(--accent);border-radius:8px;padding:13px 15px;font-size:13.5px;margin-top:10px}
+  .warn b{color:var(--accent)}
+  .total{text-align:right;font-family:"SF Mono",Menlo,monospace;font-size:13px;color:var(--sub);margin-top:6px}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">小哒 Coda · 录屏脚本 · 桌宠主轴 · ≤90 秒</span>
+  <h1>90 秒录屏脚本</h1>
+  <p class="meta"><b>主轴</b>：桌面小哒 · <b>金样本</b>：医疗 · <b>动线</b>：常驻桌面 → 工作台 → 选文件夹扫描 → 三块炸场 → 桌宠变脸 → 跨项目复用</p>
+
+  <section class="hero">
+    <h2><span class="badge">🎯</span>一句话定调（录屏开头字幕 / 路演第一句）</h2>
+    <p>「小哒 Coda，<b>住在你桌面上、懂你行业的 Review 助手</b>。」</p>
+    <p>「它<b>只读不改</b>——扫一眼你的代码，就猜出你是哪行的，用<b>你那行的话</b>告诉你哪儿有问题、哪些能复用。」</p>
+  </section>
+
+  <section>
+    <h2><span class="badge">🎬</span>分镜（6 镜头 · 总计 ≤90 秒）</h2>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">1</div><div class="shot-title">小哒登场 · 常驻桌面</div><div class="shot-time">0:00–0:10</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">画面</div><div class="v">桌面右下角小哒待机/打盹，鼠标晃一下，它有反应。</div></div>
+        <div class="row"><div class="k">操作</div><div class="v">右键小哒 → 弹出菜单 → 点「<b>打开小哒工作台</b>」。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「这是小哒，它一直蹲在我桌面上。点开它的工作台——」</span></div></div>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">2</div><div class="shot-title">选文件夹 · 一键扫描</div><div class="shot-time">0:10–0:22</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">画面</div><div class="v">工作台窗口打开（暖米风，三块空卡）。</div></div>
+        <div class="row"><div class="k">操作</div><div class="v">点「<b>📁 选文件夹</b>」→ 原生对话框 → 选一个医疗项目 → 自动开扫。</div></div>
+        <div class="row"><div class="k">画面</div><div class="v">同时桌宠切到<b>思考脸</b>（扫盘中）→ <b>干活脸</b>（评价中）。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「我授权一个本地项目——注意，它只读不改。小哒开始扫，桌面上它也跟着动起来了。」</span></div></div>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">3</div><div class="shot-title">炸场点 · 我猜你是做医疗的</div><div class="shot-time">0:22–0:38</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">画面</div><div class="v">①卡刷出「<b>我猜你是做【医疗】的　置信度 88%</b>」+ 橙色证据词 chips（patient×8、就诊×6…）。</div></div>
+        <div class="row"><div class="k">画面</div><div class="v">下方「📖 现在在干什么」：<b>用医疗的话讲项目阶段</b>（门诊试运行、前端是叫号屏）。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「我没告诉它我是哪行的——它扫一眼代码自己猜出来了：医疗，还说出凭据。这一步是全场记忆点。」</span></div></div>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">4</div><div class="shot-title">行话翻译 + 打分（评价核心）</div><div class="shot-time">0:38–0:55</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">画面</div><div class="v">③卡：各文件<b>分数徽章</b>（红/橙）+ 展开问题：把「patient 明文存 localStorage」翻成「<b>患者隐私字段裸奔，违反医疗红线</b>」+ 改法建议。</div></div>
+        <div class="row"><div class="k">画面</div><div class="v">桌宠切到<b>慌张脸</b>（发现红线）。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「它不说技术黑话，用你这行的话讲问题、给改法——但只给建议，不动你一行代码。踩到红线，小哒自己就急了。」</span></div></div>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">5</div><div class="shot-title">跨项目复用 · 你做过类似的</div><div class="shot-time">0:55–1:12</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">操作</div><div class="v">再选<b>第二个医疗项目</b>（项目 B）扫描。</div></div>
+        <div class="row"><div class="k">画面</div><div class="v">②卡顶部弹<b>橙色💡复用提醒</b>：「你做过类似的医疗项目，有 5 个现成轮子，直接用」——列出患者ID校验 / 就诊状态机，带代码片段+复制。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「换个新项目，小哒记得你上个项目的积累——『这俩轮子你写过，直接用』。越用越懂你。」</span></div></div>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="shot-head"><div class="shot-no">6</div><div class="shot-title">人设跟随 · 越用越懂你（收尾）</div><div class="shot-time">1:12–1:28</div></div>
+      <div class="shot-body">
+        <div class="row"><div class="k">画面</div><div class="v">顶部深蓝<b>🧠人设条</b>：「你主要在做【医疗】（2 个项目），越用我越懂你」+ 能力库。</div></div>
+        <div class="row"><div class="k">旁白</div><div class="v"><span class="say">「扫得越多，它越懂你是谁、擅长什么。这就是小哒——一个常驻桌面、越用越懂你行业的 Review 助手。」</span></div></div>
+        <div class="row"><div class="k">收尾</div><div class="v">小哒回到待机，打个招呼 / 字幕「Enter 一下，你的 Agent 就懂你了」。</div></div>
+      </div>
+    </div>
+    <div class="total">总时长目标 ≈ 88 秒（留 2 秒缓冲）</div>
+  </section>
+
+  <section>
+    <h2><span class="badge">✅</span>录前准备清单（关键，照此复位）</h2>
+    <div class="prep">
+      <b>录屏前在 <code>hackathon/agent/</code> 跑一遍复位 + 起服务：</b>
+      <ul>
+        <li>起评价服务：<code>export OPENAI_API_KEY=… OPENAI_BASE_URL=https://api.openai-next.com/v1 CODA_LLM_MODEL=gpt-5 && python3 server.py 8848</code></li>
+        <li>桌宠在跑：<code>cd coda-desktop && npm start</code></li>
+        <li><b>清复用库 + 人设</b>（保证第5镜头「项目B」是真·第一次命中，第6镜头人设从 0 累积）：<br><code>python3 -c "from reuse_store import clear_library; clear_library(); from persona import reset; reset()"</code></li>
+        <li>预热项目 A：先在工作台扫一次 <code>samples/clinic-demo</code>（让轮子入库），<b>再开始录</b>——录的时候第一个扫 A、第二个扫 <code>samples/clinic-new</code>，复用提醒才会弹。</li>
+      </ul>
+    </div>
+    <div class="warn"><b>录屏顺序要点：</b>镜头 2 扫的是项目 A（clinic-demo），镜头 5 扫的是项目 B（clinic-new）。<b>A 必须先入过库</b>，B 才会触发💡复用提醒。若想现场全新演，把"预热"那步也录进镜头 2，镜头 5 自然命中。</div>
+  </section>
+
+  <section>
+    <h2><span class="badge">🛟</span>兜底与避坑</h2>
+    <div class="row" style="border:none"><div class="k">网络/LLM</div><div class="v">评价翻译那步走 openai-next。<b>怕现场抽风：①卡画像/复用/提醒/人设全是纯本地，不依赖 LLM，照常炸场</b>；只有③卡的行话翻译需要 LLM。可提前把③卡结果录进备份录屏。</div></div>
+    <div class="row" style="border:none"><div class="k">桌宠竞态</div><div class="v">启动日志偶有 <code>Render frame was disposed</code>，是原工程竞态，<b>不影响表情和功能</b>，无视。</div></div>
+    <div class="row" style="border:none"><div class="k">key 安全</div><div class="v">录屏别把终端里的 API key 录进去；演示用环境变量、画面只露工作台。</div></div>
+    <div class="row" style="border:none"><div class="k">必备备份</div><div class="v">完整跑通后<b>留一条无瑕疵备份录屏</b>，现场网络异常直接切播放。</div></div>
+  </section>
+
+  <footer>小哒 Coda · 90 秒录屏脚本 · 桌宠主轴 · 回车键团队 · 2026-06-28</footer>
+
+</div>
+</body>
+</html>
