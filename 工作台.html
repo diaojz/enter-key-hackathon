@@ -1108,7 +1108,7 @@ body {
     <b>这是桌面 App 的网页兜底版</b> —— 装不上 App 也能在浏览器里看完整流程。
     点下面任意一个 <b>预置医疗 Demo</b>，小哒会<b>真扫真评</b>（连云端 Agent，非录屏）：
     反推出「医疗 88%」行业画像 → 用医疗行话讲清代码在干嘛 → 逐文件 AI 跑分给改法（只读不改）→ 翻出能复用的轮子。<br>
-    <span class="web-banner-dim">💡 云端 Agent 首次唤醒约需 10–30 秒（免费层会休眠），第一次点若提示「正在唤醒」，稍等再点一次即可。</span>
+    <span class="web-banner-dim">💡 扫描含逐文件 AI 评审，通常十几秒出结果；扫描中会一直转圈，请耐心等。若偶发「服务没连上」，稍等再点一次即可。</span>
   </div>
 
   <div class="demo-bar">
@@ -1198,7 +1198,10 @@ body {
 // 默认连本地后端（demo 主力：现场起 python server.py，扫本机真实项目，gpt-5.5 飞快）
 var CODA_LOCAL_API   = 'http://127.0.0.1:8848';
 // 云端后端地址（提交物公网链接 / 评委自助用；带 ?apiBase=cloud 可一键切到这里）
-var CODA_CLOUD_API   = 'https://code-agent-sdoy.onrender.com';
+// 主力：自建香港服务器（systemd 常驻 + Caddy HTTPS，不休眠不回收）
+var CODA_CLOUD_API   = 'https://coda.chengbei.org';
+// 备份：Render 免费实例（会休眠，需先访问唤醒）。要切回就把上面注释、解开下面这行：
+// var CODA_CLOUD_API   = 'https://code-agent-sdoy.onrender.com';
 // 访问令牌（本地和云端后端都开了护栏，要和后端 CODA_ACCESS_TOKEN 一致）
 var CODA_ACCESS_TOKEN = 'coda-8618e57cb9f37501';
 // ══════════════════════════════════════════════════════
@@ -1821,7 +1824,21 @@ function scanProject(root) {
   p.status = 'scanning';
   p.error = '';
   renderProjects();
-  if (root === _activeRoot) setStatus('<span class="spinner"></span> 扫描「' + escHtml(p.name) + '」中…');
+
+  // 冷启动友好提示：扫描中随等待时长升级文案，让评委知道是在正常加载而非卡死
+  var waited = 0;
+  var spin = '<span class="spinner"></span> ';
+  function tick() {
+    if (root !== _activeRoot) return;
+    var msg;
+    if (waited < 10)      msg = spin + '扫描「' + escHtml(p.name) + '」中…';
+    else if (waited < 25) msg = spin + 'AI 正在逐文件评审「' + escHtml(p.name) + '」，马上就好…';
+    else                  msg = spin + '快好了，正在汇总画像与可复用模块…';
+    setStatus(msg);
+  }
+  tick();
+  var progressTimer = setInterval(function() { waited += 5; tick(); }, 5000);
+  function stopProgress() { clearInterval(progressTimer); }
 
   return fetch(getApiBase() + '/scan', {
     method: 'POST',
@@ -1837,6 +1854,7 @@ function scanProject(root) {
     return res.json();
   })
   .then(function(data) {
+    stopProgress();
     p.status = 'done';
     p.result = data;
     renderProjects();
@@ -1849,6 +1867,7 @@ function scanProject(root) {
     loadPersona();
   })
   .catch(function(err) {
+    stopProgress();
     p.status = 'error';
     var isNetErr = err instanceof TypeError;
     p.error = isNetErr ? '评价服务没连上' : err.message;
@@ -1856,7 +1875,7 @@ function scanProject(root) {
     if (root === _activeRoot) {
       if (isNetErr) {
         setStatus(
-          '云端 Agent 正在唤醒（免费层休眠后首次启动约 10–30 秒），稍等几秒再点一次按钮即可',
+          '云端 Agent 暂时没连上，稍等几秒再点一次按钮即可（偶发网络波动，重试一般就好）',
           'error'
         );
       } else {
@@ -1894,7 +1913,7 @@ window.removeProject = removeProject;
 // ── 网页兜底版：预置 Demo 项目按钮（点一个 = 加一行 + 立即扫云端 samples）──
 // 浏览器读不到评委本机文件，所以扫的是「随云端 Agent 一起部署的」示例项目。
 var _cloudWoken = false;
-// 云端免费层会休眠，首次访问先发个 /health 把它唤醒，缩短第一次扫描的等待。
+// 进页面先发个 /health 预热连接（自建后端常驻不休眠；若切回 Render 备份则顺带唤醒）。
 function wakeCloud() {
   if (_cloudWoken) return;
   _cloudWoken = true;
