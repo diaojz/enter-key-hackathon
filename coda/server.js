@@ -34,6 +34,7 @@ const { reviewProject } = require('./agent/review');
 const { matchReuse } = require('./agent/reuse');
 const { scoreProject } = require('./agent/score');
 const kg = require('./agent/kg');
+const llm = require('./agent/llm');
 
 const PORT = Number(process.env.CODA_PORT || 8848);
 const WEB_DIR = path.join(__dirname, 'web');
@@ -115,9 +116,24 @@ function buildPersona() {
 }
 
 // ── 一站式分析（coda-eval.html /scan 期望的形态）─────────────
-async function fullAnalyze(rootDir) {
+// 拆分：fullAnalyzeWithProgress(rootDir, onEvent) 在每个阶段开始/结束 emit 事件；
+// fullAnalyze 是其屏蔽事件的薄封装（保持向后兼容）。
+async function fullAnalyzeWithProgress(rootDir, onEvent) {
+  const emit = typeof onEvent === 'function' ? onEvent : () => {};
+
+  // ── scan 阶段 ──
+  emit('scan', { status: 'start', message: '📁 遍历项目目录…' });
+  const tScan0 = Date.now();
   const scan = scanDir(rootDir);
   const rootAbs = scan.rootDir;
+  if ((scan.totalFiles || 0) > 50) {
+    emit('scan', { status: 'progress', current: scan.totalFiles, total: scan.totalFiles });
+  }
+  emit('scan', { status: 'done', fileCount: scan.totalFiles, durationMs: Date.now() - tScan0 });
+
+  // ── profile 阶段 ──
+  emit('profile', { status: 'start', message: '🧠 命中行业词库，反推画像…' });
+  const tProf0 = Date.now();
   const profile = buildProfile(scan);
   const detectedIndustry = profile.industry;
 
@@ -129,16 +145,68 @@ async function fullAnalyze(rootDir) {
     }
     profile.edited = true;
   }
+  emit('profile', {
+    status: 'done',
+    industry: profile.industry,
+    label: profile.label,
+    confidence: profile.confidence,
+    durationMs: Date.now() - tProf0,
+  });
 
+  // 读文件（review / score / llm 共用）
   const files = scan.allFiles.map((rel) => {
     let content = '';
     try { content = fs.readFileSync(path.join(rootAbs, rel), 'utf8'); } catch {}
     return { file: rel, content };
   });
+
+  // ── llm 阶段（可选：未配置则整段跳过，不 emit start）──
+  if (llm.isEnabled()) {
+    let modelName = 'LLM';
+    try {
+      const { getLLMConfig } = require('./agent/settings');
+      const cfg = getLLMConfig();
+      modelName = cfg.model || cfg.provider || 'LLM';
+    } catch {}
+    emit('llm', { status: 'start', message: `🤖 调用 ${modelName} 分析代码风格…` });
+    const tLLM0 = Date.now();
+    try {
+      const r = await llm.chatCompletion({
+        system: '你是看代码的资深工程师，用 2 句中文（合计 ≤60 字）评价这个项目的代码风格与潜在结构问题。直接说，不要前缀。',
+        user: `项目 ${path.basename(rootAbs)}，行业 ${profile.label}，主要文件：${scan.allFiles.slice(0, 10).join(', ')}`,
+        onChunk: (t) => emit('llm', { status: 'chunk', text: t }),
+      });
+      emit('llm', { status: 'done', durationMs: Date.now() - tLLM0, tokensOut: (r && r.tokensOut) || 0 });
+    } catch (e) {
+      emit('llm', { status: 'done', durationMs: Date.now() - tLLM0, tokensOut: 0, error: String(e.message || e) });
+    }
+  }
+
+  // ── redlines 阶段（review 内部产出 issues，按红线分级）──
+  emit('redlines', { status: 'start', message: '⚠️ 检查行业合规红线…' });
+  const tRed0 = Date.now();
   const review = await reviewProject({ ...profile, industry: detectedIndustry }, files);
+  const allIssues = review.issues || [];
+  for (const i of allIssues) {
+    emit('redlines', { status: 'hit', name: i.redlineName, level: i.redlineLevel, loc: i.loc || null });
+  }
+  emit('redlines', { status: 'done', count: allIssues.length, durationMs: Date.now() - tRed0 });
+
+  // ── score 阶段（微软MI+McCabe+OWASP+重复+合规闸门）──
+  emit('score', { status: 'start', message: '📊 多维度跑分（微软MI+McCabe+OWASP+合规闸门）…' });
+  const tScore0 = Date.now();
+  const scorecard = scoreProject(files, allIssues);
+  for (const d of scorecard.dimensions || []) {
+    emit('score', { status: 'dim', name: d.label, value: d.score });
+  }
+  emit('score', { status: 'done', total: scorecard.total, level: scorecard.level, durationMs: Date.now() - tScore0 });
+
+  // ── reuse 阶段 ──
+  emit('reuse', { status: 'start', message: '🔧 跨项目轮子匹配…' });
+  const tReuse0 = Date.now();
   const reuse = matchReuse(scan, { currentProject: path.basename(rootAbs) });
-  // 多维度跑分（docs/评分维度底稿.md：微软MI+McCabe+OWASP+重复+合规闸门）
-  const scorecard = scoreProject(files, review.issues || []);
+  emit('reuse', { status: 'done', count: (reuse.hits || []).length, durationMs: Date.now() - tReuse0 });
+
   recordProject(rootAbs, detectedIndustry, profile.confidence);
 
   const reviews = (review.perFile || []).map((r) => ({
@@ -172,14 +240,20 @@ async function fullAnalyze(rootDir) {
   // ── 阶段感知 + 类比学习法（coda-eval.html 的 _scanResult.stage 会渲染）──
   const stage = buildStage(profile, review);
 
-  // ── KG 入库（跨项目知识图谱）──
+  // ── kg 阶段（跨项目知识图谱入库）──
+  emit('kg', { status: 'start', message: '🕸️ 知识图谱入库…' });
+  const tKG0 = Date.now();
+  let kgNodes = 0, kgEdges = 0;
   try {
     const kgData = kg.loadKG();
     const kgAfter = kg.ingestScan(kgData, scan, profile, review, reuse, scorecard);
     kg.saveKG(kgAfter);
+    kgNodes = (kgAfter.nodes || []).length;
+    kgEdges = (kgAfter.edges || []).length;
   } catch (e) { /* KG 写入失败不阻塞主流程 */ }
+  emit('kg', { status: 'done', nodes: kgNodes, edges: kgEdges, durationMs: Date.now() - tKG0 });
 
-  return {
+  const result = {
     scan_summary: { scanId: scan.scanId, rootDir: rootAbs, fileCount: scan.totalFiles },
     // profile：对齐 coda-eval.html renderProfile —— industry 用中文显示串、
     // evidence/redlines 拍平成字符串数组；详细对象另存 *Detail 供自带 demo 用。
@@ -206,6 +280,18 @@ async function fullAnalyze(rootDir) {
     reviews,
     scan, report: review,
   };
+
+  emit('complete', { result });
+  return result;
+}
+
+// 向后兼容：屏蔽事件流的薄封装
+async function fullAnalyze(rootDir) {
+  let result;
+  await fullAnalyzeWithProgress(rootDir, (phase, data) => {
+    if (phase === 'complete') result = data.result;
+  });
+  return result;
 }
 
 // ── 阶段感知 + 类比学习法 ───────────────────────────────────
@@ -285,7 +371,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/' && req.method === 'GET') {
       return sendJSON(res, 200, {
         service: 'coda-agent', port: PORT,
-        endpoints: ['/scan', '/persona', '/profile/override', '/projects', '/review', '/reuse', '/chat',
+        endpoints: ['/scan', '/scan/stream', '/persona', '/profile/override', '/projects', '/review', '/reuse', '/chat',
           '/kg/graph', '/kg/related', '/kg/similar'],
         note: '对接 coda-desktop 工作台；契约见 coda/README.md',
       });
@@ -298,8 +384,68 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
+    // ── SSE 流式扫描：让前端看到 review 每一步 ─────────────────
+    if (pathname === '/scan/stream' && req.method === 'POST') {
+      const body = await readBody(req);
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST,OPTIONS',
+      });
+      const emit = (phase, data) => {
+        try {
+          res.write(`data: ${JSON.stringify({ phase, ...data, ts: Date.now() })}\n\n`);
+        } catch { /* socket 已断，忽略 */ }
+      };
+      try {
+        if (!body.root) {
+          emit('error', { message: '缺少 root' });
+        } else {
+          emit('start', { root: body.root });
+          await fullAnalyzeWithProgress(body.root, emit);
+        }
+      } catch (e) {
+        emit('error', { message: String(e && e.message || e) });
+      } finally {
+        res.end();
+      }
+      return;
+    }
+
     if (pathname === '/persona' && req.method === 'GET') {
       return sendJSON(res, 200, { persona: buildPersona() });
+    }
+
+    if (pathname === '/api/settings' && req.method === 'GET') {
+      const settingsMod = require('./agent/settings');
+      const s = settingsMod.loadSettings();
+      const masked = JSON.parse(JSON.stringify(s));
+      if (masked.llm && masked.llm.apiKey) masked.llm.apiKey = settingsMod.maskApiKey(masked.llm.apiKey);
+      return sendJSON(res, 200, masked);
+    }
+    if (pathname === '/api/settings' && req.method === 'POST') {
+      return withBody(req, res, async (body) => {
+        const settingsMod = require('./agent/settings');
+        const cur = settingsMod.loadSettings();
+        // 如果传来的 apiKey 是脱敏形态（含 "..."），保留原 key
+        if (body && body.llm && body.llm.apiKey && body.llm.apiKey.includes('...')) {
+          body.llm.apiKey = (cur.llm && cur.llm.apiKey) || '';
+        }
+        settingsMod.saveSettings(body);
+        sendJSON(res, 200, { ok: true });
+      });
+    }
+    if (pathname === '/api/llm/test' && req.method === 'POST') {
+      try {
+        const llm = require('./agent/llm');
+        if (!llm.isEnabled()) return sendJSON(res, 200, { ok: false, error: 'LLM 未配置' });
+        const r = await llm.chatCompletion({ system: 'You reply in 5 Chinese chars.', user: '你好' });
+        return sendJSON(res, 200, { ok: true, reply: r.text, model: r.model, latencyMs: r.latencyMs });
+      } catch (e) { return sendJSON(res, 200, { ok: false, error: String(e.message || e) }); }
     }
 
     if (pathname === '/profile/override' && req.method === 'POST') {
