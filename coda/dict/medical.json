@@ -1,0 +1,27 @@
+{
+  "industry": "medical",
+  "label": "医疗",
+  "emoji": "🩺",
+  "categories": {
+    "patient": {
+      "weight": 3.0,
+      "words": ["patient", "patients", "患者", "病人", "病历", "patientId", "patient_id", "就诊人", "病案", "medicalRecord", "病历号", "患者档案"]
+    },
+    "visit": {
+      "weight": 2.5,
+      "words": ["就诊", "挂号", "appointment", "候诊", "复诊", "初诊", "visit", "booking", "预约", "就诊时段", "register", "registration", "queue", "排号"]
+    },
+    "clinical": {
+      "weight": 3.0,
+      "words": ["主诉", "诊断", "diagnosis", "diagnose", "医嘱", "处方", "prescription", "symptom", "症状", "体征", "病情", "treatment", "治疗", "复核", "医师", "doctor", "physician"]
+    },
+    "privacy": {
+      "weight": 3.5,
+      "words": ["身份证", "idCard", "id_card", "病历号", "医保", "healthId", "health_id", "socialSecurity", "脱敏", "encrypt", "敏感信息", "隐私", "sensitive", "实名"]
+    },
+    "pharmacy": {
+      "weight": 2.0,
+      "words": ["药品", "禁忌症", "禁忌", "medication", "medicine", "drug", "剂量", "dosage", "库存", "用药", "药房", "处方药", "contraindication", "allergy", "过敏史"]
+    }
+  }
+}

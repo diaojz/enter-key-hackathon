@@ -1,0 +1,6 @@
+{
+  "name": "clinic-checkup",
+  "version": "0.1.0",
+  "description": "社区体检中心管理系统（演示用·项目B·当场扫）",
+  "main": "src/checkup.js"
+}

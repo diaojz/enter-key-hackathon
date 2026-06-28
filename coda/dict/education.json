@@ -1,0 +1,19 @@
+{
+  "industry": "education",
+  "label": "教育",
+  "emoji": "📚",
+  "categories": {
+    "course": {
+      "weight": 3.0,
+      "words": ["course", "课程", "lesson", "章节", "chapter", "课时", "lecture", "教材", "syllabus", "大纲", "课表", "schedule"]
+    },
+    "student": {
+      "weight": 2.5,
+      "words": ["student", "学生", "学员", "studentId", "学号", "班级", "class", "grade", "年级", "enroll", "报名", "选课"]
+    },
+    "exam": {
+      "weight": 3.0,
+      "words": ["exam", "考试", "试卷", "quiz", "作业", "homework", "成绩", "score", "答题", "题库", "question", "及格", "考勤"]
+    }
+  }
+}

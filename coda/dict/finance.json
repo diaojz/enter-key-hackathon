@@ -1,0 +1,19 @@
+{
+  "industry": "finance",
+  "label": "金融",
+  "emoji": "💰",
+  "categories": {
+    "account": {
+      "weight": 3.0,
+      "words": ["account", "账户", "余额", "balance", "开户", "bankCard", "银行卡", "卡号", "transfer", "转账", "流水", "statement"]
+    },
+    "trade": {
+      "weight": 2.5,
+      "words": ["trade", "交易", "投资", "investment", "理财", "基金", "fund", "股票", "stock", "持仓", "position", "委托"]
+    },
+    "risk": {
+      "weight": 3.0,
+      "words": ["risk", "风控", "风险", "授信", "credit", "额度", "limit", "反洗钱", "antiMoneyLaundering", "kyc", "合规", "compliance", "征信"]
+    }
+  }
+}
