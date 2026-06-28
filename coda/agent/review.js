@@ -187,5 +187,47 @@ function generalIssues(files, _scorecard) {
     // 每文件最多保留 3 条，避免大项目刷屏
     for (const it of fileIssues.slice(0, 3)) push(it.problem, it.fix, it.level);
   }
+
+  // ── 项目级耦合 issue（依赖图分析）—— 屎山的核心标志 ──
+  try {
+    const { couplingScore } = require('./coupling');
+    const c = couplingScore(files);
+    let cidx = 1;
+    const pushCp = (problem, fix, level, file = '<project>') => {
+      out.push({
+        id: 'C' + String(cidx++).padStart(3, '0'),
+        problem, techDetail: `耦合度分析：${problem}`,
+        redlineLevel: level, redlineName: '耦合度',
+        fix, loc: file, generic: true, coupling: true,
+      });
+    };
+    // 1. 循环依赖（最严重的屎山特征）
+    for (const cycle of (c.cycles || []).slice(0, 5)) {
+      pushCp(
+        `循环依赖 · ${cycle.length} 个文件互相依赖：${cycle.slice(0, 3).join(' ⇄ ')}${cycle.length > 3 ? '...' : ''}`,
+        '断环：把共用接口提到独立模块、用依赖倒置（Robert C. Martin DIP）；最重的那个文件单向依赖其他，不被反向依赖',
+        'mid',
+        cycle[0],
+      );
+    }
+    // 2. 上帝文件
+    for (const g of (c.godFiles || []).slice(0, 5)) {
+      pushCp(
+        `上帝文件 · ${g.file} 出度 ${g.ce} / 入度 ${g.ca}（业界阈值 15）`,
+        '按职责拆分：一个文件负责一件事，目标 Ce + Ca ≤ 15（SonarQube coupling_between_objects 标准）',
+        g.ce + g.ca > 25 ? 'mid' : 'low',
+        g.file,
+      );
+    }
+    // 3. 平均耦合过高
+    if (c.avgCe > 7) {
+      pushCp(
+        `团队普遍写得耦合 · 平均出度 Ce = ${c.avgCe}`,
+        '走依赖倒置：业务层不直接依赖实现层，靠接口/事件解耦。目标平均 Ce ≤ 5',
+        'low',
+      );
+    }
+  } catch {}
+
   return out;
 }

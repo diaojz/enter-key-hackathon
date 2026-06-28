@@ -121,10 +121,14 @@ function scoreDimensions(files) {
   const dupDensity = duplicationDensity(files);
   const duplication = Math.max(0, Math.round(100 - dupDensity * 2));
 
+  // 6. 耦合度（依赖图分析）—— 屎山的真正标志
+  const { couplingScore } = require('./coupling');
+  const coupling = couplingScore(files);
+
   return {
-    scores: { maintainability, complexity, readability, security, duplication },
+    scores: { maintainability, complexity, readability, security, duplication, coupling: coupling.score },
     // 兼容旧调用：直接展开 scores 到顶层
-    maintainability, complexity, readability, security, duplication,
+    maintainability, complexity, readability, security, duplication, coupling: coupling.score,
     methods: {
       maintainability: {
         name: '微软可维护性指数',
@@ -158,6 +162,7 @@ function scoreDimensions(files) {
         source: 'SonarQube ≤3% 绿线',
         evidence: `当前 ${+dupDensity.toFixed(1)}%`,
       },
+      coupling: coupling.method, // {name, formula, source, evidence}
     },
     _detail: {
       avgMI: maintainability,
@@ -165,12 +170,28 @@ function scoreDimensions(files) {
       dupDensity: +dupDensity.toFixed(1),
       securityHits: secHits,
       totalLoc,
+      coupling: { // 把耦合的详细数据也放出来给前端做 issues
+        cycles: coupling.cycles,
+        godFiles: coupling.godFiles,
+        avgCe: coupling.avgCe,
+        unstableRatio: coupling.unstableRatio,
+        topFiles: coupling.metrics,
+      },
     },
   };
 }
 
 // ── 总分（加权 + 合规闸门）──────────────────────────────────
-const WEIGHTS = { maintainability: 0.25, complexity: 0.20, readability: 0.20, security: 0.20, duplication: 0.15 };
+// 重平：耦合度权重 25%（最重，屎山核心特征），可维护性 20%，复杂度 15%，
+//      可读性 15%，安全 15%，重复 10%。总和 100%。
+const WEIGHTS = {
+  coupling: 0.25,
+  maintainability: 0.20,
+  complexity: 0.15,
+  readability: 0.15,
+  security: 0.15,
+  duplication: 0.10,
+};
 
 /**
  * @param {Array<{file,content}>} files
@@ -193,29 +214,42 @@ function scoreProject(files, redlineIssues = []) {
   if (highRedlines > 0) total = Math.min(59, Math.round(weighted));
   else total = Math.round(weighted * gate);
 
-  const level = total >= 85 ? '优秀 · 放心继续'
-    : total >= 70 ? '合格 · 有提升空间'
-    : total >= 50 ? '及格边缘 · 屎山预警'
-    : '屎山 · 建议重构';
+  // 屎山判断：分数 + 耦合度复合判定（耦合度 < 40 强制进屎山，无论总分多少；
+  //          因为耦合度低就是屎山的核心标志，业界共识）
+  let level;
+  const couplingDim = dims.coupling != null ? dims.coupling : 100;
+  if (couplingDim < 40 && total < 75) {
+    level = '屎山 · 高耦合 + 循环依赖 / 上帝文件';
+  } else if (total >= 85) {
+    level = '优秀 · 放心继续';
+  } else if (total >= 70) {
+    level = '合格 · 有提升空间';
+  } else if (total >= 50) {
+    level = '及格边缘 · 屎山预警';
+  } else {
+    level = '屎山 · 建议重构';
+  }
 
   return {
     total,
     level,
     dimensions: [
-      { key: 'maintainability', label: '可维护性', score: dims.maintainability, weight: 25,
+      { key: 'coupling', label: '耦合度', score: dims.coupling, weight: 25,
+        method: methods.coupling || { name: '依赖图分析 (Ce/Ca/循环/上帝)' } },
+      { key: 'maintainability', label: '可维护性', score: dims.maintainability, weight: 20,
         method: methods.maintainability || { name: '微软 Maintainability Index（0-100）' } },
-      { key: 'complexity', label: '复杂度', score: dims.complexity, weight: 20,
+      { key: 'complexity', label: '复杂度', score: dims.complexity, weight: 15,
         method: methods.complexity || { name: 'McCabe 圈复杂度' } },
-      { key: 'readability', label: '可读性', score: dims.readability, weight: 20,
+      { key: 'readability', label: '可读性', score: dims.readability, weight: 15,
         method: methods.readability || { name: '注释率/嵌套/文件长度（Code Climate 思路）' } },
-      { key: 'security', label: '安全性', score: dims.security, weight: 20,
+      { key: 'security', label: '安全性', score: dims.security, weight: 15,
         method: methods.security || { name: 'OWASP 模式 + SonarQube 分级' } },
-      { key: 'duplication', label: '重复度', score: dims.duplication, weight: 15,
+      { key: 'duplication', label: '重复度', score: dims.duplication, weight: 10,
         method: methods.duplication || { name: 'SonarQube 重复行密度（绿线 <3%）' } },
     ],
     gate: { factor: gate, note: gateNote, highRedlines, midRedlines },
     detail: dims._detail,
-    methodologyNote: '评分参考 SonarQube / 微软 MI / McCabe / SonarSource 认知复杂度方法论；静态扫描不执行测试，不含运行时覆盖率。',
+    methodologyNote: '评分参考 SonarQube / 微软 MI / McCabe / Robert C. Martin Ce/Ca / SonarSource 认知复杂度方法论；静态扫描不执行测试，不含运行时覆盖率。',
   };
 }
 
@@ -232,7 +266,7 @@ if (require.main === module) {
   }));
   const r = scoreProject(files, []);
   console.log(`\n总分 ${r.total} [${r.level}]`);
-  for (const d of r.dimensions) console.log(`  ${d.label}(${d.weight}%): ${d.score}  · ${d.method}`);
+  for (const d of r.dimensions) console.log(`  ${d.label}(${d.weight}%): ${d.score}  · ${d.method && d.method.name || ''}`);
   console.log(`  闸门: ${r.gate.note}`);
   console.log(`  细节: MI均=${r.detail.avgMI} 最大圈复杂度=${r.detail.maxCyclomatic} 重复密度=${r.detail.dupDensity}%`);
 }
