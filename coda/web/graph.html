@@ -278,16 +278,19 @@ function applyFilters(){
 }
 
 // ── 力导（轻量自研，O(n²) 斥力，节点 <200 OK）────────────────────
-const FORCE={charge:-180,linkLen:75,linkK:0.04,center:0.012,damp:0.85,maxV:8};
+const FORCE={charge:-2200,linkLen:260,linkK:0.015,center:0,damp:0.82,maxV:18,collidePad:20,gravity:0.0002};
 function startSim(){
   stopSim();ticks=0;
   // 节点撒点：按类型分环
   const cx=W/2,cy=H/2;
   view.nodes.forEach((n,i)=>{
-    const k=TYPES.indexOf(n.label);const r=120+k*8;
-    const a=(i/view.nodes.length)*Math.PI*2;
-    n.x=cx+Math.cos(a)*r+(Math.random()-.5)*20;
-    n.y=cy+Math.sin(a)*r+(Math.random()-.5)*20;
+    const k=TYPES.indexOf(n.label);
+    // 螺旋分布，铺满整个画布的 80%
+    const span=Math.min(W,H)*0.4;
+    const a=(i*2.4); // 黄金角螺旋
+    const r=span*Math.sqrt(i/view.nodes.length)+30;
+    n.x=cx+Math.cos(a)*r+(Math.random()-.5)*40;
+    n.y=cy+Math.sin(a)*r+(Math.random()-.5)*40;
     n.vx=0;n.vy=0;
   });
   sim=true;tick();
@@ -296,7 +299,7 @@ function stopSim(){sim=false;if(raf) cancelAnimationFrame(raf);raf=0}
 function tick(){
   if(!sim) return;
   const N=view.nodes,E=view.edges,cx=W/2,cy=H/2;
-  // 斥力（库仑）
+  // 斥力（库仑·反比平方）
   for(let i=0;i<N.length;i++){
     for(let j=i+1;j<N.length;j++){
       const a=N[i],b=N[j];
@@ -306,6 +309,13 @@ function tick(){
       const f=FORCE.charge/d2;
       const fx=f*dx/d,fy=f*dy/d;
       a.vx-=fx;a.vy-=fy;b.vx+=fx;b.vy+=fy;
+      // 硬性碰撞：节点画面圆不能重叠
+      const minD=(SIZE[a.label]||9)+(SIZE[b.label]||9)+FORCE.collidePad;
+      if(d<minD){
+        const push=(minD-d)*0.5;
+        const px=push*dx/d,py=push*dy/d;
+        a.x-=px;a.y-=py;b.x+=px;b.y+=py;
+      }
     }
   }
   // 弹簧（边）
@@ -332,7 +342,23 @@ function tick(){
   }
   updatePositions();
   ticks++;
-  if(ticks<400) raf=requestAnimationFrame(tick); else sim=false;
+  // 每 30 帧 fit 一次，模拟过程中视图始终跟着节点散开（避免一开始就丢出画外）
+  if(ticks%30===0) fitToContent();
+  if(ticks<1200) raf=requestAnimationFrame(tick);
+  else { sim=false; fitToContent(); }
+}
+// viewBox 自动 zoom 到节点 bounding box（留 padding；下限避免过分放大）
+function fitToContent(){
+  if(!view.nodes.length) return;
+  const xs=view.nodes.map(n=>n.x), ys=view.nodes.map(n=>n.y);
+  const pad=80;
+  let x0=Math.min(...xs)-pad, x1=Math.max(...xs)+pad;
+  let y0=Math.min(...ys)-pad, y1=Math.max(...ys)+pad;
+  // 强制最小尺寸 800×500，避免节点太挤时被放大太多
+  const minW=800, minH=500;
+  if((x1-x0)<minW){const cx=(x0+x1)/2; x0=cx-minW/2; x1=cx+minW/2;}
+  if((y1-y0)<minH){const cy=(y0+y1)/2; y0=cy-minH/2; y1=cy+minH/2;}
+  svg.setAttribute('viewBox', `${x0} ${y0} ${x1-x0} ${y1-y0}`);
 }
 function restart(){if(view.nodes.length){ticks=0;sim=true;tick()}}
 

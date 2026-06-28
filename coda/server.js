@@ -365,6 +365,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/app.js') return serveStatic(res, path.join(WEB_DIR, 'app.js'));
     if (pathname === '/style.css') return serveStatic(res, path.join(WEB_DIR, 'style.css'));
     if (pathname === '/index.html') return serveStatic(res, path.join(WEB_DIR, 'index.html'));
+    if (pathname === '/web/graph.html' || pathname === '/graph.html') return serveStatic(res, path.join(WEB_DIR, 'graph.html'));
     if (pathname === '/api/config') {
       return sendJSON(res, 200, { defaultDir: 'fixtures/clinic-booking', cwd: process.cwd(),
         fixtures: ['fixtures/clinic-booking', 'fixtures/clinic-checkup'] });
