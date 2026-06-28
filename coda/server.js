@@ -600,9 +600,12 @@ const server = http.createServer(async (req, res) => {
       return withBody(req, res, async (body) => {
         const settingsMod = require('./agent/settings');
         const cur = settingsMod.loadSettings();
-        // 如果传来的 apiKey 是脱敏形态（含 "..."），保留原 key
-        if (body && body.llm && body.llm.apiKey && body.llm.apiKey.includes('...')) {
-          body.llm.apiKey = (cur.llm && cur.llm.apiKey) || '';
+        if (body && body.llm) {
+          const incoming = body.llm.apiKey;
+          // 持久化保护：脱敏形态（含 "..."）或空字符串都保留原 key —— 避免用户只改 provider/model 时把已配的 key 误覆盖
+          if (incoming === '' || (typeof incoming === 'string' && incoming.includes('...'))) {
+            body.llm.apiKey = (cur.llm && cur.llm.apiKey) || '';
+          }
         }
         settingsMod.saveSettings(body);
         sendJSON(res, 200, { ok: true });
