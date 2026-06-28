@@ -275,6 +275,38 @@ html.projection { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
 .projection .changes li { padding-top:clamp(6px,0.9vh,10px); padding-bottom:clamp(6px,0.9vh,10px); }
 .projection .steps { gap:clamp(16px,2vh,24px); }
 
+/* ===== 商业模式页 ===== */
+.biz { display:grid; grid-template-columns:1.05fr 1fr; gap:44px; align-items:stretch; }
+.biz-col { display:flex; flex-direction:column; gap:22px; }
+.biz-anchor { background:linear-gradient(135deg,rgba(232,168,74,.16),rgba(255,255,255,.04)); border:1px solid rgba(232,168,74,.4); border-radius:20px; padding:26px 30px; box-shadow:0 18px 44px -18px rgba(232,168,74,.3); }
+.biz-anchor .bl { font-family:'JetBrains Mono',monospace; font-size:1.2rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.biz-anchor .bq { font-size:1.86rem; line-height:1.5; color:#fff; font-weight:600; }
+.biz-anchor .bq .gold { color:#e8a84a; }
+.biz-card { background:var(--card); border:1px solid var(--border-light); border-top:1px solid rgba(232,168,74,.22); border-radius:18px; padding:24px 28px; backdrop-filter:blur(6px); box-shadow:0 14px 34px -16px rgba(0,0,0,.5); }
+.biz-card .bk { font-family:'JetBrains Mono',monospace; font-size:1.2rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.biz-card .bt { font-size:1.62rem; line-height:1.5; color:var(--text-dim); }
+.biz-card .bt b { color:#fff; font-weight:600; }
+.biz-card .bt .gold { color:#e8a84a; font-weight:600; }
+/* 飞轮链 */
+.flywheel { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:6px; }
+.flywheel .fw { font-family:'JetBrains Mono',monospace; font-size:1.28rem; font-weight:600; color:#fff; background:rgba(232,168,74,.14); border:1px solid rgba(232,168,74,.36); border-radius:14px; padding:8px 14px; }
+.flywheel .fa { color:var(--gold); font-size:1.5rem; font-weight:800; }
+/* 三重护城河 */
+.moat3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.moat3 .m { background:rgba(255,255,255,.05); border:1px solid var(--border-light); border-radius:16px; padding:22px 22px; position:relative; }
+.moat3 .m .mn { font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--gold); margin-bottom:8px; }
+.moat3 .m .mh { font-size:1.66rem; font-weight:700; color:#fff; margin-bottom:10px; }
+.moat3 .m .md { font-size:1.38rem; color:var(--text-dim); line-height:1.5; }
+.moat3 .m .md b { color:#e8a84a; font-weight:600; }
+/* 升级路径 */
+.ladder { display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin-top:4px; }
+.ladder .lg { flex:1; min-width:180px; background:rgba(255,255,255,.05); border:1px solid var(--border-light); border-top:1px solid rgba(232,168,74,.25); border-radius:14px; padding:18px 20px; }
+.ladder .lg .lgk { font-family:'JetBrains Mono',monospace; font-size:1.18rem; font-weight:700; color:var(--gold); margin-bottom:7px; }
+.ladder .lg .lgv { font-size:1.44rem; color:var(--text-dim); line-height:1.45; }
+.ladder .lg .lgv b { color:#fff; font-weight:600; }
+.ladder .lar { display:flex; align-items:center; color:var(--gold); font-size:1.9rem; padding:0 9px; font-weight:800; }
+@media (max-width:1100px){ .biz{grid-template-columns:1fr} .moat3{grid-template-columns:1fr} }
+
 @media (max-width:1100px){ .steps,.steps.two{grid-template-columns:1fr} .agent-full{grid-template-columns:1fr!important} .agent-col:last-child{border-left:none;padding-left:0;border-top:1px solid var(--border-light);padding-top:30px} .bd-grid{grid-template-columns:1fr} .vs{grid-template-columns:1fr} .vs .arrow{justify-content:center;transform:rotate(90deg)} }
 @media (max-width:640px){ .container{padding:0 20px 80px} }
 </style>
@@ -289,6 +321,7 @@ html.projection { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
     <a class="nav-tag" href="#sec-what">产品是什么</a>
     <a class="nav-tag" href="#sec-cap">三个能力</a>
     <a class="nav-tag" href="#sec-demo">现场 Demo</a>
+    <a class="nav-tag" href="#sec-biz">商业模式</a>
     <a class="nav-tag" href="#sec-take">收尾</a>
   </div>
 </div>
@@ -442,7 +475,70 @@ html.projection { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
   </div>
   </section>
 
-  <!-- 8 收尾 -->
+  <!-- 8 商业模式：怎么赚钱 + 越用越值钱 + 三重护城河 + 升级路径 -->
+  <section class="slide">
+  <div class="section" id="sec-biz">
+    <div class="sec-title"><span class="sn">05</span><h2>商业模式 · 凭什么长出来</h2><span class="sub">技术评审到业务决策之间，谁也绕不开的翻译中枢</span></div>
+    <div class="biz">
+      <!-- 左列：定位锚 + 怎么赚钱 + 飞轮 -->
+      <div class="biz-col">
+        <div class="biz-anchor">
+          <div class="bl">一句话定位</div>
+          <div class="bq">小哒把<span class="gold">技术债，翻译成业务听得懂的风险</span>——它是技术评审到业务决策之间，谁也绕不开的<span class="gold">翻译中枢</span>。</div>
+        </div>
+        <div class="biz-card">
+          <div class="bk">💰 怎么赚钱 · 分层订阅 + 场景化服务</div>
+          <div class="bt"><b>个人靠订阅</b>：基础扫盘免费，<span class="gold">行业知识图谱、业务风险翻译</span>等高级功能付费。<br><b>企业靠私有化</b>：私有化部署、平台嵌入、<span class="gold">定制行业模板</span>，按席位 / 项目计费，客单价高。</div>
+        </div>
+        <div class="biz-card">
+          <div class="bk">🔁 越用越值钱 · 资产飞轮</div>
+          <div class="bt" style="margin-bottom:12px">每用一次都在<b>沉淀团队专属资产</b>——客户不是在用工具，是在养自己的一座<span class="gold">智慧资产库</span>。</div>
+          <div class="flywheel">
+            <span class="fw">用得越久</span><span class="fa">→</span>
+            <span class="fw">资产越厚</span><span class="fa">→</span>
+            <span class="fw">推荐越准</span><span class="fa">→</span>
+            <span class="fw">迁移成本越高</span>
+          </div>
+        </div>
+      </div>
+      <!-- 右列：三重护城河 + 升级路径 -->
+      <div class="biz-col">
+        <div class="biz-card">
+          <div class="bk">🛡 护城河 · 数据 + 流程 + 生态（功能能抄，这三层抄不走）</div>
+          <div class="moat3">
+            <div class="m">
+              <div class="mn">护城河 ①</div>
+              <div class="mh">动态数据</div>
+              <div class="md">真实项目喂出的「<b>技术问题 ↔ 业务损失</b>」映射，无法逆向复制。</div>
+            </div>
+            <div class="m">
+              <div class="mn">护城河 ②</div>
+              <div class="mh">流程渗透</div>
+              <div class="md">嵌进 <b>PR 评审、OKR 对齐</b>，成为风险管控的必要基础设施，拔不掉。</div>
+            </div>
+            <div class="m">
+              <div class="mn">护城河 ③</div>
+              <div class="mh">协作锁定</div>
+              <div class="md">团队知识共享强化<b>组织依赖</b>，迁移成本远超工具本身。</div>
+            </div>
+          </div>
+        </div>
+        <div class="biz-card">
+          <div class="bk">📈 天花板 · 从卖功能到按价值收费</div>
+          <div class="ladder">
+            <div class="lg"><div class="lgk">今天</div><div class="lgv"><b>个人 / 团队</b> Review 助手</div></div>
+            <div class="lar">→</div>
+            <div class="lg"><div class="lgk">中期</div><div class="lgv"><b>企业代码资产库</b> + 流程嵌入</div></div>
+            <div class="lar">→</div>
+            <div class="lg"><div class="lgk">长期</div><div class="lgv"><b>代码资产管理平台</b> · 按价值增量收费</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- 9 收尾 -->
   <section class="slide">
   <div class="section" id="sec-take" style="margin-bottom:0">
     <div class="foot">
