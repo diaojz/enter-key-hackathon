@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>路演逐字稿 · 小哒 Coda · 回车键团队</title>
+<style>
+  :root{
+    --bg:#ece7de; --paper:#fbf8f2; --ink:#26201a; --muted:#7a7066;
+    --accent:#e8a84a; --accent-deep:#c98a23; --navy:#0a1626; --line:#e3dccf;
+    --good:#5f9c6b; --warn:#d98a3c;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+    line-height:1.85; font-size:16px;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:48px 28px 120px;}
+
+  /* 顶部 */
+  header.top{
+    background:var(--navy); color:#f3ece0; border-radius:18px;
+    padding:34px 38px; box-shadow:0 18px 50px rgba(10,22,38,.28);
+    position:relative; overflow:hidden;
+  }
+  header.top::after{
+    content:"⏎"; position:absolute; right:24px; top:-18px;
+    font-size:160px; color:rgba(232,168,74,.14); font-weight:700;
+  }
+  .kicker{font-size:13px; letter-spacing:3px; color:var(--accent); font-weight:700;}
+  header.top h1{margin:8px 0 6px; font-size:30px; color:#fff; font-weight:800; letter-spacing:.5px;}
+  header.top .sub{color:#c9d3e0; font-size:15px;}
+  .meta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .meta-row .pill{
+    background:rgba(232,168,74,.16); color:#f0c070; border:1px solid rgba(232,168,74,.35);
+    padding:5px 13px; border-radius:999px; font-size:13px; font-weight:600;
+  }
+
+  /* 使用说明条 */
+  .howto{
+    margin:22px 0 36px; background:var(--paper); border:1px dashed var(--accent);
+    border-radius:14px; padding:16px 22px; font-size:14px; color:var(--muted);
+  }
+  .howto b{color:var(--accent-deep);}
+
+  /* 段落卡 */
+  .beat{
+    background:var(--paper); border-radius:16px; margin:0 0 22px;
+    border:1px solid var(--line); box-shadow:0 6px 22px rgba(38,32,26,.05);
+    overflow:hidden;
+  }
+  .beat-head{
+    display:flex; align-items:center; gap:14px; padding:16px 24px;
+    background:linear-gradient(90deg,#fff5e4,#fbf8f2); border-bottom:1px solid var(--line);
+  }
+  .slide-no{
+    flex:none; width:46px; height:46px; border-radius:12px;
+    background:var(--navy); color:var(--accent); font-weight:800; font-size:15px;
+    display:flex; align-items:center; justify-content:center; line-height:1.1; text-align:center;
+  }
+  .slide-no small{display:block; font-size:9px; color:#c9d3e0; letter-spacing:1px; font-weight:600;}
+  .beat-title{flex:1;}
+  .beat-title h2{margin:0; font-size:18px; font-weight:800; color:var(--ink);}
+  .beat-title .tag{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .timecode{
+    flex:none; font-size:12px; font-weight:700; color:var(--accent-deep);
+    background:#fff; border:1px solid var(--accent); border-radius:999px; padding:4px 11px;
+    white-space:nowrap;
+  }
+  .beat-body{padding:20px 26px 24px;}
+  .beat-body p{margin:0 0 13px;}
+  .beat-body p:last-child{margin-bottom:0;}
+
+  /* 语气/动作提示 */
+  .cue{
+    display:block; margin:4px 0 14px; padding:9px 14px;
+    background:#f3ece0; border-left:3px solid var(--accent); border-radius:0 8px 8px 0;
+    font-size:13.5px; color:var(--muted);
+  }
+  .cue b{color:var(--accent-deep); font-weight:700;}
+
+  /* 高亮金句 */
+  .hl{color:var(--accent-deep); font-weight:700;
+      background:linear-gradient(transparent 62%, rgba(232,168,74,.32) 62%);
+      padding:0 2px;}
+  .demo-line{
+    font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:13.5px;
+    background:var(--navy); color:#c9d3e0; border-radius:10px; padding:14px 18px;
+    margin:12px 0; line-height:1.7;
+  }
+  .demo-line .ok{color:var(--good);}
+  .demo-line .you{color:var(--accent);}
+
+  /* 节奏小结 */
+  .timeline{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px;
+    padding:22px 26px; margin-top:34px;
+  }
+  .timeline h3{margin:0 0 16px; font-size:16px; color:var(--navy);}
+  .tl-row{display:flex; align-items:baseline; gap:14px; padding:7px 0; border-bottom:1px dotted var(--line); font-size:14px;}
+  .tl-row:last-child{border-bottom:none;}
+  .tl-row .t{flex:none; width:92px; font-weight:700; color:var(--accent-deep); font-variant-numeric:tabular-nums;}
+  .tl-row .n{flex:none; width:30px; color:var(--muted); font-weight:700;}
+  .tl-row .d{flex:1; color:var(--ink);}
+
+  footer{margin-top:40px; text-align:center; color:var(--muted); font-size:13px;}
+  footer .enter{color:var(--accent-deep); font-weight:700;}
+  @media print{ body{background:#fff;} .howto{display:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">PITCH SCRIPT · 逐字稿</div>
+    <h1>小哒 Coda · 路演逐字稿</h1>
+    <div class="sub">回车键团队出品 · Coding Agent 赛道 · 一个常驻桌面、懂你行业的 Review 助手</div>
+    <div class="meta-row">
+      <span class="pill">⏱ 4–6 分钟</span>
+      <span class="pill">📑 对齐 8 页 PPT</span>
+      <span class="pill">🎤 主讲 1 人 · 演示 1 人</span>
+      <span class="pill">⏎ Enter 一下，世界开始运行</span>
+    </div>
+  </header>
+
+  <div class="howto">
+    💡 <b>用法</b>：粗体金句是「<b>务必说出口</b>」的钩子；灰色斜体条是 <b>语气 / 动作提示</b>，不念出来。整篇约 1550 字，正常语速约 <b>5 分半</b>，留半分钟弹性。商业模式那段时间紧可砍。建议<b>主讲念稿、演示同学在「现场演示」段切到工作台真扫医疗项目</b>。
+  </div>
+
+  <!-- 开场 / 痛点 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">01<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>开场 · 用 AI 写代码的人，卡在三件事</h2>
+        <div class="tag">钩子 + 三个痛点，30 秒立住人群</div>
+      </div>
+      <div class="timecode">00:00–00:50</div>
+    </div>
+    <div class="beat-body">
+      <span class="cue"><b>语气</b>：放慢、直视评委，第一句话不要急。</span>
+      <p>大家好，我们是<span class="hl">回车键</span>团队。</p>
+      <p>今天台下、台上，越来越多的人开始用 AI 写代码——但真正写代码的，<span class="hl">往往不是程序员，而是各行各业的行业专家</span>：医生、老师、做风控的、做营销的。他们最懂业务，只是不懂代码。</p>
+      <p>可当他们用 AI 的时候，会卡在三件事上：</p>
+      <p>第一，<span class="hl">不懂你</span>。通用的 Agent 帮你 Review，只会说「命名不规范」，却不会说「<span class="hl">患者隐私字段不该明文存</span>」——用了 AI，却感受不到它真的懂你这行。</p>
+      <p>第二，<span class="hl">看不懂</span>。报告全是技术黑话，你懂行业不懂代码，看不出哪儿有问题、严不严重，更不知道怎么改。</p>
+      <p>第三，<span class="hl">攒不住</span>。同一个领域里写过的校验、状态机，全锁在单个项目里，换个项目又得从头造，越做越乱。</p>
+    </div>
+  </section>
+
+  <!-- 产品是什么 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">02<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>小哒 Coda，是什么</h2>
+        <div class="tag">一句话定位 + 三能力总览</div>
+      </div>
+      <div class="timecode">00:50–01:35</div>
+    </div>
+    <div class="beat-body">
+      <span class="cue"><b>动作</b>：指一下屏幕上的桌宠形象，让「常驻桌面」具象化。</span>
+      <p>所以我们做了<span class="hl">小哒 Coda</span>。</p>
+      <p>它<span class="hl">不是又一个代码生成器</span>。它是一个<span class="hl">住在你桌面上、懂你行业的 Review 助手</span>——扫一遍你的项目，反推你是哪一行的，用你那行的话把问题讲给你听，<span class="hl">给建议，但不自动改</span>。</p>
+      <p>它就对着前面那三个痛点，给三个能力：</p>
+      <p><b>会评价</b>——扫盘反推行业，像跑分软件一样，把每个文件的得分列出来，配上行话和改法；</p>
+      <p><b>会解释</b>——用你那行的话，讲透这段代码在你这行到底是什么；</p>
+      <p><b>能复用</b>——老项目的轮子进行业库，新项目命中了直接用，不重复造。</p>
+      <p>它常驻桌面、有形象有状态，但<span class="hl">只在你踩到行业红线时才弹出来</span>——该响时响，该静时静，不喧宾夺主。</p>
+    </div>
+  </section>
+
+  <!-- 能力一 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">03<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>能力一 · 会评价</h2>
+        <div class="tag">扫盘 → 反推行业 → 行话打分（炸场点）</div>
+      </div>
+      <div class="timecode">01:35–02:15</div>
+    </div>
+    <div class="beat-body">
+      <p>先说<span class="hl">会评价</span>，这是我们最想让大家记住的一点。</p>
+      <p>你授权一个目录，它<span class="hl">只读</span>地扫一遍。扫完它命中了 <span class="hl">patient 47 次、就诊 23 次、禁忌症 6 次</span>——于是它说：「<span class="hl">我猜你是做医疗的，对吗？</span>」并给出置信度。这一步，是它「懂你」的起点。</p>
+      <p>然后它像跑分软件一样列明细：每个文件给一个<span class="hl">行业人话的名字</span>加一个等级徽章——比如「就诊记录 85 分，良好」。折叠时只露一句结论，点开才看红线和改法。</p>
+      <p>关键是<span class="hl">翻译</span>：通用工具只会说「敏感数据未加密」；小哒会说「<span class="hl">患者隐私在裸奔，违反了医疗数据红线</span>」。同一个问题，它用你听得懂、也最在意的话讲——而且<span class="hl">只读不改，怎么改你自己决定</span>。</p>
+    </div>
+  </section>
+
+  <!-- 能力二 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">04<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>能力二 · 会解释</h2>
+        <div class="tag">把代码概念翻译成你那行的话</div>
+      </div>
+      <div class="timecode">02:15–02:50</div>
+    </div>
+    <div class="beat-body">
+      <p>第二个能力，<span class="hl">会解释</span>。</p>
+      <p>它不会逐个文件念给你听。它挑出 3 到 5 个<span class="hl">关键概念</span>，用类比讲透——比如把代码里的「<span class="hl">订单状态机</span>」讲成「<span class="hl">病历流转</span>」，告诉你它在你这行到底是干嘛的。</p>
+      <p>而且它按业务发生的先后，串成一条<span class="hl">时间线</span>：患者档案 → 挂号 → 候诊 → 处方，每一步对应哪段代码，一眼就看懂整个项目的结构。</p>
+      <p>这样一来，<span class="hl">你不懂前端、API、数据库，也不会被这些词挡在门外</span>。你看懂了需求是怎么映射到代码的，就知道下一步该让 AI 帮你做什么。</p>
+    </div>
+  </section>
+
+  <!-- 能力三 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">05<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>能力三 · 能复用</h2>
+        <div class="tag">老项目轮子进库 · 新项目命中直接用</div>
+      </div>
+      <div class="timecode">02:50–03:25</div>
+    </div>
+    <div class="beat-body">
+      <p>第三个能力，<span class="hl">能复用</span>。</p>
+      <p>你在老项目里写过的好东西——患者 ID 校验、就诊状态机——小哒会<span class="hl">自动抽取，放进你这个领域的能力库</span>。</p>
+      <p>等你开一个新项目，它识别出「还是医疗」，就主动提醒你：「<span class="hl">这个你做过，行业库里有现成的，直接用</span>」，并把代码片段递给你。</p>
+      <p>你扫得越多，它越懂你——它会跨项目记住你做过哪些领域、攒了哪些轮子、常踩哪类坑。<span class="hl">用得越久，行业库越厚，你越省。</span></p>
+    </div>
+  </section>
+
+  <!-- 现场演示 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">06<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>现场演示 · 扫盘即真相</h2>
+        <div class="tag">真扫医疗项目，全程只读不改</div>
+      </div>
+      <div class="timecode">03:25–04:55</div>
+    </div>
+    <div class="beat-body">
+      <span class="cue"><b>动作</b>：切到工作台 → 点「医疗诊所 A」→ 真扫。<b>边演边说</b>，让画面替你讲话；后端慢就先抛结论再等画面。</span>
+      <p>说得再多，不如现场看一遍。我现在授权一个本地的医疗项目，<span class="hl">全程只读</span>。</p>
+      <div class="demo-line">
+        # 小哒遍历变量名 / 注释 / 字符串里的行业词<br>
+        <span class="ok">✓ 命中 patient×47 · 就诊×23 · 挂号×31 · 禁忌症×6</span><br>
+        → 识别行业：<span class="you">医疗（社区诊所 / 门诊管理）· 置信度 0.92</span>
+      </div>
+      <p>你看，它直接反推出来了——「<span class="hl">我猜你是做医疗的</span>」。</p>
+      <p>再看这一条：代码把 patient 明文存进了 localStorage。通用工具只会冷冰冰说「敏感数据未加密」；小哒翻译成——「<span class="hl">患者隐私字段裸奔了，违反医疗数据红线</span>」，并给出改法建议，<span class="hl">但它不替你动一行代码</span>。</p>
+      <span class="cue"><b>动作</b>：第二幕，切到「医疗诊所 B」演复用提醒（时间紧可口述）。</span>
+      <p>第二幕更妙：我再扫另一个医疗项目，小哒立刻提醒——「你做过类似的，行业库里有<span class="hl">患者 ID 校验和就诊状态机</span>，直接用」。这就是<span class="hl">越用越懂你</span>。</p>
+    </div>
+  </section>
+
+  <!-- 商业模式（口播插入） -->
+  <section class="beat" style="border:1px solid var(--accent);box-shadow:0 8px 26px rgba(232,168,74,.18);">
+    <div class="beat-head" style="background:linear-gradient(90deg,#fdeccb,#fbf8f2);">
+      <div class="slide-no" style="background:var(--accent-deep);color:#fff;">💰<small>口播</small></div>
+      <div class="beat-title">
+        <h2>商业模式 · 凭什么长久赚钱（口播插入）</h2>
+        <div class="tag">~20 秒 · 飞轮 + 三重护城河，不展开 PPT</div>
+      </div>
+      <div class="timecode">04:55–05:15</div>
+    </div>
+    <div class="beat-body">
+      <span class="cue"><b>用法</b>：紧接演示说，<b>一口气讲完不停顿</b>；时间紧可只留首尾两句。评委追问「怎么赚钱」时再展开 Q&A 卡。</span>
+      <p>有人会问，这东西<span class="hl">怎么赚钱、又凭什么别人抄不走</span>？</p>
+      <p>收费很简单：<span class="hl">个人订阅高级功能，企业要私有化部署和行业模板</span>。</p>
+      <p>但真正的壁垒在<span class="hl">越用越值钱</span>——它把你团队的行业经验和复用轮子，沉淀成一个<span class="hl">专属的代码资产库</span>，用得越久，资产越厚、迁移成本越高。</p>
+      <p>更关键的是，它干的是别人干不了的事：<span class="hl">把技术债，翻译成业务能听懂的风险</span>。一旦嵌进你的评审和决策流程，它就从「一个工具」，变成了<span class="hl">技术到决策之间，那个谁也绕不开的翻译中枢</span>。</p>
+    </div>
+  </section>
+
+  <!-- 收尾 -->
+  <section class="beat">
+    <div class="beat-head">
+      <div class="slide-no">07<small>SLIDE</small></div>
+      <div class="beat-title">
+        <h2>收尾 · 一句话记住小哒 Coda</h2>
+        <div class="tag">回扣三能力 + slogan 落点</div>
+      </div>
+      <div class="timecode">05:15–05:45</div>
+    </div>
+    <div class="beat-body">
+      <span class="cue"><b>语气</b>：慢下来，最后一句加重、停顿，给评委记忆点。</span>
+      <p>一句话记住小哒 Coda——它是一个常驻桌面、<span class="hl">会评价、会解释、能复用</span>的 Review 助手。</p>
+      <p><b>会评价</b>，扫盘反推行业，像跑分软件一样列明细，只读不改；<b>会解释</b>，用你那行的话讲透代码；<b>能复用</b>，老轮子进库，新项目直接用，越用越懂你。</p>
+      <p>它让那些最懂业务、却不懂代码的人，<span class="hl">第一次感觉到——AI 真的懂他这一行</span>。</p>
+      <p><span class="hl">回车键 · Enter 一下，你的 Agent 就懂你了。</span>谢谢大家！</p>
+    </div>
+  </section>
+
+  <!-- 节奏总表 -->
+  <div class="timeline">
+    <h3>⏱ 节奏总表（目标 5 分钟 · 留 1 分钟弹性）</h3>
+    <div class="tl-row"><span class="t">00:00–00:50</span><span class="n">①</span><span class="d">开场 + 三痛点：不懂你 / 看不懂 / 攒不住</span></div>
+    <div class="tl-row"><span class="t">00:50–01:35</span><span class="n">②</span><span class="d">是什么：常驻桌面的 Review 助手，三能力总览</span></div>
+    <div class="tl-row"><span class="t">01:35–02:15</span><span class="n">③</span><span class="d">会评价：扫盘反推行业 + 行话打分（炸场）</span></div>
+    <div class="tl-row"><span class="t">02:15–02:50</span><span class="n">④</span><span class="d">会解释：关键概念翻译 + 业务时间线</span></div>
+    <div class="tl-row"><span class="t">02:50–03:25</span><span class="n">⑤</span><span class="d">能复用：老轮子进库，新项目命中直接用</span></div>
+    <div class="tl-row"><span class="t">03:25–04:55</span><span class="n">⑥</span><span class="d">现场演示：真扫医疗项目（两幕）— 最长，预留弹性</span></div>
+    <div class="tl-row"><span class="t">04:55–05:15</span><span class="n">💰</span><span class="d">商业模式口播：飞轮 + 三重护城河（~20 秒，时间紧可砍）</span></div>
+    <div class="tl-row"><span class="t">05:15–05:45</span><span class="n">⑦</span><span class="d">收尾：回扣三能力 + slogan 落点</span></div>
+  </div>
+
+  <footer>
+    <p class="enter">⏎ 回车键 · 小哒 Coda · Beyond Prompt: Agents in Action</p>
+    <p>逐字稿与《路演PPT.html》8 页一一对应 · 现场以工作台真扫医疗项目为准</p>
+  </footer>
+
+</div>
+</body>
+</html>

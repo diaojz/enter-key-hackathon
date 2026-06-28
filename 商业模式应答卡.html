@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商业模式 Q&A 应答卡 · 小哒 Coda · 回车键团队</title>
+<style>
+  :root{
+    --bg:#ece7de; --paper:#fbf8f2; --ink:#26201a; --muted:#7a7066;
+    --accent:#e8a84a; --accent-deep:#c98a23; --navy:#0a1626; --line:#e3dccf;
+    --good:#5f9c6b;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+    line-height:1.8; font-size:16px;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:48px 28px 120px;}
+
+  header.top{
+    background:var(--navy); color:#f3ece0; border-radius:18px;
+    padding:32px 38px; box-shadow:0 18px 50px rgba(10,22,38,.28);
+    position:relative; overflow:hidden;
+  }
+  header.top::after{
+    content:"💰"; position:absolute; right:26px; top:14px; font-size:90px; opacity:.10;
+  }
+  .kicker{font-size:13px; letter-spacing:3px; color:var(--accent); font-weight:700;}
+  header.top h1{margin:8px 0 6px; font-size:28px; color:#fff; font-weight:800;}
+  header.top .sub{color:#c9d3e0; font-size:14.5px;}
+  .meta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+  .meta-row .pill{
+    background:rgba(232,168,74,.16); color:#f0c070; border:1px solid rgba(232,168,74,.35);
+    padding:5px 13px; border-radius:999px; font-size:13px; font-weight:600;
+  }
+
+  .howto{
+    margin:22px 0 30px; background:var(--paper); border:1px dashed var(--accent);
+    border-radius:14px; padding:14px 22px; font-size:14px; color:var(--muted);
+  }
+  .howto b{color:var(--accent-deep);}
+
+  /* 一句话锚点：台上挂的那句，台下从这里展开 */
+  .anchor{
+    background:linear-gradient(90deg,#fdeccb,#fbf8f2); border:1px solid var(--accent);
+    border-radius:16px; padding:18px 24px; margin-bottom:30px; font-size:15px;
+  }
+  .anchor .lab{font-size:12px; letter-spacing:2px; color:var(--accent-deep); font-weight:700;}
+  .anchor p{margin:6px 0 0; font-size:16.5px; font-weight:700; color:var(--ink);}
+
+  /* Q&A 卡 */
+  .qa{
+    background:var(--paper); border-radius:16px; margin:0 0 20px;
+    border:1px solid var(--line); box-shadow:0 6px 22px rgba(38,32,26,.05); overflow:hidden;
+  }
+  .qa-head{
+    display:flex; align-items:flex-start; gap:14px; padding:16px 24px;
+    background:linear-gradient(90deg,#fff5e4,#fbf8f2); border-bottom:1px solid var(--line);
+  }
+  .qa-q{
+    flex:none; min-width:34px; height:34px; padding:0 9px; border-radius:9px;
+    background:var(--navy); color:var(--accent); font-weight:800; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .qa-head .t{flex:1;}
+  .qa-head .t .ask{font-size:12.5px; color:var(--muted); font-weight:600;}
+  .qa-head .t h2{margin:2px 0 0; font-size:17.5px; font-weight:800; color:var(--ink);}
+  .qa-body{padding:18px 26px 22px;}
+  .qa-body .ans-lab{
+    display:inline-block; font-size:11.5px; letter-spacing:1px; font-weight:700;
+    color:var(--good); background:rgba(95,156,107,.12); border-radius:6px;
+    padding:2px 9px; margin-bottom:10px;
+  }
+  .qa-body p{margin:0 0 12px;}
+  .qa-body p:last-child{margin-bottom:0;}
+
+  .hl{color:var(--accent-deep); font-weight:700;
+      background:linear-gradient(transparent 62%, rgba(232,168,74,.30) 62%); padding:0 2px;}
+
+  /* 护城河三层 */
+  .moat{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:8px 0 4px;}
+  .moat .m{
+    background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+  }
+  .moat .m .n{font-size:12px; font-weight:700; color:var(--accent-deep);}
+  .moat .m .h{font-size:14.5px; font-weight:800; margin:4px 0 6px; color:var(--ink);}
+  .moat .m .d{font-size:13px; color:var(--muted); line-height:1.65;}
+
+  /* 计费表 */
+  .pricing{width:100%; border-collapse:collapse; margin:6px 0; font-size:14px;}
+  .pricing th,.pricing td{border:1px solid var(--line); padding:10px 13px; text-align:left; vertical-align:top;}
+  .pricing th{background:#fff5e4; color:var(--navy); font-weight:700; font-size:13px;}
+  .pricing td:first-child{font-weight:700; color:var(--accent-deep); white-space:nowrap;}
+
+  /* 升级路径 */
+  .stage{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:6px 0 4px;}
+  .stage .s{background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 14px; flex:1; min-width:200px;}
+  .stage .s b{color:var(--accent-deep);}
+  .stage .arrow{color:var(--accent); font-weight:800; font-size:18px;}
+
+  /* 一句话弹药 */
+  .ammo{
+    background:var(--navy); color:#f3ece0; border-radius:16px; padding:22px 26px; margin-top:30px;
+  }
+  .ammo h3{margin:0 0 14px; font-size:16px; color:var(--accent);}
+  .ammo ul{margin:0; padding-left:20px;}
+  .ammo li{margin:0 0 10px; font-size:14.5px; line-height:1.7; color:#e8e0d3;}
+  .ammo li b{color:#f0c070;}
+
+  footer{margin-top:36px; text-align:center; color:var(--muted); font-size:13px;}
+  footer .enter{color:var(--accent-deep); font-weight:700;}
+  @media print{ body{background:#fff;} .howto{display:none;} }
+  @media (max-width:680px){ .moat{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">Q&amp;A BACKUP · 商业模式应答卡</div>
+    <h1>商业模式 · 评委追问应答卡</h1>
+    <div class="sub">回车键团队出品 · 小哒 Coda · 台上一句话带过，台下照这张接深问</div>
+    <div class="meta-row">
+      <span class="pill">🎯 配合路演稿「商业模式口播」段</span>
+      <span class="pill">💬 4 类高频追问</span>
+      <span class="pill">🛡 数据 + 流程 + 生态 三重护城河</span>
+    </div>
+  </header>
+
+  <div class="howto">
+    💡 <b>用法</b>：这张<b>不进口播</b>，是答辩（2 分钟 Q&amp;A）的备用弹药。台上只说「<b>它是技术到决策之间谁也绕不开的翻译中枢</b>」；评委一旦追问「怎么赚钱 / 凭什么抄不走 / 长期怎么放大」，照对应卡片<b>挑一两句答</b>，别全念。最底部有 5 句「一句话弹药」，紧张时直接抽。
+  </div>
+
+  <div class="anchor">
+    <div class="lab">台上挂的那句 · 台下从这里展开</div>
+    <p>「小哒把<span class="hl">技术债，翻译成业务听得懂的风险</span>——它是技术评审到业务决策之间，那个谁也绕不开的<span class="hl">翻译中枢</span>。」</p>
+  </div>
+
+  <!-- Q1 怎么收费 -->
+  <section class="qa">
+    <div class="qa-head">
+      <div class="qa-q">Q1</div>
+      <div class="t">
+        <div class="ask">评委可能问</div>
+        <h2>你们具体怎么收费？商业模式跑得通吗？</h2>
+      </div>
+    </div>
+    <div class="qa-body">
+      <span class="ans-lab">短期：分层订阅 + 场景化服务</span>
+      <p>短期走「<span class="hl">分层订阅 + 场景化服务</span>」切入，分两条线：</p>
+      <table class="pricing">
+        <tr><th>对象</th><th>免费 / 基础</th><th>付费点</th></tr>
+        <tr><td>个人版</td><td>基础扫盘、基础 Review</td><td><span class="hl">行业知识图谱、业务风险翻译</span>等高级功能订阅</td></tr>
+        <tr><td>企业版</td><td>—</td><td><span class="hl">私有化部署、平台嵌入</span>（接进代码 / 办公系统）、<span class="hl">定制行业模板</span>，按席位 / 项目计费</td></tr>
+      </table>
+      <p>一句话：<span class="hl">个人靠订阅，企业靠私有化和行业模板</span>。门槛低、上手快，企业侧客单价高。</p>
+    </div>
+  </section>
+
+  <!-- Q2 越用越值钱 -->
+  <section class="qa">
+    <div class="qa-head">
+      <div class="qa-q">Q2</div>
+      <div class="t">
+        <div class="ask">评委可能问</div>
+        <h2>为什么说它「越用越值钱」？飞轮在哪？</h2>
+      </div>
+    </div>
+    <div class="qa-body">
+      <span class="ans-lab">飞轮：团队知识图谱 + 业务逻辑复用</span>
+      <p>因为它每用一次，都在<span class="hl">沉淀团队专属的资产</span>，而不只是给一次答案。</p>
+      <p>它自动攒下团队的<span class="hl">行业经验</span>（比如金融的风控规则链）、复用历史方案，形成一个跨项目的<span class="hl">智慧资产库</span>。</p>
+      <p>于是形成飞轮：<span class="hl">用得越久 → 资产越厚 → 推荐越准 → 效率与价值越高 → 迁移成本越高</span>。客户不是「在用一个工具」，是「在养自己的一座资产库」——养得越久，越离不开。</p>
+    </div>
+  </section>
+
+  <!-- Q3 怎么防抄 -->
+  <section class="qa">
+    <div class="qa-head">
+      <div class="qa-q">Q3</div>
+      <div class="t">
+        <div class="ask">评委可能问</div>
+        <h2>大厂复制怎么办？护城河在哪？</h2>
+      </div>
+    </div>
+    <div class="qa-body">
+      <span class="ans-lab">三重护城河：数据 + 流程 + 生态</span>
+      <p>功能能抄，但这三层抄不走，它们还会互相加固：</p>
+      <div class="moat">
+        <div class="m">
+          <div class="n">护城河 ①</div>
+          <div class="h">动态数据</div>
+          <div class="d">基于客户<span class="hl">真实项目</span>持续训练行业库，沉淀「<span class="hl">技术问题 ↔ 业务损失</span>」映射——这是用真实场景喂出来的，<span class="hl">无法逆向复制</span>。</div>
+        </div>
+        <div class="m">
+          <div class="n">护城河 ②</div>
+          <div class="h">流程渗透</div>
+          <div class="d">深度嵌进企业决策链（<span class="hl">PR 评审、OKR 对齐</span>）、生成合规报告，成为业务风险管控的<span class="hl">必要基础设施</span>，拔不掉。</div>
+        </div>
+        <div class="m">
+          <div class="n">护城河 ③</div>
+          <div class="h">协作锁定</div>
+          <div class="d">推动团队内知识共享与复用，强化<span class="hl">组织依赖</span>，让迁移成本<span class="hl">远超工具本身的价值</span>。</div>
+        </div>
+      </div>
+      <p style="margin-top:12px;">合起来就是「<span class="hl">数据 + 流程 + 生态</span>」三位一体——大厂能抄界面，抄不走你客户养出来的资产和已经长进流程里的依赖。</p>
+    </div>
+  </section>
+
+  <!-- Q4 长期天花板 -->
+  <section class="qa">
+    <div class="qa-head">
+      <div class="qa-q">Q4</div>
+      <div class="t">
+        <div class="ask">评委可能问</div>
+        <h2>长期天花板有多高？只是个 Review 工具吗？</h2>
+      </div>
+    </div>
+    <div class="qa-body">
+      <span class="ans-lab">长期：升级为代码资产管理平台</span>
+      <p>短期它是 Review 助手；长期会升级成<span class="hl">企业级代码资产评审与管理平台</span>，按<span class="hl">数据量、协作规模、业务价值增量</span>收平台服务费——从「卖功能」变成「<span class="hl">按创造的价值收费</span>」。</p>
+      <div class="stage">
+        <div class="s"><b>今天</b><br>个人 / 团队 Review 助手</div>
+        <div class="arrow">→</div>
+        <div class="s"><b>中期</b><br>企业代码资产库 + 流程嵌入</div>
+        <div class="arrow">→</div>
+        <div class="s"><b>长期</b><br>代码资产管理平台 · 按价值增量收费</div>
+      </div>
+      <p style="margin-top:12px;">天花板不在「帮人看代码」，而在<span class="hl">成为企业技术资产与业务决策之间的标准翻译层</span>——这一层一旦坐稳，是基础设施级的位置。</p>
+    </div>
+  </section>
+
+  <!-- 一句话弹药 -->
+  <div class="ammo">
+    <h3>🎯 紧张时直接抽 · 5 句一句话弹药</h3>
+    <ul>
+      <li><b>怎么赚钱：</b>个人订阅高级功能，企业要私有化部署和行业模板，长期升级成代码资产管理平台、按价值收费。</li>
+      <li><b>越用越值钱：</b>它把团队经验沉淀成专属资产库，用得越久资产越厚、迁移成本越高——客户是在养自己的库。</li>
+      <li><b>凭什么抄不走：</b>数据、流程、生态三重护城河——真实项目喂出来的语料逆向不了，流程嵌进去拔不掉，协作锁定迁移成本高。</li>
+      <li><b>核心价值：</b>把技术债翻译成业务能听懂的风险，是技术评审到业务决策之间谁也绕不开的翻译中枢。</li>
+      <li><b>天花板：</b>不在「帮人看代码」，在成为企业技术资产与业务决策之间的标准翻译层——基础设施级的位置。</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p class="enter">⏎ 回车键 · 小哒 Coda · 商业价值是路演加分项，不是主线——台上一句，台下深答</p>
+    <p>配合《路演稿.html》「商业模式口播」段使用 · 答辩时挑一两句，切忌全念</p>
+  </footer>
+
+</div>
+</body>
+</html>
