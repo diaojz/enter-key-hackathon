@@ -1,0 +1,6 @@
+{
+  "name": "clinic-booking",
+  "version": "1.0.0",
+  "description": "社区诊所预约挂号系统（演示用·项目A·已入库）",
+  "main": "src/api/booking.js"
+}

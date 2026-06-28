@@ -1,0 +1,126 @@
+/* coda · 暖米编辑风（对齐仓库既有页配色） */
+:root{
+  --bg:#ece7de; --card:#fffdf8; --ink:#2b2723; --sub:#6b6258;
+  --accent:#e0623a; --line:#ddd5c8; --good:#3f8f5b; --pill:#f0eadf;
+  --warn:#d98a2b; --high:#c0452f; --mute:#8a8276;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.6;padding:24px 16px 140px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto}
+
+/* 顶部 */
+.top{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.top .logo{font-size:34px}
+.top h1{font-family:Georgia,"Songti SC",serif;font-size:26px}
+.top .tag{color:var(--sub);font-size:13.5px;margin-top:2px}
+.kicker{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  letter-spacing:.08em;padding:4px 11px;border-radius:999px;margin-bottom:14px}
+
+/* 区块卡 */
+section{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+section.hidden{display:none}
+h2{font-family:Georgia,"Songti SC",serif;font-size:19px;margin-bottom:12px;
+  display:flex;align-items:center;gap:9px}
+.badge{background:var(--accent);color:#fff;font-size:13px;width:25px;height:25px;border-radius:7px;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+/* 控制台 */
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ctrl input{flex:1;min-width:240px;font-size:14px;padding:10px 13px;border:1px solid var(--line);
+  border-radius:10px;background:#fffefb;color:var(--ink);font-family:"SF Mono",Menlo,monospace}
+.btn{font-size:14px;font-weight:700;padding:10px 18px;border:none;border-radius:10px;cursor:pointer;
+  background:var(--accent);color:#fff;transition:transform .08s,filter .15s}
+.btn:hover{filter:brightness(1.07)} .btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--pill);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.quick .lbl{font-size:12.5px;color:var(--sub);align-self:center}
+
+/* 扫盘动画 */
+.scanbox{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;color:var(--sub);
+  background:#2b2723;color:#d7cfc2;border-radius:10px;padding:12px 14px;height:120px;overflow:hidden}
+.scanbox .ln{opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scanbox .ln b{color:#e0a06a}
+
+/* 炸场卡 */
+.boom{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.ring{--p:0;width:118px;height:118px;border-radius:50%;flex:none;
+  background:conic-gradient(var(--accent) calc(var(--p)*1%), #e7ded0 0);
+  display:flex;align-items:center;justify-content:center;position:relative}
+.ring::before{content:"";position:absolute;inset:11px;background:var(--card);border-radius:50%}
+.ring .num{position:relative;font-size:30px;font-weight:800;color:var(--accent);font-family:Georgia,serif}
+.ring .num small{font-size:14px}
+.boom .gist{flex:1;min-width:240px}
+.boom .guess{font-size:23px;font-weight:800;font-family:Georgia,"Songti SC",serif}
+.boom .guess em{color:var(--accent);font-style:normal}
+.boom .sub{color:var(--sub);font-size:13.5px;margin-top:4px}
+.cands{margin-top:8px;font-size:12.5px;color:var(--mute)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.chip{font-size:12px;background:var(--pill);border:1px solid var(--line);border-radius:999px;
+  padding:4px 11px;color:var(--ink)}
+.chip b{color:var(--accent)} .chip .loc{color:var(--mute);font-family:"SF Mono",monospace;font-size:11px}
+
+/* 画像卡 */
+.pcard .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;margin-bottom:11px}
+.pcard .k{width:62px;flex:none;color:var(--sub);font-size:13px;padding-top:4px}
+.pcard .v{flex:1;min-width:200px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:12px;background:var(--pill);border:1px solid var(--line);border-radius:7px;padding:3px 9px}
+.tag.editable{cursor:text;background:#fff} .tag.red{color:var(--high);border-color:#e6c4bc}
+.tag input{border:none;background:transparent;font:inherit;width:auto;min-width:40px;color:var(--ink);outline:none}
+.pcard .edithint{font-size:12px;color:var(--mute);margin-top:4px}
+
+/* 报告 */
+.report .head{display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  border-bottom:1px dashed var(--line);padding-bottom:14px;margin-bottom:14px}
+.score{font-size:46px;font-weight:800;font-family:Georgia,serif;line-height:1}
+.score.s-good{color:var(--good)} .score.s-warn{color:var(--warn)}
+.score.s-bad{color:var(--accent)} .score.s-worst{color:var(--high)}
+.report .lvl{font-size:14px;font-weight:700;margin-top:3px}
+.report .rsum{color:var(--sub);font-size:13.5px}
+.issue{border:1px solid var(--line);border-left-width:4px;border-radius:11px;padding:13px 15px;margin-bottom:11px;background:#fffefb}
+.issue.high{border-left-color:var(--high)} .issue.medium{border-left-color:var(--warn)} .issue.low{border-left-color:var(--good)}
+.issue .lvlbadge{font-size:11px;font-weight:800;color:#fff;border-radius:5px;padding:2px 8px;margin-right:8px}
+.lvlbadge.high{background:var(--high)} .lvlbadge.medium{background:var(--warn)} .lvlbadge.low{background:var(--good)}
+.issue .name{font-weight:700;font-size:14.5px}
+.issue .prob{margin-top:7px;font-size:14px}
+.issue .loc{font-family:"SF Mono",monospace;font-size:11.5px;color:var(--mute);margin-top:5px}
+.issue details{margin-top:7px} .issue summary{cursor:pointer;font-size:12.5px;color:var(--sub)}
+.issue .tech{font-family:"SF Mono",monospace;font-size:12px;color:var(--sub);margin-top:5px;
+  background:var(--pill);border-radius:7px;padding:8px 10px}
+.issue .fix{margin-top:9px;background:#eef3ec;border-left:3px solid var(--good);border-radius:7px;
+  padding:9px 12px;font-size:13.5px;position:relative}
+.issue .fix .ft{font-weight:700;color:var(--good);font-size:12px;display:block;margin-bottom:3px}
+.copybtn{position:absolute;top:8px;right:8px}
+.safety{font-size:12px;color:var(--mute);margin-top:6px;text-align:right}
+
+/* 复用弹窗 */
+.modal{position:fixed;inset:0;background:rgba(43,39,35,.45);display:flex;align-items:center;
+  justify-content:center;z-index:50;padding:20px}
+.modal.hidden{display:none}
+.modal .box{background:var(--card);border-radius:18px;max-width:600px;width:100%;max-height:85vh;
+  overflow:auto;padding:22px;box-shadow:0 16px 48px rgba(0,0,0,.25)}
+.modal h3{font-family:Georgia,"Songti SC",serif;font-size:20px;margin-bottom:4px}
+.modal .msub{color:var(--sub);font-size:13px;margin-bottom:14px}
+.wheel{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fffefb}
+.wheel .wt{font-weight:800;font-size:15px}
+.wheel .ms{float:right;font-size:11.5px;color:#fff;background:var(--good);border-radius:999px;padding:2px 9px}
+.wheel .wd{font-size:13px;color:var(--sub);margin:5px 0 8px}
+.wheel .src{font-size:11.5px;color:var(--mute)}
+.wheel pre{margin-top:9px;background:#2b2723;color:#d7cfc2;border-radius:8px;padding:11px;
+  font-size:11.5px;overflow:auto;max-height:200px;font-family:"SF Mono",Menlo,monospace}
+.modal .x{float:right;cursor:pointer;font-size:22px;color:var(--mute);line-height:1}
+
+/* 桌宠 */
+.pet{position:fixed;right:22px;bottom:22px;z-index:40;display:flex;align-items:flex-end;gap:8px}
+.pet .bubble{background:var(--card);border:1px solid var(--line);border-radius:14px 14px 4px 14px;
+  padding:8px 13px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.12);max-width:220px}
+.pet .dog{font-size:46px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.18));animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#2b2723;color:#fff;
+  padding:9px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+.spin{display:inline-block;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+footer{text-align:center;color:var(--mute);font-size:12px;margin-top:20px}

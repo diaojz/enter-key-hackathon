@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒 Coda · 懂你行业的 Review 助手</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kicker">回车键团队 · CODING AGENT · 只读不改</span>
+  <div class="top">
+    <div class="logo">🐕</div>
+    <div>
+      <h1>小哒 Coda</h1>
+      <div class="tag">扫一眼你的代码，就知道你是哪行的 · 只读不改 · 用你那行的话讲问题</div>
+    </div>
+  </div>
+
+  <!-- 控制台 -->
+  <section>
+    <h2><span class="badge">1</span>选个项目，开始扫盘</h2>
+    <div class="ctrl">
+      <input id="dir" placeholder="输入项目目录（相对 coda/ 或绝对路径）" value="fixtures/clinic-booking">
+      <button class="btn" id="scanBtn">🔍 开始扫盘</button>
+    </div>
+    <div class="quick">
+      <span class="lbl">快速演示：</span>
+      <button class="btn ghost sm" data-dir="fixtures/clinic-booking">项目A · 诊所挂号</button>
+      <button class="btn ghost sm" data-dir="fixtures/clinic-checkup">项目B · 体检中心</button>
+      <button class="btn ghost sm" id="resetBtn">↺ 重置画像</button>
+    </div>
+    <div class="scanbox hidden" id="scanbox"></div>
+  </section>
+
+  <!-- 炸场：反推行业 -->
+  <section class="hidden" id="boomSec">
+    <h2><span class="badge">2</span>我扫一眼，就猜出你是哪行的</h2>
+    <div class="boom">
+      <div class="ring" id="ring"><div class="num" id="ringNum">0<small>%</small></div></div>
+      <div class="gist">
+        <div class="guess">我猜你是做 <em id="guessLabel">—</em> 的</div>
+        <div class="sub" id="guessSub">置信度由扫盘权重算法得出，证据词均可溯源到文件</div>
+        <div class="cands" id="cands"></div>
+        <div class="chips" id="evChips"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 画像卡（可手改）-->
+  <section class="hidden" id="profileSec">
+    <h2><span class="badge">3</span>你的行业画像 <span style="font-size:12px;color:var(--mute);font-weight:400">（可手改 · 改完即生效）</span></h2>
+    <div class="pcard" id="pcard">
+      <div class="row"><div class="k">行业</div><div class="v" id="pIndustry"></div></div>
+      <div class="row"><div class="k">概述</div><div class="v" id="pSummary"></div></div>
+      <div class="row"><div class="k">红线</div><div class="v" id="pRedlines"></div></div>
+      <div class="row"><div class="k">行话</div><div class="v" id="pJargons"></div></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+      <button class="btn sm" id="saveProfile">💾 保存画像</button>
+      <span class="edithint">演示「越用越懂你」：把行业/行话改了保存，重新扫盘报告口径立刻跟着变。</span>
+    </div>
+  </section>
+
+  <!-- 报告 -->
+  <section class="hidden report" id="reportSec">
+    <h2><span class="badge">4</span>质量报告 · 用医疗的话讲给你听</h2>
+    <div class="head">
+      <div>
+        <div class="score" id="score">--</div>
+        <div class="lvl" id="scoreLvl"></div>
+      </div>
+      <div class="rsum" id="reportSum"></div>
+    </div>
+    <div id="issues"></div>
+    <div class="safety">🔒 小哒只读不改：以上只给「怎么改」的文字建议，绝不动你的代码。</div>
+  </section>
+
+  <footer>回车键 · Enter 一下，世界开始运行 · 小哒 Coda Demo</footer>
+</div>
+
+<!-- 复用弹窗 -->
+<div class="modal hidden" id="reuseModal">
+  <div class="box">
+    <span class="x" id="closeReuse">×</span>
+    <h3>🎁 你做过类似的，有现成轮子！</h3>
+    <div class="msub" id="reuseSub"></div>
+    <div id="wheels"></div>
+  </div>
+</div>
+
+<!-- 桌宠 -->
+<div class="pet">
+  <div class="bubble" id="petBubble">嗨，我是小哒 🐾<br>给我个项目目录，我扫一眼就懂你～</div>
+  <div class="dog" id="petDog">🐕</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "industry": "medical",
+  "label": "医疗",
+  "wheels": [
+    {
+      "id": "W1",
+      "name": "患者 ID 校验",
+      "intent": ["patientId", "身份证校验", "患者身份核验", "idCard"],
+      "sourceProject": "clinic-booking",
+      "file": "snippets/patient-id-validate.js",
+      "desc": "校验患者身份证格式 + 出生日期 + 末位校验码，附脱敏展示。比只查长度严谨，避免错号建档。",
+      "tags": ["校验", "患者", "身份证", "脱敏"]
+    },
+    {
+      "id": "W2",
+      "name": "就诊状态机",
+      "intent": ["就诊状态", "挂号流程", "候诊就诊完结", "visit", "状态机"],
+      "sourceProject": "clinic-booking",
+      "file": "snippets/visit-state-machine.js",
+      "desc": "就诊全流程状态流转 + 开方前强制医嘱复核（禁忌症/过敏史拦截），堵住医疗高危红线。",
+      "tags": ["状态机", "就诊", "挂号", "医嘱复核"]
+    }
+  ]
+}

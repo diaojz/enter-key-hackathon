@@ -1,0 +1,233 @@
+// coda · Agent 层 /review —— 画像 + 文件 → 问题清单 + 打分（方案 §8.2）
+// 规则引擎：对目标文件按红线规则命中 → 行话 problem + 技术细节 + 改法。
+// 硬约束（§8.3）：只输出文本，永不返回 patch/diff；前端无"应用修改"按钮。
+'use strict';
+
+const { getRedlineRules } = require('./redlines');
+const { fileMetrics } = require('./score');
+const llm = require('./llm');
+
+// 分数分段（§8.2）：≥85 优秀 / 70~84 合格 / 50~69 屎山预警 / <50 屎山
+function levelOf(score) {
+  if (score >= 85) return '优秀 · 放心继续';
+  if (score >= 70) return '合格 · 有提升空间';
+  if (score >= 50) return '及格边缘 · 屎山预警';
+  return '屎山 · 建议重构';
+}
+
+// 命中判定：触发词组里 any 命中 ≥1 且 near 命中 ≥1（同文件即可，弱关联）
+function matchRule(rule, low) {
+  const anyHit = rule.triggers.any.some((t) => low.includes(t));
+  if (!anyHit) return false;
+  const nearHit = rule.triggers.near.some((t) => low.includes(t));
+  return nearHit;
+}
+
+// 定位触发词首次出现行号，给 loc
+function locateTrigger(rule, lines) {
+  const needles = [...rule.triggers.any, ...rule.triggers.near];
+  for (let i = 0; i < lines.length; i++) {
+    const low = lines[i].toLowerCase();
+    if (needles.some((n) => low.includes(n))) return i + 1;
+  }
+  return 1;
+}
+
+/**
+ * 评审单个文件。
+ * @param {object} profile 画像（§8.1，含 industry）
+ * @param {object} target  { file, content }
+ * @param {object} [opts]  { useLLM?:boolean }
+ * @returns {Promise<object>} §8.2 结构
+ */
+async function reviewFile(profile, target, opts = {}) {
+  const rules = getRedlineRules(profile.industry);
+  const content = target.content || '';
+  const low = content.toLowerCase();
+  const lines = content.split('\n');
+
+  const issues = [];
+  let penalty = 0;
+  for (const rule of rules) {
+    if (!matchRule(rule, low)) continue;
+    const lineNo = locateTrigger(rule, lines);
+    let problem = rule.problem;
+    let fix = rule.fix;
+
+    // 可选：真 API 精修文案（失败自动回退规则文案）
+    if (opts.useLLM && llm.isEnabled()) {
+      const refined = await llm.refineIssue(profile, target, {
+        problem: rule.problem,
+        techDetail: `${target.file}:${lineNo} 触发「${rule.name}」`,
+      });
+      if (refined && refined.problem && refined.fix) {
+        problem = refined.problem;
+        fix = refined.fix;
+      }
+    }
+
+    issues.push({
+      id: rule.id.replace('R', 'I'),
+      problem,                                  // 强制行话
+      techDetail: `${target.file}:${lineNo} 触发「${rule.name}」红线规则`, // 默认折叠
+      redlineLevel: rule.level,
+      redlineName: rule.name,
+      fix,                                      // 文字改法，绝不 diff
+      loc: `${target.file}:${lineNo}`,
+    });
+    penalty += rule.level === 'high' ? 18 : rule.level === 'medium' ? 10 : 5;
+  }
+
+  const score = Math.max(0, 100 - penalty);
+  const highN = issues.filter((i) => i.redlineLevel === 'high').length;
+  const summary = issues.length === 0
+    ? '未发现明显红线问题，代码质量良好'
+    : `${issues.length} 处问题${highN ? `（其中 ${highN} 处高危红线）` : ''}`;
+
+  return {
+    file: target.file,
+    score,
+    scoreLevel: levelOf(score),
+    summary,
+    issues,
+    engine: (opts.useLLM && llm.isEnabled()) ? 'rule+llm' : 'rule',
+  };
+}
+
+/** 评审整个项目（多文件）→ 汇总分 + 全部 issues。 */
+async function reviewProject(profile, files, opts = {}) {
+  const perFile = [];
+  for (const f of files) {
+    const r = await reviewFile(profile, f, opts);
+    if (r.issues.length > 0) perFile.push(r);
+  }
+  const allIssues = perFile.flatMap((r) => r.issues);
+  // 项目总分：取各文件最低分加权，突出最严重短板
+  const score = perFile.length
+    ? Math.max(0, 100 - allIssues.reduce((s, i) =>
+        s + (i.redlineLevel === 'high' ? 18 : i.redlineLevel === 'medium' ? 10 : 5), 0))
+    : 95;
+  const highN = allIssues.filter((i) => i.redlineLevel === 'high').length;
+  return {
+    score,
+    scoreLevel: levelOf(score),
+    summary: allIssues.length
+      ? `全项目 ${allIssues.length} 处问题，${highN} 处踩医疗高危红线`
+      : '全项目未发现明显红线问题',
+    issues: allIssues,
+    perFile,
+    engine: (opts.useLLM && llm.isEnabled()) ? 'rule+llm' : 'rule',
+  };
+}
+
+module.exports = { reviewFile, reviewProject, generalIssues, levelOf };
+
+// ── 通用代码健康提示（无行业红线时兜底）─────────────────────
+// 任何项目（哪怕识别为 unknown）也能命中：可维护性 / 圈复杂度 / 嵌套 / 注释率 / 文件大小
+// 对齐 reviewProject().issues 形态，但 redlineLevel 只取 'mid' | 'low'，且 generic:true。
+function generalIssues(files, _scorecard) {
+  const out = [];
+  let counter = 1;
+  for (const f of files || []) {
+    const content = f.content || '';
+    if (!content.trim()) continue;
+    const m = fileMetrics(content);
+    const file = f.file;
+    const push = (problem, fix, level, line = 1) => {
+      out.push({
+        id: 'G' + String(counter++).padStart(3, '0'),
+        problem,
+        techDetail: `${file}:${line} 通用代码健康检查命中`,
+        redlineLevel: level,        // 'mid' | 'low'（无 high，区别于行业红线）
+        redlineName: '通用代码健康',
+        fix,
+        loc: `${file}:${line}`,
+        generic: true,
+      });
+    };
+
+    const fileIssues = [];
+    if (m.mi < 50) {
+      fileIssues.push({
+        problem: `可维护性低 · 微软 MI=${Math.round(m.mi)}`,
+        fix: '拆分长函数、降低圈复杂度，目标 MI ≥ 65（微软 VS 默认绿线）',
+        level: 'mid',
+      });
+    }
+    if (m.cyclomatic > 10) {
+      fileIssues.push({
+        problem: `复杂度过高 · 文件圈复杂度 ${m.cyclomatic}`,
+        fix: '把决策点超 10 的函数拆成多个小函数，单函数 CC 控制在 ≤ 10（McCabe 原始建议）',
+        level: m.cyclomatic > 20 ? 'mid' : 'low',
+      });
+    }
+    if (m.maxDepth > 4) {
+      fileIssues.push({
+        problem: `嵌套过深 · 最大深度 ${m.maxDepth}`,
+        fix: '用 early return / 守卫语句拍平嵌套，目标 ≤ 4 层（Linux 内核 + Code Climate 共识）',
+        level: m.maxDepth > 6 ? 'mid' : 'low',
+      });
+    }
+    const commentPct = Math.round(m.commentRatio * 100);
+    if (commentPct < 5 && m.lines > 30) {
+      fileIssues.push({
+        problem: `注释率低 · ${commentPct}%`,
+        fix: '为关键函数补写一句意图注释，至少标出"做什么 / 为什么这样写"',
+        level: 'low',
+      });
+    }
+    if (m.loc > 300) {
+      fileIssues.push({
+        problem: `文件偏大 · ${m.loc} 行`,
+        fix: '按职责拆成多个文件，单文件目标 ≤ 300 行（Sandi Metz "首字法则"扩展版）',
+        level: m.loc > 600 ? 'mid' : 'low',
+      });
+    }
+
+    // 每文件最多保留 3 条，避免大项目刷屏
+    for (const it of fileIssues.slice(0, 3)) push(it.problem, it.fix, it.level);
+  }
+
+  // ── 项目级耦合 issue（依赖图分析）—— 屎山的核心标志 ──
+  try {
+    const { couplingScore } = require('./coupling');
+    const c = couplingScore(files);
+    let cidx = 1;
+    const pushCp = (problem, fix, level, file = '<project>') => {
+      out.push({
+        id: 'C' + String(cidx++).padStart(3, '0'),
+        problem, techDetail: `耦合度分析：${problem}`,
+        redlineLevel: level, redlineName: '耦合度',
+        fix, loc: file, generic: true, coupling: true,
+      });
+    };
+    // 1. 循环依赖（最严重的屎山特征）
+    for (const cycle of (c.cycles || []).slice(0, 5)) {
+      pushCp(
+        `循环依赖 · ${cycle.length} 个文件互相依赖：${cycle.slice(0, 3).join(' ⇄ ')}${cycle.length > 3 ? '...' : ''}`,
+        '断环：把共用接口提到独立模块、用依赖倒置（Robert C. Martin DIP）；最重的那个文件单向依赖其他，不被反向依赖',
+        'mid',
+        cycle[0],
+      );
+    }
+    // 2. 上帝文件
+    for (const g of (c.godFiles || []).slice(0, 5)) {
+      pushCp(
+        `上帝文件 · ${g.file} 出度 ${g.ce} / 入度 ${g.ca}（业界阈值 15）`,
+        '按职责拆分：一个文件负责一件事，目标 Ce + Ca ≤ 15（SonarQube coupling_between_objects 标准）',
+        g.ce + g.ca > 25 ? 'mid' : 'low',
+        g.file,
+      );
+    }
+    // 3. 平均耦合过高
+    if (c.avgCe > 7) {
+      pushCp(
+        `团队普遍写得耦合 · 平均出度 Ce = ${c.avgCe}`,
+        '走依赖倒置：业务层不直接依赖实现层，靠接口/事件解耦。目标平均 Ce ≤ 5',
+        'low',
+      );
+    }
+  } catch {}
+
+  return out;
+}

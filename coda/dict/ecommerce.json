@@ -1,0 +1,19 @@
+{
+  "industry": "ecommerce",
+  "label": "电商",
+  "emoji": "🛒",
+  "categories": {
+    "order": {
+      "weight": 3.0,
+      "words": ["order", "orderId", "order_id", "订单", "下单", "purchase", "checkout", "结算", "购物车", "cart", "shipping", "物流", "发货"]
+    },
+    "product": {
+      "weight": 2.5,
+      "words": ["product", "sku", "spu", "商品", "库存", "inventory", "stock", "上架", "价格", "price", "促销", "discount", "优惠券", "coupon"]
+    },
+    "payment": {
+      "weight": 3.0,
+      "words": ["payment", "pay", "支付", "退款", "refund", "wallet", "余额", "支付宝", "微信支付", "alipay", "wxpay", "交易", "transaction"]
+    }
+  }
+}

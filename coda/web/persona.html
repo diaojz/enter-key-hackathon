@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src http://127.0.0.1:* http://localhost:*; img-src 'self' data:;">
+<title>我是谁 · 小哒 Coda</title>
+<style>
+:root{
+  --bg:#ece7de;--card:#fffdf8;--ink:#2b2723;--sub:#6b6258;
+  --accent:#e0623a;--accent-light:#f48e6c;--line:#ddd5c8;--pill:#f0eadf;
+  --green:#3f8f5b;--red:#c0452f;--blue:#3f7d8f;--amber:#d98a2b;--purple:#7a5fa3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{display:flex;flex-direction:column;min-height:100vh}
+
+/* 顶部 toolbar（对齐 graph.html）*/
+.head{padding:14px 18px 12px;border-bottom:1px solid var(--line);background:var(--bg);flex:none;position:sticky;top:0;z-index:10}
+.title-row{display:flex;align-items:center;gap:12px}
+.logo{font-size:30px;line-height:1}
+.title{font-family:Georgia,"Songti SC",serif;font-size:18px;font-weight:700}
+.kicker{display:inline-block;background:var(--accent);color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 9px;border-radius:999px;margin-right:8px}
+.tag{font-size:12px;color:var(--sub);margin-top:1px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-top:11px;flex-wrap:wrap}
+.btn{font-size:12.5px;font-weight:700;padding:6px 14px;border:none;border-radius:8px;cursor:pointer;background:var(--accent);color:#fff;transition:filter .12s,transform .08s}
+.btn:hover{filter:brightness(1.07)} .btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.danger{background:var(--red);color:#fff}
+.btn.danger:hover{filter:brightness(1.05)}
+.btn.green{background:var(--green);color:#fff}
+.meta{font-size:12px;color:var(--sub);margin-left:auto;font-family:"SF Mono",Menlo,monospace}
+
+/* 主体 */
+.body{flex:1;padding:24px 18px 60px;max-width:1100px;margin:0 auto;width:100%}
+.section{margin-bottom:28px}
+.section-title{font-family:Georgia,serif;font-size:14px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title .badge{background:var(--pill);color:var(--ink);font-size:10px;padding:2px 7px;border-radius:999px;font-family:"SF Mono",monospace;letter-spacing:0;text-transform:none}
+
+/* hero */
+.hero{text-align:center;padding:32px 16px 28px}
+.hero h1{font-family:Georgia,"Songti SC",serif;font-size:34px;font-weight:700;letter-spacing:-.01em;margin-bottom:10px}
+.hero .sub{font-size:14px;color:var(--sub)}
+.hero .sub .dot{color:var(--accent);margin:0 6px}
+
+/* 核心身份卡 */
+.identity{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 30px;box-shadow:0 1px 0 rgba(43,39,35,.03)}
+.identity .primary{display:flex;align-items:center;gap:18px;margin-bottom:6px}
+.identity .emoji{font-size:54px;line-height:1}
+.identity .primary-text{flex:1}
+.identity .primary-text .name{font-family:Georgia,serif;font-size:26px;font-weight:700;margin-bottom:4px}
+.identity .primary-text .weight{font-size:13px;color:var(--sub);font-family:"SF Mono",monospace}
+.identity .conf-bar{height:8px;background:var(--pill);border-radius:999px;overflow:hidden;margin-top:8px}
+.identity .conf-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-light));border-radius:999px;transition:width .4s ease}
+.identity .secondary{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
+.identity .sec-pill{background:var(--pill);border:1px dashed var(--line);border-radius:8px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:6px}
+.identity .sec-pill .em{font-size:16px}
+.identity .stats{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:18px;border-top:1px dashed var(--line)}
+.identity .stat{text-align:center}
+.identity .stat .k{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.identity .stat .v{font-family:Georgia,serif;font-size:18px;font-weight:700}
+.identity .actions{margin-top:18px;display:flex;gap:10px;justify-content:center;padding-top:16px;border-top:1px dashed var(--line);flex-wrap:wrap}
+.identity .confirmed-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px}
+.chip .score{color:var(--sub);font-family:"SF Mono",monospace;font-size:10.5px;background:var(--pill);padding:1px 6px;border-radius:999px}
+
+/* 时间轴 */
+.timeline{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;overflow-x:auto}
+.timeline-track{display:flex;align-items:flex-start;gap:0;min-height:140px;position:relative;padding:18px 8px 8px;min-width:fit-content}
+.timeline-track::before{content:'';position:absolute;left:18px;right:18px;top:46px;height:2px;background:var(--line);z-index:0}
+.tl-item{flex:0 0 auto;min-width:160px;position:relative;text-align:center;padding:0 12px}
+.tl-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);margin:0 auto 14px;border:3px solid var(--card);box-shadow:0 0 0 2px var(--accent);position:relative;z-index:1;cursor:pointer;transition:transform .15s}
+.tl-dot:hover{transform:scale(1.2)}
+.tl-item .tl-time{font-family:"SF Mono",monospace;font-size:10.5px;color:var(--sub);margin-bottom:4px}
+.tl-item .tl-label{font-size:12.5px;line-height:1.4;color:var(--ink);max-width:160px;margin:0 auto}
+
+/* 决策日志表格 */
+.decisions{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.dec-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.dec-table th{background:var(--pill);text-align:left;padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;border-bottom:1px solid var(--line)}
+.dec-table td{padding:10px 14px;border-bottom:1px dashed var(--line);vertical-align:top}
+.dec-table tr:last-child td{border-bottom:none}
+.dec-row{cursor:pointer;transition:background .12s}
+.dec-row:hover{background:rgba(224,98,58,.05)}
+.dec-row .when{font-family:"SF Mono",monospace;font-size:11px;color:var(--sub);white-space:nowrap}
+.dec-row .proj{font-weight:600;color:var(--ink);font-family:"SF Mono",monospace;font-size:11.5px}
+.dec-row .ind{display:inline-block;background:var(--green);color:#fff;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600}
+.dec-row .conf{font-family:"SF Mono",monospace;font-size:11px}
+.dec-row .ev{color:var(--sub);font-size:11.5px;font-family:"SF Mono",monospace}
+.dec-detail{background:rgba(224,98,58,.04);padding:14px 18px;font-size:12px;line-height:1.6}
+.dec-detail .lbl{font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700}
+.dec-detail .ev-words{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.dec-detail .ev-words .w{background:var(--pill);border-radius:4px;padding:2px 8px;font-family:"SF Mono",monospace;font-size:11px}
+.dec-detail .redline{color:var(--red);font-size:11.5px;margin-top:2px}
+
+/* corrections */
+.corrections{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.corr-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.corr-item:last-child{border-bottom:none}
+.corr-item .when{font-family:"SF Mono",monospace;font-size:11px;color:var(--sub);min-width:140px}
+.corr-item .arrow{font-size:14px;color:var(--accent)}
+.corr-item .before{background:var(--pill);padding:3px 9px;border-radius:6px;font-size:12px;text-decoration:line-through;color:var(--sub);font-family:"SF Mono",monospace}
+.corr-item .after{background:var(--green);color:#fff;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:700}
+.corr-item .reason{flex:1;color:var(--sub);font-size:12px;font-style:italic}
+
+.empty{text-align:center;padding:40px 20px;color:var(--sub);font-size:13px}
+.empty .icon{font-size:36px;margin-bottom:10px;opacity:.5}
+
+/* 模态框 */
+.modal-bg{position:fixed;inset:0;background:rgba(43,39,35,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:var(--card);border-radius:14px;padding:26px 28px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal h2{font-family:Georgia,serif;font-size:20px;margin-bottom:8px}
+.modal p{font-size:13px;color:var(--sub);margin-bottom:18px;line-height:1.5}
+.modal label{display:block;font-size:12px;color:var(--sub);margin-bottom:6px;font-weight:600}
+.modal input,.modal textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font:inherit;font-size:13px;color:var(--ink);outline:none;margin-bottom:14px;font-family:inherit}
+.modal input:focus,.modal textarea:focus{border-color:var(--accent)}
+.modal textarea{resize:vertical;min-height:60px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+
+/* 状态提示 */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 18px;border-radius:8px;font-size:13px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.toast.error{background:var(--red)}
+.toast.success{background:var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="head">
+    <div class="title-row">
+      <div class="logo">🐕</div>
+      <div>
+        <div><span class="kicker">回车键 · 我是谁</span></div>
+        <div class="title">小哒认识你 · 持久化画像</div>
+        <div class="tag">越扫越懂你 · 数据来自 /persona/detailed · 每 10 秒自动刷新</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="refresh">🔄 刷新</button>
+      <a class="btn ghost" href="graph.html" style="text-decoration:none;display:inline-block">🕸️ 看图谱</a>
+      <button class="btn danger" id="resetBtn">⚠️ 重置画像</button>
+      <span class="meta" id="metaInfo">载入中…</span>
+    </div>
+  </header>
+
+  <main class="body">
+
+    <section class="section hero">
+      <h1 id="heroTitle">小哒认识你这么久了</h1>
+      <div class="sub">越用越懂你<span class="dot">·</span>持久化追踪<span class="dot">·</span>所有判断都可纠正</div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">核心身份 <span class="badge" id="confBadge"></span></div>
+      <div class="identity" id="identity">
+        <div class="empty"><div class="icon">⏳</div>载入中…</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">能力库 <span class="badge" id="skillsCount"></span></div>
+      <div class="chips" id="skillsChips"><span style="color:var(--sub);font-size:13px">载入中…</span></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">项目时间轴 <span class="badge" id="timelineCount"></span></div>
+      <div class="timeline" id="timeline">
+        <div class="empty"><div class="icon">⏳</div>载入中…</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">决策日志 <span class="badge" id="historyCount"></span></div>
+      <div class="decisions" id="decisions">
+        <div class="empty"><div class="icon">⏳</div>载入中…</div>
+      </div>
+    </section>
+
+    <section class="section" id="corrSection" style="display:none">
+      <div class="section-title">修正记录 <span class="badge" id="corrCount"></span></div>
+      <div class="corrections" id="corrections"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">那你是做什么的？</h2>
+    <p>告诉小哒你真正的领域，它会立刻更新画像并下次记住。</p>
+    <label>行业标签（例如：教育、电商、AI 工具）</label>
+    <input type="text" id="modalIndustry" placeholder="例如：医疗">
+    <label>原因（可选）</label>
+    <textarea id="modalReason" placeholder="例如：我专注牙科诊所系统"></textarea>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modalCancel">取消</button>
+      <button class="btn" id="modalSubmit">提交</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const PORT = (new URLSearchParams(location.search)).get('port') || '8848';
+const API = `http://127.0.0.1:${PORT}`;
+const $ = (s) => document.querySelector(s);
+
+const INDUSTRY_EMOJI = {
+  '医疗':'🏥','牙科':'🦷','教育':'📚','电商':'🛒','金融':'💰','物流':'📦',
+  '游戏':'🎮','社交':'💬','工具':'🔧','AI':'🤖','法律':'⚖️','餐饮':'🍴',
+  '旅游':'✈️','地产':'🏠','广告':'📣','媒体':'📰','汽车':'🚗','农业':'🌾'
+};
+const emojiFor = (label) => {
+  if (!label) return '🧭';
+  for (const k of Object.keys(INDUSTRY_EMOJI)) if (label.includes(k)) return INDUSTRY_EMOJI[k];
+  return '🧭';
+};
+
+const state = { persona:null, history:null, confirmed:false, lastFetch:0 };
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtTime(iso){
+  if(!iso) return '—';
+  try{
+    const d = new Date(iso);
+    const now = new Date();
+    const same = d.toDateString() === now.toDateString();
+    const hh = String(d.getHours()).padStart(2,'0'), mm = String(d.getMinutes()).padStart(2,'0');
+    if (same) return `今天 ${hh}:${mm}`;
+    const mo = String(d.getMonth()+1).padStart(2,'0'), da = String(d.getDate()).padStart(2,'0');
+    return `${mo}-${da} ${hh}:${mm}`;
+  } catch(e){return iso;}
+}
+function fmtPct(n){return Math.round((n||0)*100) + '%';}
+
+function showToast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg; t.className = 'toast show' + (kind?' '+kind:'');
+  setTimeout(()=>{ t.className = 'toast'; }, 2200);
+}
+
+async function loadAll(){
+  try{
+    const [pRes, hRes] = await Promise.all([
+      fetch(`${API}/persona/detailed`),
+      fetch(`${API}/persona/history?limit=200`)
+    ]);
+    if (!pRes.ok) throw new Error('persona HTTP ' + pRes.status);
+    const pJ = await pRes.json();
+    state.persona = pJ.persona || pJ;
+    if (hRes.ok) state.history = await hRes.json();
+    state.lastFetch = Date.now();
+    render();
+    $('#metaInfo').textContent = `更新于 ${new Date().toLocaleTimeString()}`;
+  } catch(e){
+    $('#metaInfo').textContent = '连接失败：' + e.message;
+    if (!state.persona){
+      $('#identity').innerHTML = `<div class="empty"><div class="icon">🔌</div>连不上 ${API}<br><span style="font-size:12px">请确认 <code>cd coda && node server.js</code> 已启动</span></div>`;
+    }
+  }
+}
+
+function render(){
+  const p = state.persona; if (!p) return;
+  renderIdentity(p);
+  renderSkills(p.skills || []);
+  renderTimeline(p.timeline || []);
+  renderDecisions(state.history && state.history.all || p.timeline || []);
+  renderCorrections(p.corrections || []);
+}
+
+function renderIdentity(p){
+  const inds = p.industries || [];
+  const stats = p.stats || {};
+  const primary = inds[0];
+  const secondary = inds.slice(1, 3);
+
+  if (!primary){
+    $('#identity').innerHTML = `<div class="empty"><div class="icon">🤷</div>还没扫过项目<br><span style="font-size:12px">先用 <code>POST /scan</code> 让小哒认识你</span></div>`;
+    $('#confBadge').textContent = '';
+    return;
+  }
+
+  const totalW = inds.reduce((a,x)=>a+(x.weight||0),0) || 1;
+  const pctPrim = Math.round((primary.weight||0)/totalW*100);
+  const conf = primary.confidence || 0;
+  $('#confBadge').textContent = '置信度 ' + fmtPct(conf);
+
+  const confirmedBadge = state.confirmed ? `<span class="confirmed-badge">✓ 你已确认</span>` : '';
+  const actionsHtml = state.confirmed
+    ? `<div style="text-align:center;flex:1">${confirmedBadge}<button class="btn ghost" id="unconfirmBtn" style="margin-left:10px">改主意</button></div>`
+    : `<button class="btn green" id="agreeBtn">✓ 我同意</button>
+       <button class="btn ghost" id="disagreeBtn">✗ 我不是这个</button>`;
+
+  const secHtml = secondary.length ? `<div class="secondary">${secondary.map(s=>{
+    const pct = Math.round((s.weight||0)/totalW*100);
+    return `<div class="sec-pill"><span class="em">${emojiFor(s.label)}</span><span><b>${esc(s.label)}</b> · ${pct}%</span></div>`;
+  }).join('')}</div>` : '';
+
+  $('#identity').innerHTML = `
+    <div class="primary">
+      <div class="emoji">${emojiFor(primary.label)}</div>
+      <div class="primary-text">
+        <div class="name">${esc(primary.label)} <span style="font-size:14px;color:var(--sub);font-weight:500">· 权重 ${pctPrim}%</span></div>
+        <div class="weight">键 ${esc(primary.key)} · 项目 ${(primary.projects||[]).length} 个 · 关键词 ${(primary.evidenceWords||[]).length} 条</div>
+        <div class="conf-bar"><div class="fill" style="width:${Math.round(conf*100)}%"></div></div>
+      </div>
+    </div>
+    ${secHtml}
+    <div class="stats">
+      <div class="stat"><div class="k">项目总数</div><div class="v">${stats.uniqueProjects||0}</div></div>
+      <div class="stat"><div class="k">最早扫描</div><div class="v" style="font-size:12px;font-family:'SF Mono',monospace">${fmtTime(p.identity&&p.identity.firstSeen)}</div></div>
+      <div class="stat"><div class="k">最近活跃</div><div class="v" style="font-size:12px;font-family:'SF Mono',monospace">${fmtTime((primary.projects||[])[0]&&primary.projects[0].lastSeen)}</div></div>
+    </div>
+    <div class="actions">${actionsHtml}</div>
+  `;
+
+  const ag = $('#agreeBtn'); if (ag) ag.onclick = ()=>handleAgree(primary);
+  const dis = $('#disagreeBtn'); if (dis) dis.onclick = ()=>openModal(primary);
+  const un = $('#unconfirmBtn'); if (un) un.onclick = ()=>{ state.confirmed = false; render(); };
+}
+
+function renderSkills(skills){
+  $('#skillsCount').textContent = skills.length + ' 个';
+  if (!skills.length){
+    $('#skillsChips').innerHTML = `<span style="color:var(--sub);font-size:13px">暂无能力数据</span>`;
+    return;
+  }
+  $('#skillsChips').innerHTML = skills.slice(0, 30).map(s =>
+    `<span class="chip">${esc(s.word)}<span class="score">${s.score}</span></span>`
+  ).join('');
+}
+
+function renderTimeline(items){
+  $('#timelineCount').textContent = items.length + ' 次扫描';
+  if (!items.length){
+    $('#timeline').innerHTML = `<div class="empty"><div class="icon">📅</div>还没有扫描记录</div>`;
+    return;
+  }
+  const sorted = [...items].sort((a,b) => new Date(a.ts) - new Date(b.ts));
+  $('#timeline').innerHTML = `<div class="timeline-track">${sorted.map((it,i)=>`
+    <div class="tl-item">
+      <div class="tl-dot" title="${esc(it.summary||'')}"></div>
+      <div class="tl-time">${fmtTime(it.ts)}</div>
+      <div class="tl-label">${esc(it.summary || ('扫描 #'+(i+1)))}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderDecisions(history){
+  const items = (history || []).slice(0, 20).reverse ? [...(history||[])].reverse().slice(0,20) : (history||[]).slice(-20).reverse();
+  $('#historyCount').textContent = items.length + ' 条';
+  if (!items.length){
+    $('#decisions').innerHTML = `<div class="empty"><div class="icon">🧠</div>还没有决策记录</div>`;
+    return;
+  }
+  const rows = items.map((d,i) => {
+    const proj = d.root ? (d.root.split('/').pop() || d.root) : (d.project || '—');
+    const ind = d.industryLabel || d.industry || '—';
+    const ev = (d.evidenceWords || []).slice(0,4).join(' · ') || '—';
+    const conf = d.confidence != null ? fmtPct(d.confidence) : '—';
+    const redlines = (d.topRedlines || []).join('；');
+    const allEv = (d.evidenceWords||[]).map(w=>`<span class="w">${esc(w)}</span>`).join('');
+    return `
+      <tr class="dec-row" data-idx="${i}">
+        <td class="when">${fmtTime(d.ts)}</td>
+        <td class="proj">${esc(proj)}</td>
+        <td><span class="ind">${esc(ind)}</span></td>
+        <td class="conf">${conf}</td>
+        <td class="ev">${esc(ev)}</td>
+      </tr>
+      <tr id="dec-${i}" style="display:none"><td colspan="5" class="dec-detail">
+        <div class="lbl">完整路径</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--sub);margin-bottom:10px">${esc(d.root||'—')}</div>
+        <div class="lbl">证据词（${(d.evidenceWords||[]).length}）</div>
+        <div class="ev-words">${allEv || '<span style="color:var(--sub)">无</span>'}</div>
+        ${redlines ? `<div class="lbl">红线</div><div class="redline">⛔ ${esc(redlines)}</div>` : ''}
+        ${d.score != null ? `<div class="lbl" style="margin-top:10px">扫描评分</div><div style="font-family:'SF Mono',monospace">${d.score}</div>` : ''}
+      </td></tr>`;
+  }).join('');
+  $('#decisions').innerHTML = `<table class="dec-table">
+    <thead><tr><th>时间</th><th>项目</th><th>推断行业</th><th>置信度</th><th>证据词</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+  $('#decisions').querySelectorAll('.dec-row').forEach(r=>{
+    r.onclick = ()=>{
+      const det = document.getElementById('dec-' + r.dataset.idx);
+      if (!det) return;
+      det.style.display = det.style.display === 'none' ? 'table-row' : 'none';
+    };
+  });
+}
+
+function renderCorrections(corrs){
+  if (!corrs.length){ $('#corrSection').style.display = 'none'; return; }
+  $('#corrSection').style.display = 'block';
+  $('#corrCount').textContent = corrs.length;
+  $('#corrections').innerHTML = corrs.slice().reverse().map((c,i)=>`
+    <div class="corr-item">
+      <span class="when">${fmtTime(c.ts)}</span>
+      <span class="before">${esc(c.before||'—')}</span>
+      <span class="arrow">→</span>
+      <span class="after">${esc(c.after||'—')}</span>
+      <span class="reason">${c.reason ? '“'+esc(c.reason)+'”' : '<span style="font-style:normal;opacity:.5">无原因</span>'}</span>
+      <button class="btn ghost" data-undo="${i}" style="padding:4px 10px;font-size:11px">撤销</button>
+    </div>`).join('');
+  $('#corrections').querySelectorAll('[data-undo]').forEach(b => {
+    b.onclick = async () => {
+      showToast('撤销功能 TODO（暂未实现 /persona/correction DELETE）', 'error');
+    };
+  });
+}
+
+async function handleAgree(primary){
+  try{
+    const r = await fetch(`${API}/persona/correction`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ kind:'confirm', after: primary.key, reason:'用户确认', confirmed:true })
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    state.confirmed = true;
+    showToast('已记录你的确认 ✓', 'success');
+    render();
+    loadAll();
+  } catch(e){
+    state.confirmed = true;
+    showToast('确认已记录（本地）', 'success');
+    render();
+  }
+}
+
+function openModal(primary){
+  $('#modalIndustry').value = '';
+  $('#modalReason').value = '';
+  $('#modal').classList.add('show');
+  setTimeout(()=>$('#modalIndustry').focus(), 50);
+  $('#modal').dataset.beforeKey = primary.key || '';
+  $('#modal').dataset.beforeLabel = primary.label || '';
+}
+function closeModal(){ $('#modal').classList.remove('show'); }
+$('#modalCancel').onclick = closeModal;
+$('#modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+
+$('#modalSubmit').onclick = async () => {
+  const after = $('#modalIndustry').value.trim();
+  const reason = $('#modalReason').value.trim();
+  if (!after){ showToast('请填行业标签', 'error'); return; }
+  try{
+    const r = await fetch(`${API}/persona/correction`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        kind:'industry',
+        before: $('#modal').dataset.beforeKey,
+        after,
+        reason
+      })
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    showToast('已更新画像 ✓', 'success');
+    closeModal();
+    state.confirmed = false;
+    await loadAll();
+  } catch(e){
+    showToast('提交失败：' + e.message, 'error');
+  }
+};
+
+$('#resetBtn').onclick = async () => {
+  if (!confirm('确认重置画像？此操作不可撤销。')) return;
+  if (!confirm('再次确认：所有历史扫描、决策、修正都会被清空。')) return;
+  try{
+    // TODO: 后端 /persona/reset 端点 Phase A 未实现，按钮先做出来
+    const r = await fetch(`${API}/persona/reset`, { method:'POST' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    showToast('画像已重置 ✓', 'success');
+    state.confirmed = false;
+    await loadAll();
+  } catch(e){
+    showToast('重置失败（端点未实现）：' + e.message, 'error');
+  }
+};
+
+$('#refresh').onclick = loadAll;
+
+// 周期性轮询（每 10 秒）
+let pollTimer = null;
+function startPoll(){
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(() => {
+    if (document.visibilityState === 'visible') loadAll();
+  }, 10000);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && Date.now() - state.lastFetch > 5000) loadAll();
+});
+
+// 启动
+loadAll();
+startPoll();
+</script>
+</body>
+</html>
