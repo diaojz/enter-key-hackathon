@@ -36,8 +36,27 @@
 | `代码资产.html` | 代码资产盘点（成就栏目）：6 个跨行业 demo 项目的实测可视化（六维雷达 / 行业分布 / 技术栈占比 / 关联图谱 / 对外话术）。纯 SVG 零依赖，数据来自 `../industry-demo-repos/` 实测 |
 | `feishu-auth-qr.png` | 飞书读取授权二维码（一次性物料，用完可删） |
 | `README.md` | 作战中心总览 + 关键信息速记 + 待办 |
+| `coda/` | **小哒 Coda 评价 Agent 后端（Node 实现）**：合并自 `feat/claude-coda-side-implementation`（Claude 侧实现）。**零三方依赖**（纯 Node 内置模块），`cd coda && node server.js` 起服务（默认 `:8848`），浏览器开 `localhost:8848` 演两幕。详见下「两套后端实现」 + `coda/README.md` |
+| `agent/` | **原主线后端（Python 实现）**：零三方依赖（`http.server` + `urllib`），对接 `工作台.html` / 云端 Render。详见下「两套后端实现」 |
 
 文件名用中文，便于现场快速辨识。新增速查页延续「单文件 HTML、暖米编辑风、双击即开」的约定。
+
+## 两套后端实现（重要：别混淆）
+
+本仓库现存**两套互相独立、各自零依赖的评价 Agent 后端**，做同一件事（扫盘反推行业 + 评分/行话/复用），但语言、入口、端口都不同：
+
+| | `agent/`（Python） | `coda/`（Node） |
+|---|---|---|
+| 来源 | 仓库原主线 | 合并自 `feat/claude-coda-side-implementation`（Claude 侧实现） |
+| 语言 | Python，标准库 `http.server` + `urllib` | Node，纯内置模块 |
+| 启动 | 见 `agent/` 启动脚本 | `cd coda && node server.js` |
+| 端口 | 对接云端 Render / 工作台.html | 默认 `:8848` |
+| 接口 | `/scan` `/profile` `/review` `/explain` `/reuse` `/notify` `/persona` | `/scan` `/review` `/reuse` `/persona` `/kg/*` 等 |
+| 前端 | `工作台.html`（网页兜底）+ Electron 桌宠 | `coda/web/`（含知识图谱可视化 `graph.html`） |
+
+- **`工作台.html` 默认连的是 `agent/`（云端 Render）**，不是 `coda/`。两者不要混接。
+- `coda/` 多了一层**知识图谱**（`coda/agent/kg.js` + `coda/web/graph.html`，存 `~/.coda/kg.json`），`agent/` 没有。
+- 改后端时先确认改的是哪一套：扫盘演示主线 / 工作台对接走 `agent/`；Claude 侧 Node 实现 + 知识图谱走 `coda/`。
 
 ## 常用命令
 
