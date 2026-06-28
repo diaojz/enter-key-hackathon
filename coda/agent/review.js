@@ -4,6 +4,7 @@
 'use strict';
 
 const { getRedlineRules } = require('./redlines');
+const { fileMetrics } = require('./score');
 const llm = require('./llm');
 
 // 分数分段（§8.2）：≥85 优秀 / 70~84 合格 / 50~69 屎山预警 / <50 屎山
@@ -119,4 +120,72 @@ async function reviewProject(profile, files, opts = {}) {
   };
 }
 
-module.exports = { reviewFile, reviewProject, levelOf };
+module.exports = { reviewFile, reviewProject, generalIssues, levelOf };
+
+// ── 通用代码健康提示（无行业红线时兜底）─────────────────────
+// 任何项目（哪怕识别为 unknown）也能命中：可维护性 / 圈复杂度 / 嵌套 / 注释率 / 文件大小
+// 对齐 reviewProject().issues 形态，但 redlineLevel 只取 'mid' | 'low'，且 generic:true。
+function generalIssues(files, _scorecard) {
+  const out = [];
+  let counter = 1;
+  for (const f of files || []) {
+    const content = f.content || '';
+    if (!content.trim()) continue;
+    const m = fileMetrics(content);
+    const file = f.file;
+    const push = (problem, fix, level, line = 1) => {
+      out.push({
+        id: 'G' + String(counter++).padStart(3, '0'),
+        problem,
+        techDetail: `${file}:${line} 通用代码健康检查命中`,
+        redlineLevel: level,        // 'mid' | 'low'（无 high，区别于行业红线）
+        redlineName: '通用代码健康',
+        fix,
+        loc: `${file}:${line}`,
+        generic: true,
+      });
+    };
+
+    const fileIssues = [];
+    if (m.mi < 50) {
+      fileIssues.push({
+        problem: `可维护性低 · 微软 MI=${Math.round(m.mi)}`,
+        fix: '拆分长函数、降低圈复杂度，目标 MI ≥ 65（微软 VS 默认绿线）',
+        level: 'mid',
+      });
+    }
+    if (m.cyclomatic > 10) {
+      fileIssues.push({
+        problem: `复杂度过高 · 文件圈复杂度 ${m.cyclomatic}`,
+        fix: '把决策点超 10 的函数拆成多个小函数，单函数 CC 控制在 ≤ 10（McCabe 原始建议）',
+        level: m.cyclomatic > 20 ? 'mid' : 'low',
+      });
+    }
+    if (m.maxDepth > 4) {
+      fileIssues.push({
+        problem: `嵌套过深 · 最大深度 ${m.maxDepth}`,
+        fix: '用 early return / 守卫语句拍平嵌套，目标 ≤ 4 层（Linux 内核 + Code Climate 共识）',
+        level: m.maxDepth > 6 ? 'mid' : 'low',
+      });
+    }
+    const commentPct = Math.round(m.commentRatio * 100);
+    if (commentPct < 5 && m.lines > 30) {
+      fileIssues.push({
+        problem: `注释率低 · ${commentPct}%`,
+        fix: '为关键函数补写一句意图注释，至少标出"做什么 / 为什么这样写"',
+        level: 'low',
+      });
+    }
+    if (m.loc > 300) {
+      fileIssues.push({
+        problem: `文件偏大 · ${m.loc} 行`,
+        fix: '按职责拆成多个文件，单文件目标 ≤ 300 行（Sandi Metz "首字法则"扩展版）',
+        level: m.loc > 600 ? 'mid' : 'low',
+      });
+    }
+
+    // 每文件最多保留 3 条，避免大项目刷屏
+    for (const it of fileIssues.slice(0, 3)) push(it.problem, it.fix, it.level);
+  }
+  return out;
+}

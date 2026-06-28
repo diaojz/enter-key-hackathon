@@ -3,8 +3,28 @@
 // 不调 LLM（炸场点本就是 0 LLM 的纯算法）；输出可被 /review 直接消费。
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const { getRedlines } = require('./redlines');
 const { getJargons, getSummary } = require('./jargons');
+
+// 行业英文 key → 中文 label（读 dict/*.json，找不到回退英文）
+let _labelCache = null;
+function industryLabel(key) {
+  if (!key) return '未识别';
+  if (!_labelCache) {
+    _labelCache = {};
+    try {
+      const dictDir = path.join(__dirname, '..', 'dict');
+      for (const f of fs.readdirSync(dictDir)) {
+        if (!f.endsWith('.json')) continue;
+        const d = JSON.parse(fs.readFileSync(path.join(dictDir, f), 'utf8'));
+        if (d.industry) _labelCache[d.industry] = d.label || d.industry;
+      }
+    } catch { /* 词库读不到就回退英文 */ }
+  }
+  return _labelCache[key] || key;
+}
 
 /**
  * @param {object} scan 扫盘输出（§7.4）
@@ -21,8 +41,8 @@ function buildProfile(scan) {
   }
   return {
     industry: top.industry,
-    label: top.label,
-    emoji: top.emoji,
+    label: top.label || industryLabel(top.industry), // 兜底：词库 label 缺失也保证中文
+    emoji: top.emoji || '🛠️',
     confidence: top.confidence,
     summary: getSummary(top.industry),
     evidence: top.evidence.map((e) => ({
@@ -31,10 +51,10 @@ function buildProfile(scan) {
     redlines: getRedlines(top.industry),
     jargons: getJargons(top.industry),
     candidates: scan.candidates.map((c) => ({
-      industry: c.industry, label: c.label, confidence: c.confidence,
+      industry: c.industry, label: c.label || industryLabel(c.industry), confidence: c.confidence,
     })),
     editable: true,
   };
 }
 
-module.exports = { buildProfile };
+module.exports = { buildProfile, industryLabel };

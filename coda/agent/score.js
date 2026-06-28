@@ -122,7 +122,43 @@ function scoreDimensions(files) {
   const duplication = Math.max(0, Math.round(100 - dupDensity * 2));
 
   return {
+    scores: { maintainability, complexity, readability, security, duplication },
+    // 兼容旧调用：直接展开 scores 到顶层
     maintainability, complexity, readability, security, duplication,
+    methods: {
+      maintainability: {
+        name: '微软可维护性指数',
+        formula: '171 - 5.2·ln(Halstead) - 0.23·CC - 16.2·ln(LOC)',
+        source: 'Microsoft VS Maintainability Index',
+        evidence: `每文件 MI 均值 ${maintainability}`,
+      },
+      complexity: {
+        name: '圈复杂度',
+        formula: 'M = E - N + 2P',
+        source: 'McCabe 1976',
+        evidence: `最大函数圈复杂度 ${Math.max(...ms.map((x) => x.m.cyclomatic), 0)}`,
+      },
+      readability: {
+        name: '可读性指数',
+        formula: '综合注释率/嵌套/文件长度',
+        source: 'CodeClimate 10 项检查',
+        evidence: `平均注释 ${Math.round(
+          (ms.reduce((s, x) => s + x.m.commentRatio, 0) / Math.max(1, ms.length)) * 100
+        )}%`,
+      },
+      security: {
+        name: '静态安全扫描',
+        formula: 'OWASP 模式匹配',
+        source: 'SonarQube Security Hotspots',
+        evidence: `命中 ${secHits.length} 个高危模式`,
+      },
+      duplication: {
+        name: '重复行密度',
+        formula: '重复行 / 总行 × 100',
+        source: 'SonarQube ≤3% 绿线',
+        evidence: `当前 ${+dupDensity.toFixed(1)}%`,
+      },
+    },
     _detail: {
       avgMI: maintainability,
       maxCyclomatic: Math.max(...ms.map((x) => x.m.cyclomatic), 0),
@@ -143,6 +179,7 @@ const WEIGHTS = { maintainability: 0.25, complexity: 0.20, readability: 0.20, se
  */
 function scoreProject(files, redlineIssues = []) {
   const dims = scoreDimensions(files);
+  const methods = dims.methods || {};
   const weighted = Object.entries(WEIGHTS).reduce((s, [k, w]) => s + dims[k] * w, 0);
 
   // 合规闸门（一票否决式）
@@ -165,11 +202,16 @@ function scoreProject(files, redlineIssues = []) {
     total,
     level,
     dimensions: [
-      { key: 'maintainability', label: '可维护性', score: dims.maintainability, weight: 25, method: '微软 Maintainability Index（0-100）' },
-      { key: 'complexity', label: '复杂度', score: dims.complexity, weight: 20, method: 'McCabe 圈复杂度 + 认知复杂度' },
-      { key: 'readability', label: '可读性', score: dims.readability, weight: 20, method: '注释率/嵌套/文件长度（Code Climate 思路）' },
-      { key: 'security', label: '安全性', score: dims.security, weight: 20, method: 'OWASP 模式 + SonarQube 分级（静态模式扫描）' },
-      { key: 'duplication', label: '重复度', score: dims.duplication, weight: 15, method: 'SonarQube 重复行密度（绿线 <3%）' },
+      { key: 'maintainability', label: '可维护性', score: dims.maintainability, weight: 25,
+        method: methods.maintainability || { name: '微软 Maintainability Index（0-100）' } },
+      { key: 'complexity', label: '复杂度', score: dims.complexity, weight: 20,
+        method: methods.complexity || { name: 'McCabe 圈复杂度' } },
+      { key: 'readability', label: '可读性', score: dims.readability, weight: 20,
+        method: methods.readability || { name: '注释率/嵌套/文件长度（Code Climate 思路）' } },
+      { key: 'security', label: '安全性', score: dims.security, weight: 20,
+        method: methods.security || { name: 'OWASP 模式 + SonarQube 分级' } },
+      { key: 'duplication', label: '重复度', score: dims.duplication, weight: 15,
+        method: methods.duplication || { name: 'SonarQube 重复行密度（绿线 <3%）' } },
     ],
     gate: { factor: gate, note: gateNote, highRedlines, midRedlines },
     detail: dims._detail,
