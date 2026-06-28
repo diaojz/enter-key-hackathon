@@ -50,7 +50,8 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
         "root": scan["root"],
         "fileCount": scan["fileCount"],
         "langs": scan["langs"],
-    }, "profile": profile, "reviews": [], "reuse": reuse, "reuseHint": reuse_hint}
+    }, "profile": profile, "reviews": [], "reuse": reuse, "reuseHint": reuse_hint,
+        "mapping": _build_mapping(scan, profile)}
 
     # ②解释：项目阶段（用行业语言讲现在在干什么）。只在能调 LLM + 行业已知时跑。
     if use_llm and profile["industry"] != "未知":
@@ -94,6 +95,47 @@ def run(root: str, use_llm: bool = True, review_limit: int = 3, pet: bool = True
             push_state("done", event="评价完成", cwd=scan["root"])
 
     return result
+
+
+def _build_mapping(scan: dict, profile: dict):
+    """把扫盘命中按文件归并成「代码文件 ↔ 行业行话」映射，供工作台「行业映射」对照卡用。
+
+    数据来源：scan["hits"] 里每个命中词天然带 term（行业行话）+ category（类别）+
+    where（出现的文件）。这里反过来按文件聚合：一个文件 → 它命中的行业行话清单。
+    只取当前推断行业的命中词（避免把别的行业的噪声混进来）；行业未知则不出映射。
+    """
+    industry = profile.get("industry", "未知")
+    if industry == "未知":
+        return {"industry": industry, "rows": []}
+
+    # 文件 -> {terms: set, categories: set, weight: 命中总次数}
+    by_file = {}
+    for h in scan.get("hits", []):
+        if h.get("industry") != industry:
+            continue
+        term = h.get("term", "")
+        category = h.get("category", "")
+        cnt = h.get("count", 0)
+        for rel in h.get("where", []):
+            slot = by_file.setdefault(rel, {"terms": [], "categories": set(), "weight": 0})
+            if term and term not in slot["terms"]:
+                slot["terms"].append(term)
+            if category:
+                slot["categories"].add(category)
+            slot["weight"] += cnt
+
+    # 拍平成行：每行 = 一个文件 + 它对应的行业行话（按命中权重降序，命中多的文件排前）
+    rows = []
+    for rel, slot in by_file.items():
+        rows.append({
+            "path": rel,
+            "module": os.path.splitext(os.path.basename(rel))[0],
+            "terms": slot["terms"][:6],
+            "categories": sorted(slot["categories"]),
+            "weight": slot["weight"],
+        })
+    rows.sort(key=lambda r: r["weight"], reverse=True)
+    return {"industry": industry, "rows": rows[:12]}
 
 
 def print_pretty(result: dict):
