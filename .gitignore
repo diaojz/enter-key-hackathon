@@ -19,3 +19,5 @@ dist/
 # 系统 & 临时
 Thumbs.db
 *.tmp
+
+.codegraph/

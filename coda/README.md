@@ -102,3 +102,54 @@ export CODA_AGENT_API_KEY=你的key
 export CODA_AGENT_API_URL=https://...   # opencli responses 端点
 node server.js                          # /review 自动走真 LLM，失败回退规则引擎
 ```
+
+---
+
+## 🕸️ 知识图谱层（KG · 飞轮+可视化）
+
+把每次扫盘的产出沉淀成一张**跨项目知识图谱**：既是「你的项目地图」，也是「越用越懂你」的用户画像飞轮 —— 同行业的轮子、踩过的红线、惯用的行业词，都在图里串成网，新项目一进来就能秒查类比。
+
+### 实体（Node Labels）
+
+| Label | 含义 | ID 格式 |
+|---|---|---|
+| `User` | 本地用户（单机一人，演示用） | `U:local` |
+| `Project` | 被扫的项目（带 visits/score/industry 等画像 props） | `P:<absRoot>` |
+| `Industry` | 行业（medical / ecommerce / education / finance …） | `I:<key>` |
+| `IndustryWord` | 行业词（带类别 + 跨项目命中聚合） | `IW:<industry>::<word>` |
+| `File` | 项目内文件（带语言 + 单文件评分） | `F:<projectId>::<relPath>` |
+| `Wheel` | 复用轮子（W1 患者ID校验 / W2 就诊状态机 …） | `W:<industry>::<wheelKey>` |
+| `Redline` | 行业红线（隐私裸奔 / 身份核验弱 …） | `R:<industry>::<redlineName>` |
+
+### 关系（Edge Types）
+
+| Type | from → to | 含义 |
+|---|---|---|
+| `OWNS` | User → Project | 我看过这个项目 |
+| `IS_IN` | Project → Industry | 反推出该项目属于哪行 |
+| `CONTAINS` | Project → File | 包含的文件 |
+| `INDICATES` | File → IndustryWord | 文件命中行业词（带 loc 可溯源） |
+| `BELONGS_TO` | IndustryWord → Industry | 行业词归属 |
+| `REUSES` | Project → Wheel | 该项目命中可复用轮子 |
+| `VIOLATES` | Project → Redline | 该项目触发的行业红线 |
+| `SIMILAR_TO` | Project ↔ Project | 同行业项目相似度（词/红线/轮子 Jaccard 加权） |
+
+### 存储
+
+单文件 JSON 图：`~/.coda/kg.json`（原子写：先写 `.tmp` 再 `rename`，防崩溃半截损坏）。同项目反复扫**幂等**，只更新 props（visits / lastSeen / hitCountTotal），不膨胀节点/边。
+
+### 接口
+
+| 路由 | 用途 |
+|---|---|
+| `GET /kg/graph` | 整图 dump（force-directed 友好的 `{nodes, links}`） |
+| `GET /kg/related?nodeId=X` | 指定节点的 N 跳邻居子图（含边） |
+| `GET /kg/similar?project=root` | 该项目的同行业姊妹项目（按 SIMILAR_TO 权重降序） |
+
+### 可视化
+
+浏览器开 [`http://localhost:8848/web/graph.html`](http://localhost:8848/web/graph.html)（`server.js` 已挂 `web/` 静态路由），也可 `file://` 直接拖 `web/graph.html` 进浏览器离线看。
+
+### 一句话「类比学习法」
+
+KG 把链路串起来 —— **行业词**（INDICATES）→ **行业**（BELONGS_TO / IS_IN）→ **红线**（VIOLATES）→ **改法**（同行业 Wheel 通过 REUSES 反查 + SIMILAR_TO 姊妹项目里的实战修法），新项目一进来，沿着 `File → Word → Industry → Redline → Wheel` 这条边走两跳，就能直接「类比抄作业」。

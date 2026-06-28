@@ -27,13 +27,13 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const url = require('url');
-
+const { URL } = require('url');
 const { scanDir } = require('./scanner/scan');
 const { buildProfile } = require('./agent/profile');
 const { reviewProject } = require('./agent/review');
 const { matchReuse } = require('./agent/reuse');
 const { scoreProject } = require('./agent/score');
+const kg = require('./agent/kg');
 
 const PORT = Number(process.env.CODA_PORT || 8848);
 const WEB_DIR = path.join(__dirname, 'web');
@@ -172,6 +172,13 @@ async function fullAnalyze(rootDir) {
   // ── 阶段感知 + 类比学习法（coda-eval.html 的 _scanResult.stage 会渲染）──
   const stage = buildStage(profile, review);
 
+  // ── KG 入库（跨项目知识图谱）──
+  try {
+    const kgData = kg.loadKG();
+    const kgAfter = kg.ingestScan(kgData, scan, profile, review, reuse, scorecard);
+    kg.saveKG(kgAfter);
+  } catch (e) { /* KG 写入失败不阻塞主流程 */ }
+
   return {
     scan_summary: { scanId: scan.scanId, rootDir: rootAbs, fileCount: scan.totalFiles },
     // profile：对齐 coda-eval.html renderProfile —— industry 用中文显示串、
@@ -269,7 +276,7 @@ async function withBody(req, res, fn) {
 
 // ── 路由 ───────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-  const parsed = url.parse(req.url, true);
+  const parsed = new URL(req.url, `http://${req.headers.host}`);
   const pathname = parsed.pathname;
 
   if (req.method === 'OPTIONS') return sendJSON(res, 200, {});
@@ -278,7 +285,8 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/' && req.method === 'GET') {
       return sendJSON(res, 200, {
         service: 'coda-agent', port: PORT,
-        endpoints: ['/scan', '/persona', '/profile/override', '/projects', '/review', '/reuse', '/chat'],
+        endpoints: ['/scan', '/persona', '/profile/override', '/projects', '/review', '/reuse', '/chat',
+          '/kg/graph', '/kg/related', '/kg/similar'],
         note: '对接 coda-desktop 工作台；契约见 coda/README.md',
       });
     }
@@ -310,8 +318,28 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, loadProjects());
     }
 
+    if (pathname === '/kg/graph' && req.method === 'GET') {
+      return sendJSON(res, 200, kg.graphForViz(kg.loadKG()));
+    }
+
+    if (pathname === '/kg/related' && req.method === 'GET') {
+      let nodeId = parsed.searchParams.get('nodeId');
+      const depth = Number(parsed.searchParams.get('depth') || 1);
+      if (!nodeId) return sendJSON(res, 400, { error: '缺少 nodeId' });
+      if (nodeId.startsWith('/')) nodeId = 'P:' + nodeId; // 兜底：绝对路径自动加 P:
+      return sendJSON(res, 200, kg.queryRelated(kg.loadKG(), nodeId, depth));
+    }
+
+    if (pathname === '/kg/similar' && req.method === 'GET') {
+      let project = parsed.searchParams.get('project');
+      if (!project) return sendJSON(res, 400, { error: '缺少 project' });
+      if (project.startsWith('/')) project = 'P:' + project; // 兜底：绝对路径自动加 P:
+      const limit = Number(parsed.searchParams.get('limit') || 3);
+      return sendJSON(res, 200, kg.querySimilarProjects(kg.loadKG(), project, limit));
+    }
+
     if (pathname === '/reuse' && req.method === 'GET') {
-      const root = parsed.query.root || '.';
+      const root = parsed.searchParams.get('root') || '.';
       const scan = scanDir(root);
       return sendJSON(res, 200, { industry: scan.candidates[0] && scan.candidates[0].industry, ...matchReuse(scan) });
     }
@@ -329,7 +357,7 @@ const server = http.createServer(async (req, res) => {
         const { root, question } = body;
         if (!root || !question) return sendJSON(res, 400, { error: '缺少 root 或 question' });
         const r = await fullAnalyze(root);
-        sendJSON(res, 200, composeAdvice(question, r.profile, r.reviews[0], r.reuse));
+        sendJSON(res, 200, composeAdvice(question, r.profile, r.reviews[0], r.reuse, kg.loadKG()));
       });
     }
 
@@ -342,10 +370,10 @@ const server = http.createServer(async (req, res) => {
         fixtures: ['fixtures/clinic-booking', 'fixtures/clinic-checkup'] });
     }
     if (pathname === '/api/analyze') {
-      return sendJSON(res, 200, await fullAnalyze(parsed.query.dir || 'fixtures/clinic-booking'));
+      return sendJSON(res, 200, await fullAnalyze(parsed.searchParams.get('dir') || 'fixtures/clinic-booking'));
     }
     if (pathname === '/api/scan') {
-      return sendJSON(res, 200, scanDir(parsed.query.dir || 'fixtures/clinic-booking'));
+      return sendJSON(res, 200, scanDir(parsed.searchParams.get('dir') || 'fixtures/clinic-booking'));
     }
     if (pathname === '/api/profile' && req.method === 'POST') {
       return withBody(req, res, (body) => {
@@ -372,7 +400,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 // ── 自然语言应答（规则引擎·不依赖 LLM）──────────────────────
-function composeAdvice(question, profile, topReview, reuseOut) {
+function composeAdvice(question, profile, topReview, reuseOut, kgData) {
   const q = (question || '').trim();
   const ind = (profile && profile.label) || '这个';
   const j = (profile && profile.jargons && profile.jargons[0]) || '';
@@ -382,6 +410,36 @@ function composeAdvice(question, profile, topReview, reuseOut) {
     const i0 = (topReview.issues && topReview.issues[0]) || {};
     lines.push(`基于你${ind}行业的小哒评分（${topReview.score} 分），最高优先级是修「${i0.redlineName || '第一条问题'}」——${i0.problem || ''}`);
     if (i0.fix) lines.push(`改法：${i0.fix}`);
+  } else if (/其他项目|相关|学过|做过|姊妹|同行业|历史|相似|类似|之前/i.test(q) && kgData) {
+    // KG 智能：用 querySimilarProjects 找同行业项目，附上名字 + 评分
+    try {
+      const projectId = kg.ID.project(/* rootDir */ '');
+      // 因为 chat 不传 rootDir 给 composeAdvice，从 KG 里挑当前行业最近的 Project
+      const indKey = profile && profile.industryKey;
+      let curId = null;
+      if (indKey) {
+        const candidates = kgData.edges
+          .filter((e) => e.type === 'IS_IN' && e.to === `I:${indKey}`)
+          .map((e) => e.from);
+        // 取 lastSeen 最近的那个
+        const projs = candidates
+          .map((id) => kgData.nodes.find((n) => n.id === id))
+          .filter(Boolean)
+          .sort((a, b) => (b.props.lastSeen || '').localeCompare(a.props.lastSeen || ''));
+        curId = projs[0] && projs[0].id;
+      }
+      const sims = curId ? kg.querySimilarProjects(kgData, curId, 3) : [];
+      if (sims.length) {
+        lines.push(`小哒在知识图谱里翻了翻——你做过 ${sims.length} 个同行业的相似项目：`);
+        for (const s of sims) {
+          const node = kgData.nodes.find((n) => n.id === s.id);
+          const score = node && node.props && node.props.score;
+          lines.push(`  · ${s.name}${score != null ? `（评分 ${score}）` : ''} · 相似度 ${(s.weight * 100 | 0)}%`);
+        }
+      } else {
+        lines.push(`小哒目前还没在知识图谱里找到同行业的姊妹项目——多扫几个项目就能看出共性。`);
+      }
+    } catch { lines.push(`知识图谱暂未建立同行业关联，多扫几个项目试试。`); }
   } else if (/复用|轮子|之前做|类似的|现成/i.test(q) && reuseOut.candidates && reuseOut.candidates.length) {
     const w = reuseOut.candidates[0];
     lines.push(`你做过 ${profile.industry} 类项目，「${w.name}」能直接复用——来自 ${w.fromProject}，匹配度 ${(w.matchScore * 100 | 0)}%。`);
@@ -398,6 +456,7 @@ server.listen(PORT, () => {
   console.log(`\n🐕 小哒 Coda · 评价 Agent 已启动`);
   console.log(`   监听端口：http://localhost:${PORT}`);
   console.log(`   状态存储：${CODA_HOME}`);
+  console.log(`   KG 节点数: ${kg.loadKG().nodes.length}`);
   console.log(`   对接：coda-desktop 工作台 (coda-eval.html)`);
-  console.log(`   端点：GET /persona · POST /scan · POST /profile/override · GET /projects · POST /chat\n`);
+  console.log(`   端点：GET /persona · POST /scan · POST /profile/override · GET /projects · POST /chat · GET /kg/graph\n`);
 });
