@@ -60,6 +60,38 @@
   .tools{font-size:11.5px;color:var(--sub)}
   .empty{text-align:center;color:var(--sub);padding:40px;font-size:14px}
   mark{background:#ffe08a;padding:0 1px;border-radius:2px}
+
+  /* 竞品分析块 */
+  .analysis{background:linear-gradient(135deg,#fffdf8,#fbf6ec);border:1px solid var(--line);
+    border-left:4px solid var(--accent);border-radius:16px;padding:18px 20px;margin:14px 0 18px;
+    box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .analysis summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px}
+  .analysis summary::-webkit-details-marker{display:none}
+  .analysis summary .badge{background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;letter-spacing:.04em}
+  .analysis summary .arrow{margin-left:auto;color:var(--sub);font-size:13px;transition:.2s}
+  .analysis[open] summary .arrow{transform:rotate(90deg)}
+  .analysis .body{margin-top:14px}
+  .an-sub{color:var(--sub);font-size:12.5px;margin-top:2px;font-weight:400}
+  .an-h{font-family:Georgia,"Songti SC",serif;font-size:14px;font-weight:800;margin:16px 0 8px;
+    display:flex;align-items:center;gap:8px}
+  .an-h::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+  /* 赛道分布条 */
+  .seg{display:flex;flex-direction:column;gap:9px}
+  .segrow{display:flex;align-items:center;gap:10px;font-size:13px}
+  .segrow .sn{width:120px;flex-shrink:0;font-weight:600}
+  .segrow .strack{flex:1;height:9px;background:var(--pill);border-radius:99px;overflow:hidden}
+  .segrow .strack i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--code),var(--accent))}
+  .segrow .sv{width:54px;text-align:right;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}
+  /* 竞品卡 */
+  .rivals{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:4px}
+  .rival{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .rival.hot{border-color:var(--accent);background:#fff6f1}
+  .rival .rt{font-weight:800;font-size:13.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .rival .rtag{font-size:10px;font-weight:700;color:#fff;background:var(--accent);padding:2px 7px;border-radius:999px}
+  .rival .rd{font-size:12px;color:#4a443c;margin-top:5px;line-height:1.5}
+  .moat{background:var(--ink);color:#f3ece0;border-radius:12px;padding:14px 18px;margin-top:14px;font-size:13.5px;line-height:1.6}
+  .moat b{color:#e8a84a}
 </style>
 </head>
 <body>
@@ -67,6 +99,52 @@
   <span class="kicker">BEYOND PROMPT · 北京站</span>
   <h1>参赛选手名册</h1>
   <p class="meta">共 <b id="total">0</b> 名选手 · 数据来自报名表 · 点卡片描述可展开</p>
+
+  <details class="analysis" open>
+    <summary>
+      <span class="badge">竞品速读</span>
+      34 支队伍最终选题分析
+      <span class="arrow">▸</span>
+    </summary>
+    <div class="body">
+      <p class="an-sub">基于现场提交的 34 支队伍队名 + 作品名整理。回车键 = <b>#20 小哒 Coda</b>（Coding Agent · 扫盘 Review / 行业画像）。</p>
+
+      <div class="an-h">作品形态分布（约数，含交叉）</div>
+      <div class="seg">
+        <div class="segrow"><span class="sn">垂直行业 ToB Agent</span><span class="strack"><i style="width:53%"></i></span><span class="sv">~18 队</span></div>
+        <div class="segrow"><span class="sn">法律 / 合同类</span><span class="strack"><i style="width:9%"></i></span><span class="sv">3 队</span></div>
+        <div class="segrow"><span class="sn">金融 / 研究分析</span><span class="strack"><i style="width:9%"></i></span><span class="sv">3 队</span></div>
+        <div class="segrow"><span class="sn">获客 / 营销线索</span><span class="strack"><i style="width:9%"></i></span><span class="sv">3 队</span></div>
+        <div class="segrow"><span class="sn">研发 / 代码工具</span><span class="strack"><i style="width:9%"></i></span><span class="sv">3 队</span></div>
+        <div class="segrow"><span class="sn">泛 Agent 框架 / 平台</span><span class="strack"><i style="width:11%"></i></span><span class="sv">~4 队</span></div>
+      </div>
+
+      <div class="an-h">⚠️ 与「小哒 Coda」最接近的直接竞品</div>
+      <div class="rivals">
+        <div class="rival hot">
+          <div class="rt">#17 缺陷猎手 DefectionHunter <span class="rtag">最像</span></div>
+          <div class="rd">缺陷检测，和我们「扫代码找问题」高度重叠。差异点：他们只找 bug，我们多了<b>行业画像 + 行话翻译 + 跨项目复用</b>。</div>
+        </div>
+        <div class="rival hot">
+          <div class="rt">#1 replica · 企业数字分身 <span class="rtag">同形态</span></div>
+          <div class="rd">平台型、与 Coding/企业知识相关，是「常驻型助手」打法的近邻。</div>
+        </div>
+        <div class="rival">
+          <div class="rt">#33 论文审核「审小助」 / #12 文档补全</div>
+          <div class="rd">同为「审查 / 补全」逻辑，但不在代码域，对我们威胁较小。</div>
+        </div>
+        <div class="rival">
+          <div class="rt">#7 TeamLoop / #25 CoAgent / #28 共识引擎</div>
+          <div class="rd">泛 Agent 框架/协作平台，赛道更通用，与我们的垂直元能力错位竞争。</div>
+        </div>
+      </div>
+
+      <div class="an-h">我们的差异 / 护城河</div>
+      <div class="moat">
+        全场几乎都在做<b>单一垂直行业的 ToB Agent</b>（物流、商旅、建筑、家装、车后、医药…），而我们做的是<b>跨行业的元能力</b>——扫盘 → 反推行业 → 用「你那行的话」讲问题。<b>独此一家</b>。Demo 高潮（现场扫评委的真实项目、当场反推行业并翻译报告）<b>别人无法预演、难以复制</b>，这是最强的现场记忆点。
+      </div>
+    </div>
+  </details>
 
   <div class="stats" id="stats"></div>
 

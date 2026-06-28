@@ -26,6 +26,7 @@
 
 | 文件 | 用途 |
 |---|---|
+| `工作台.html` | 桌面 App（`coda-eval`）的**网页兜底版**：评委装不上 App 时直接在浏览器看完整 demo。复刻四卡布局（评分/复用/人设/行业映射），去掉 Electron 专有的选目录/拖拽，改成预置「医疗诊所 A/B」按钮，默认连云端 Agent（`code-agent-sdoy.onrender.com`）真扫 `agent/samples/`。`?apiBase=local` 可切回本地后端 |
 | `手册速查.html` | 选手手册速查：赛程 / 必交清单 / 赛道 / 评审 / 福利红线（带倒计时 + 可勾选清单） |
 | `评分规则.html` | 评分五维权重 + 双轨奖项机制 + 三人队作战策略 |
 | `API资源.html` | 主办方 Search / Agent API 接入速查 |

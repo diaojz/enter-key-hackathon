@@ -22,6 +22,7 @@
 
 | 看什么 | 在线打开（点开即看） | 一句话 |
 |---|---|---|
+| 🐾 **工作台（网页兜底版）** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E5%B7%A5%E4%BD%9C%E5%8F%B0.html) | **装不上 App 也能用** · 点「医疗诊所 A/B」即真扫真评，浏览器内看完整画像/评分/复用/映射 |
 | 🎤 **路演 PPT** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
 | 📋 **产品 PRD** | [打开 →](https://diaojz.github.io/enter-key-hackathon/PRD.html) | v3.0 产品中心版 · 桌面助手 + 看得见/懂业务/能裂变 |
 | 🐾 **产品命名 & 形象** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E4%BA%A7%E5%93%81%E5%91%BD%E5%90%8D.html) | 小哒 Coda · 萌系形象 + icon 定稿 |
@@ -90,6 +91,7 @@
 ### 团队物料（产品 / 路演）
 | 文件 | 用途 |
 |---|---|
+| [`工作台.html`](./工作台.html) | **桌面 App 的网页兜底版**（评委装不上 App 时的主入口）· 复刻 `coda-eval` 四卡布局，去 Electron 依赖，默认连云端 Agent · 点「医疗诊所 A/B」即真扫 `agent/samples/` 出完整画像/评分/复用/映射 |
 | [`选题定稿.html`](./选题定稿.html) | **选题定稿 v4（当前口径）** · 扫盘 Review / 行业画像（真做）+ 跨项目复用（医疗最小切片）· 开发依据 + PPT 底稿 |
 | [`Agent接口契约.html`](./Agent接口契约.html) | **Agent 接口契约** · `/profile` + `/review` 两个 API · 医疗示例 + 关键词库，给 Agent 同学照搭 |
 | [`路演PPT.html`](./路演PPT.html) | 路演演讲稿 · 8 页 · 深蓝暖金风 · ✅ 已对齐 v4（扫盘 Review）· 横版海报全屏封面 |

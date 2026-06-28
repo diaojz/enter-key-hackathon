@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           style-src 'unsafe-inline';
+           script-src 'unsafe-inline' 'self';
+           connect-src https: http://127.0.0.1:* http://localhost:*;
+           img-src 'self' data:">
+<title>小哒 Coda · 工作台（网页兜底版）</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ece7de;
+  --card: #fffdf8;
+  --ink: #2b2723;
+  --accent: #e0623a;
+  --accent-hover: #c95430;
+  --muted: #6b6258;
+  --border: #ddd5c8;
+  --pill: #f0eadf;
+  --code-bg: #2b2723;
+  --code-fg: #f0eadf;
+  --green: #2d7a3a;
+  --orange: #c96a10;
+  --red: #be2c2c;
+  --score-green-bg: #d4f0d8;
+  --score-green-fg: #1d5c27;
+  --score-orange-bg: #fde6c4;
+  --score-orange-fg: #7a3c00;
+  --score-red-bg: #fdd5d5;
+  --score-red-fg: #7a0000;
+  --shadow: 0 2px 8px rgba(43,39,35,0.08);
+  --radius: 12px;
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  padding: 24px 20px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── 顶部标题区 ── */
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: Georgia, "Songti SC", "SimSun", serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  margin-bottom: 14px;
+}
+
+.scan-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.scan-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.scan-input:focus {
+  border-color: var(--accent);
+}
+
+.scan-input::placeholder {
+  color: var(--muted);
+}
+
+.port-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.port-input {
+  width: 72px;
+  padding: 9px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  font-family: "Menlo", "Monaco", monospace;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.port-input:focus {
+  border-color: var(--accent);
+}
+
+.btn-pick {
+  padding: 9px 16px;
+  background: var(--card);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-pick:hover { background: #fff3ee; }
+.btn-pick:active { transform: scale(0.97); }
+
+.btn-scan {
+  padding: 9px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+/* 窄窗适配：扫描栏元素换行，输入框/按钮各占满 */
+@media (max-width: 560px) {
+  .scan-bar { gap: 8px; }
+  .scan-input { flex: 1 1 100%; min-width: 0; order: -1; }
+  .btn-pick { flex: 1 1 auto; }
+  .btn-scan { flex: 1 1 auto; }
+  .port-group { flex: 0 0 auto; }
+}
+
+.btn-scan:hover {
+  background: var(--accent-hover);
+}
+
+.btn-scan:active {
+  transform: scale(0.97);
+}
+
+.btn-scan:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-line {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-line.error {
+  color: var(--red);
+}
+
+.status-line.success {
+  color: var(--green);
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 卡片通用 ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title .icon {
+  font-size: 18px;
+}
+
+/* ── 占位态 ── */
+.placeholder {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 20px 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── ① 人设与行业 ── */
+.industry-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.industry-label {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.industry-name {
+  color: var(--accent);
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--pill);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.evidence-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.chip {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 20px;
+  padding: 3px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Menlo", "Monaco", monospace;
+}
+
+.meta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.meta-item {
+  background: var(--pill);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.meta-item-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.meta-item-value {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.redlines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.redline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 6px 10px;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 7px;
+}
+
+.redline-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  margin-top: 1px;
+}
+
+.stage-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fff6ee, #fdeee2);
+  border: 1px solid #f0d4c0;
+  border-radius: 12px;
+}
+.stage-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.stage-row {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 5px 0;
+}
+.stage-row b {
+  display: inline-block;
+  min-width: 52px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.persona-bar {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #0a1626, #13243f);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #f3ece0;
+  font-size: 13px;
+}
+.persona-icon { font-size: 16px; }
+.persona-headline { font-weight: 700; color: #e8a84a; }
+.persona-skills {
+  font-size: 12px;
+  color: #a9b7c9;
+  border-left: 1px solid rgba(255,255,255,.2);
+  padding-left: 10px;
+}
+
+.reuse-hint {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fff1e6, #ffe4cf);
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px -6px rgba(224, 98, 58, 0.4);
+}
+.reuse-hint-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.reuse-hint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.reuse-hint-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.reuse-hint-name {
+  font-weight: 700;
+  color: var(--text);
+}
+.reuse-hint-from {
+  font-size: 11px;
+  color: var(--sub);
+  background: rgba(255,255,255,0.6);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.edit-profile-btn {
+  background: var(--pill);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.edit-profile-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.industry-edit-input {
+  border: 1.5px solid var(--accent);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--card);
+  outline: none;
+  width: 180px;
+}
+
+/* ── ② 可复用模块 ── */
+.reuse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reuse-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.reuse-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--pill);
+  gap: 8px;
+}
+
+.reuse-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.reuse-item-from {
+  font-size: 11.5px;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2px 9px;
+}
+
+.copy-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.copy-btn:hover {
+  background: var(--accent-hover);
+}
+
+.copy-btn.copied {
+  background: var(--green);
+}
+
+.code-block {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: "Menlo", "Monaco", "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 12px 16px;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+}
+
+/* ── ③ 项目优化建议 ── */
+.avg-score-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.avg-score-number {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.avg-score-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.score-legend {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+.file-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-review-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.file-review-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--card);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+
+.file-review-header:hover {
+  background: var(--pill);
+}
+
+.fr-main { flex: 1; min-width: 0; }
+
+.fr-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fr-nick {
+  flex: 1;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fr-file {
+  font-size: 11px;
+  font-family: "Menlo", "Monaco", monospace;
+  color: var(--muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fr-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--ink);
+  margin-top: 8px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: var(--pill);
+}
+.fr-summary.high { background: #fff5f5; color: #7a0000; }
+.fr-summary.mid  { background: #fff9f0; color: #7a3c00; }
+.fr-summary.ok   { background: #eef7ef; color: var(--green); }
+
+.file-name {
+  flex: 1;
+  font-size: 13px;
+  font-family: "Menlo", "Monaco", monospace;
+  color: var(--ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: Georgia, serif;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.score-badge.green {
+  background: var(--score-green-bg);
+  color: var(--score-green-fg);
+}
+
+.score-badge.orange {
+  background: var(--score-orange-bg);
+  color: var(--score-orange-fg);
+}
+
+.score-badge.red {
+  background: var(--score-red-bg);
+  color: var(--score-red-fg);
+}
+
+.expand-arrow {
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.expand-arrow.open {
+  transform: rotate(90deg);
+}
+
+.file-issues {
+  display: none;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-issues.open {
+  display: flex;
+}
+
+.issue-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--border);
+  background: var(--pill);
+}
+
+.issue-item.high {
+  border-left-color: var(--red);
+  background: #fff5f5;
+}
+
+.issue-item.mid {
+  border-left-color: var(--orange);
+  background: #fff9f0;
+}
+
+.issue-item.low {
+  border-left-color: #bbb;
+  background: var(--pill);
+}
+
+.issue-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.issue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.issue-dot.high { background: var(--red); }
+.issue-dot.mid  { background: var(--orange); }
+.issue-dot.low  { background: #aaa; }
+
+.issue-problem {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  flex: 1;
+}
+
+.issue-loc {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: "Menlo", "Monaco", monospace;
+  flex-shrink: 0;
+}
+
+.issue-fix {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding-left: 16px;
+  line-height: 1.5;
+}
+
+.issue-fix-label {
+  font-weight: 600;
+  color: var(--ink);
+  margin-right: 4px;
+}
+
+.issue-level-tag {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 5px;
+  line-height: 1.5;
+}
+.issue-level-tag.high { background: #fdd5d5; color: #7a0000; }
+.issue-level-tag.mid  { background: #fde6c4; color: #7a3c00; }
+.issue-level-tag.low  { background: var(--pill); color: var(--muted); }
+
+.issue-tech {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding-left: 16px;
+  margin-top: 5px;
+  line-height: 1.5;
+  font-family: "Menlo", "Monaco", monospace;
+}
+
+/* ── 项目列表 / 拖拽区 ── */
+.projects-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  font-family: -apple-system, sans-serif;
+}
+
+.dropzone {
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  padding: 6px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.dropzone.dragover {
+  border-color: var(--accent);
+  background: #fff3ee;
+}
+
+.dropzone-hint {
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  padding: 14px 8px;
+  font-style: italic;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.projects-list:empty { display: none; }
+
+.project-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.project-row:hover { background: var(--pill); }
+.project-row.active {
+  border-color: var(--accent);
+  background: #fff6f1;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.project-status {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+.project-status .spinner { width: 12px; height: 12px; }
+
+.project-path {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.project-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-dir {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: "Menlo", "Monaco", monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-score {
+  flex-shrink: 0;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  min-width: 32px;
+  text-align: right;
+}
+
+.project-remove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  line-height: 1;
+  transition: background 0.12s, color 0.12s;
+}
+.project-remove:hover { background: #fdd5d5; color: var(--red); }
+
+/* ── 人设摘要条（独立卡内顶部） ── */
+.persona-summary {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #0a1626, #13243f);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #f3ece0;
+  font-size: 13px;
+}
+.persona-summary .persona-icon { font-size: 16px; }
+.persona-summary .persona-headline { font-weight: 700; color: #e8a84a; }
+.persona-summary .persona-skills {
+  font-size: 12px;
+  color: #a9b7c9;
+  border-left: 1px solid rgba(255,255,255,.2);
+  padding-left: 10px;
+}
+
+/* ── ④ 行业映射（业务流程时间线）── */
+.mp-intro {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #fff6ee, #fdeee2);
+  border: 1px solid #f0d4c0;
+  border-radius: 10px;
+}
+.mp-intro b { color: var(--accent); }
+
+.mp-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mp-step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.mp-step.active { opacity: 1; transform: none; }
+
+/* 左侧时间线节点 */
+.mp-node {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+.mp-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2.5px solid var(--card);
+  box-shadow: 0 0 0 1.5px var(--border);
+  z-index: 2;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.mp-step.active .mp-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 1.5px var(--accent), 0 0 0 5px rgba(224,98,58,0.14);
+}
+.mp-line {
+  position: absolute;
+  top: 16px;
+  bottom: -8px;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--border);
+  z-index: 1;
+}
+.mp-seq {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.mp-step.active .mp-seq { opacity: 1; }
+
+/* 右侧内容 */
+.mp-body {
+  padding: 0 0 22px 4px;
+  min-width: 0;
+}
+.mp-industry {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.mp-role {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.mp-codecard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--pill);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.mp-arrow {
+  font-size: 11px;
+  color: var(--muted);
+}
+.mp-codename {
+  font-family: "Menlo", "Monaco", monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 9px;
+}
+.mp-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-basis: 100%;
+  margin-top: 2px;
+}
+.mp-file {
+  font-family: "Menlo", "Monaco", monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── 网页兜底版专属：顶部说明横幅 ── */
+.web-banner {
+  background: linear-gradient(135deg, #fff1e6, #ffe4cf);
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  box-shadow: 0 4px 14px -8px rgba(224, 98, 58, 0.4);
+}
+.web-banner b { color: var(--accent); }
+.web-banner .web-banner-dim { color: var(--muted); }
+
+/* ── 预置 Demo 项目按钮 ── */
+.demo-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.demo-bar-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-right: 2px;
+}
+.btn-demo {
+  padding: 8px 14px;
+  background: var(--card);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-demo:hover { background: #fff3ee; }
+.btn-demo:active { transform: scale(0.97); }
+.btn-demo .btn-demo-sub {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 1px;
+}
+</style>
+</head>
+<body>
+
+<!-- ── 顶部标题 + 操作栏 ── -->
+<div class="page-header">
+  <div class="page-title">🐾 小哒 Coda · 工作台（网页兜底版）</div>
+
+  <div class="web-banner">
+    <b>这是桌面 App 的网页兜底版</b> —— 装不上 App 也能在浏览器里看完整流程。
+    点下面任意一个 <b>预置医疗 Demo</b>，小哒会<b>真扫真评</b>（连云端 Agent，非录屏）：
+    反推出「医疗 88%」行业画像 → 用医疗行话讲清代码在干嘛 → 逐文件 AI 跑分给改法（只读不改）→ 翻出能复用的轮子。<br>
+    <span class="web-banner-dim">💡 云端 Agent 首次唤醒约需 10–30 秒（免费层会休眠），第一次点若提示「正在唤醒」，稍等再点一次即可。</span>
+  </div>
+
+  <div class="demo-bar">
+    <span class="demo-bar-label">点这里看 Demo →</span>
+    <button class="btn-demo" data-demo-root="samples/clinic-demo" data-demo-name="医疗诊所 A · clinic-demo">
+      🏥 医疗诊所 A
+      <span class="btn-demo-sub">第一幕 · 画像 / 评分 / 行话翻译</span>
+    </button>
+    <button class="btn-demo" data-demo-root="samples/clinic-new" data-demo-name="医疗诊所 B · clinic-new">
+      🏥 医疗诊所 B
+      <span class="btn-demo-sub">第二幕 · 跨项目复用提醒</span>
+    </button>
+  </div>
+
+  <div class="scan-bar">
+    <input
+      id="root-input"
+      class="scan-input"
+      type="text"
+      placeholder="高级：粘贴云端 Agent 上存在的项目相对路径后回车（评委一般用上面的按钮即可）"
+    />
+    <input id="port-input" type="hidden" value="8848" />
+    <button id="scan-btn" class="btn-scan">扫全部</button>
+  </div>
+  <div id="status-line" class="status-line"></div>
+</div>
+
+<!-- ── 项目列表（多项目：选一个看一个） ── -->
+<div class="card" id="card-projects">
+  <div class="card-title">
+    <span class="icon">🗂️</span>项目列表
+    <span id="projects-count" class="projects-count"></span>
+  </div>
+  <div id="dropzone" class="dropzone">
+    <div id="projects-list" class="projects-list"></div>
+    <div id="dropzone-hint" class="dropzone-hint">
+      点上方「医疗诊所 A / B」任意一个即可开扫。每点一个加一行，点同一个会刷新 ↓
+    </div>
+  </div>
+</div>
+
+<!-- ── ① 项目评分（置顶） ── -->
+<div class="card" id="card-reviews">
+  <div class="card-title">
+    <span class="icon">📊</span>项目评分（跑分 + 得分）
+  </div>
+  <div id="reviews-content">
+    <div class="placeholder">选一个项目并扫描后，这里会列出各文件跑分与改进建议</div>
+  </div>
+</div>
+
+<!-- ── ② 公共模块（可复用轮子） ── -->
+<div class="card" id="card-reuse">
+  <div class="card-title">
+    <span class="icon">♻️</span>公共模块（可复用轮子）
+  </div>
+  <div id="reuse-content">
+    <div class="placeholder">扫描后这里会列出可复用的公共模块</div>
+  </div>
+</div>
+
+<!-- ── ③ 人设跟随（独立卡） ── -->
+<div class="card" id="card-profile">
+  <div class="card-title">
+    <span class="icon">🧬</span>人设跟随
+  </div>
+  <div id="persona-summary" class="persona-summary" style="display:none"></div>
+  <div id="profile-content">
+    <div class="placeholder">扫描后这里会显示行业画像推断，越用越准</div>
+  </div>
+</div>
+
+<!-- ── ④ 行业映射（代码 ↔ 行话 对照） ── -->
+<div class="card" id="card-mapping">
+  <div class="card-title">
+    <span class="icon">🔗</span>行业映射（代码 ↔ 你那行的话）
+  </div>
+  <div id="mapping-content">
+    <div class="placeholder">扫描后，这里把项目里的代码文件翻译成你那行的行话</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// 后端配置（改这几行即可切换连本地 / 连云端）
+// ══════════════════════════════════════════════════════
+// 默认连本地后端（demo 主力：现场起 python server.py，扫本机真实项目，gpt-5.5 飞快）
+var CODA_LOCAL_API   = 'http://127.0.0.1:8848';
+// 云端后端地址（提交物公网链接 / 评委自助用；带 ?apiBase=cloud 可一键切到这里）
+var CODA_CLOUD_API   = 'https://code-agent-sdoy.onrender.com';
+// 访问令牌（本地和云端后端都开了护栏，要和后端 CODA_ACCESS_TOKEN 一致）
+var CODA_ACCESS_TOKEN = 'coda-8618e57cb9f37501';
+// ══════════════════════════════════════════════════════
+
+// ── 统一后端地址入口 ──
+// 优先级：运行时覆盖 > ?apiBase= query > ?apiBase=cloud 切云端 > ?port= query > 本地默认
+var _apiBaseOverride = ''; // 由 window.codaScan / initFromQuery 在运行时写入
+function getApiBase() {
+  if (_apiBaseOverride) return _apiBaseOverride;
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var apiBaseParam = params.get('apiBase');
+    if (apiBaseParam === 'local') return CODA_LOCAL_API;       // ?apiBase=local → 切回本地 8848
+    if (apiBaseParam === 'cloud') return CODA_CLOUD_API;       // ?apiBase=cloud → 显式云端
+    if (apiBaseParam) return apiBaseParam.replace(/\/+$/, ''); // ?apiBase=http://… → 自定义
+    var portParam = params.get('port');
+    if (portParam) return 'http://127.0.0.1:' + portParam;     // ?port=8849 → 换本地端口
+  } catch (e) { /* URL API 异常时静默跳过 */ }
+  // 网页兜底版默认连云端：评委打开网页即用，无需本地起服务
+  return CODA_CLOUD_API;
+}
+
+// ── 带可选 token 的 headers 构建（保留原有 Content-Type）──
+function buildHeaders(extra) {
+  var h = Object.assign({}, extra || {});
+  if (CODA_ACCESS_TOKEN) h['x-coda-token'] = CODA_ACCESS_TOKEN;
+  return h;
+}
+
+// ── 全局状态（多项目：选一个看一个）──
+var _currentIndustry = '';   // 当前行业（可被用户手改）
+var _scanResult     = null;  // 当前选中项目的扫描结果
+var _projects       = [];    // [{ root, name, status:'idle'|'scanning'|'done'|'error', result, error }]
+var _activeRoot     = null;  // 当前选中项目的 root
+
+// ── 工具函数 ──
+function el(id) { return document.getElementById(id); }
+
+function baseName(p) {
+  if (!p) return '';
+  var parts = String(p).replace(/[\/\\]+$/, '').split(/[\/\\]/);
+  return parts[parts.length - 1] || p;
+}
+
+function getPort() {
+  return (el('port-input') && el('port-input').value) || '8848';
+}
+
+function findProject(root) {
+  for (var i = 0; i < _projects.length; i++) {
+    if (_projects[i].root === root) return _projects[i];
+  }
+  return null;
+}
+
+function setStatus(msg, type) {
+  var s = el('status-line');
+  s.className = 'status-line' + (type ? ' ' + type : '');
+  s.innerHTML = msg;
+}
+
+function scoreClass(score) {
+  if (score >= 80) return 'green';
+  if (score >= 60) return 'orange';
+  return 'red';
+}
+
+function scoreColor(score) {
+  if (score >= 80) return '#2d7a3a';
+  if (score >= 60) return '#c96a10';
+  return '#be2c2c';
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── 渲染 ① 人设与行业 ──
+function renderProfile(profile) {
+  if (!profile) {
+    el('profile-content').innerHTML = '<div class="placeholder">暂无画像数据</div>';
+    return;
+  }
+
+  _currentIndustry = profile.industry || '未知';
+
+  var confidence = profile.confidence != null
+    ? Math.round(profile.confidence * 100) + '%'
+    : '--';
+
+  var evidenceHtml = '';
+  if (profile.evidence && profile.evidence.length) {
+    evidenceHtml = '<div class="evidence-chips">'
+      + profile.evidence.map(function(e) {
+          return '<span class="chip">' + escHtml(e) + '</span>';
+        }).join('')
+      + '</div>';
+  }
+
+  var metaHtml = '';
+  if (profile.subDomain || profile.roleGuess) {
+    metaHtml = '<div class="meta-row">';
+    if (profile.subDomain) {
+      metaHtml += '<div class="meta-item">'
+        + '<div class="meta-item-label">细分领域</div>'
+        + '<div class="meta-item-value">' + escHtml(profile.subDomain) + '</div>'
+        + '</div>';
+    }
+    if (profile.roleGuess) {
+      metaHtml += '<div class="meta-item">'
+        + '<div class="meta-item-label">角色画像</div>'
+        + '<div class="meta-item-value">' + escHtml(profile.roleGuess) + '</div>'
+        + '</div>';
+    }
+    metaHtml += '</div>';
+  }
+
+  var redlinesHtml = '';
+  if (profile.redlines && profile.redlines.length) {
+    redlinesHtml = '<div class="redlines-list">'
+      + profile.redlines.map(function(r) {
+          return '<div class="redline-item">'
+            + '<span class="redline-icon">⚠</span>'
+            + '<span>' + escHtml(r) + '</span>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+  }
+
+  el('profile-content').innerHTML =
+    '<div class="industry-hero">'
+      + '<span class="industry-label">我猜你是做【<span class="industry-name" id="industry-display">'
+        + escHtml(_currentIndustry) + '</span>】的</span>'
+      + '<span class="confidence-badge">置信度 ' + confidence + '</span>'
+    + '</div>'
+    + evidenceHtml
+    + metaHtml
+    + redlinesHtml
+    + renderStageHtml()
+    + '<button class="edit-profile-btn" onclick="toggleEditIndustry()">编辑画像</button>';
+}
+
+// ── ②解释：用行业语言讲「现在这个项目在干什么阶段」──
+function renderStageHtml() {
+  var stage = _scanResult && _scanResult.stage;
+  if (!stage || (!stage.stage && !stage.analogy)) return '';
+  var html = '<div class="stage-box">'
+    + '<div class="stage-title">📖 现在在干什么（用你那行的话讲）</div>';
+  if (stage.stage)   html += '<div class="stage-row"><b>阶段</b>' + escHtml(stage.stage) + '</div>';
+  if (stage.analogy) html += '<div class="stage-row"><b>相当于</b>' + escHtml(stage.analogy) + '</div>';
+  if (stage.next)    html += '<div class="stage-row"><b>下一步</b>' + escHtml(stage.next) + '</div>';
+  html += '</div>';
+  return html;
+}
+
+// ── 编辑行业名（最简实现，不持久化） ──
+function toggleEditIndustry() {
+  var display = el('industry-display');
+  if (!display) return;
+
+  if (display.tagName === 'SPAN') {
+    // 切换为输入框
+    var val = display.textContent;
+    var input = document.createElement('input');
+    input.className = 'industry-edit-input';
+    input.value = val;
+    input.id = 'industry-display';
+    input.onblur = function() { saveIndustry(input.value); };
+    input.onkeydown = function(e) {
+      if (e.key === 'Enter') { input.blur(); }
+      if (e.key === 'Escape') { saveIndustry(_currentIndustry); }
+    };
+    display.parentNode.replaceChild(input, display);
+    input.focus();
+    input.select();
+  } else {
+    saveIndustry(display.value);
+  }
+}
+
+function saveIndustry(val) {
+  var newVal = (val || _currentIndustry || '').trim() || _currentIndustry;
+  var changed = newVal !== _currentIndustry;
+  _currentIndustry = newVal;
+  var display = el('industry-display');
+  if (display) {
+    var span = document.createElement('span');
+    span.className = 'industry-name';
+    span.id = 'industry-display';
+    span.textContent = _currentIndustry;
+    if (display.parentNode) display.parentNode.replaceChild(span, display);
+  }
+  if (changed) persistProfileOverride();
+}
+
+// ── 把手改的画像持久化到评价 Agent（人设跟随：改一次，记一辈子）──
+function persistProfileOverride() {
+  var root = _activeRoot;
+  if (!root) return;
+  var override = { industry: _currentIndustry };
+  // 行业改了，红线也跟着换成该行业的（让评价跟着走）——交给后端按行业补默认红线，
+  // 这里只传 industry；若将来支持手编红线，再带上 redlines。
+  fetch(getApiBase() + '/profile/override', {
+    method: 'POST',
+    headers: buildHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ root: root, override: override, editedAt: new Date().toISOString() })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(d) {
+    if (d && d.ok) {
+      setStatus('✓ 画像已保存，下次扫这个目录就按「' + escHtml(_currentIndustry) + '」走', 'success');
+    } else {
+      setStatus('画像保存失败：' + ((d && d.error) || '未知错误'), 'error');
+    }
+  })
+  .catch(function() {
+    setStatus('画像保存失败：评价服务没连上', 'error');
+  });
+}
+
+// ── ③复用·跨项目提醒横幅（你做过类似的，有现成轮子）──
+function renderReuseHintHtml() {
+  var hint = _scanResult && _scanResult.reuseHint;
+  if (!hint || !hint.candidates || !hint.candidates.length) return '';
+  var html = '<div class="reuse-hint">'
+    + '<div class="reuse-hint-title">💡 ' + escHtml(hint.message || '你做过类似的项目，有现成轮子可用') + '</div>'
+    + '<div class="reuse-hint-list">';
+  hint.candidates.forEach(function(c) {
+    html += '<div class="reuse-hint-item">'
+      + '<span class="reuse-hint-name">' + escHtml(c.name || '') + '</span>'
+      + '<span class="reuse-hint-from">来自 ' + escHtml(c.fromProject || '') + '</span>'
+      + '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// ── 渲染 ② 公共模块 ──
+function renderReuse(reuse) {
+  var hintHtml = renderReuseHintHtml();
+  var candidates = reuse && reuse.candidates;
+  if (!candidates || !candidates.length) {
+    el('reuse-content').innerHTML = hintHtml
+      || '<div class="placeholder">扫描后这里会列出可复用的公共模块</div>';
+    return;
+  }
+
+  var html = hintHtml + '<div class="reuse-list">';
+  candidates.forEach(function(item, idx) {
+    var snippetId = 'snippet-' + idx;
+    html += '<div class="reuse-item">'
+      + '<div class="reuse-item-header">'
+        + '<span class="reuse-item-name">' + escHtml(item.name || '未命名') + '</span>'
+        + '<span class="reuse-item-from">来自 ' + escHtml(item.fromProject || '—') + '</span>'
+        + '<button class="copy-btn" onclick="copySnippet(' + idx + ', this)"'
+          + ' data-snippet-idx="' + idx + '">复制</button>'
+      + '</div>';
+
+    if (item.snippet) {
+      html += '<pre class="code-block" id="' + snippetId + '">'
+        + escHtml(item.snippet)
+        + '</pre>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  el('reuse-content').innerHTML = html;
+
+  // 存 snippet 到全局，供复制用
+  window._reuseSnippets = candidates.map(function(c) { return c.snippet || ''; });
+}
+
+function copySnippet(idx, btn) {
+  var snippets = window._reuseSnippets || [];
+  var text = snippets[idx] || '';
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '已复制✓';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 1800);
+  }).catch(function() {
+    // 降级：选中 pre 块
+    var pre = el('snippet-' + idx);
+    if (pre) {
+      var sel = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(pre);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+}
+
+// 给代码文件配「行业人话名」——复用行业映射卡的 concepts（数据打通，不额外调 LLM）
+function industryNameForFile(filePath) {
+  var concepts = _scanResult && _scanResult.mapping && _scanResult.mapping.concepts;
+  if (!concepts || !filePath) return '';
+  var base = baseName(filePath);
+  for (var i = 0; i < concepts.length; i++) {
+    var files = concepts[i].files || [];
+    for (var j = 0; j < files.length; j++) {
+      // 文件名或路径尾部匹配即认为是同一文件
+      if (files[j] && (files[j] === filePath || baseName(files[j]) === base
+          || filePath.indexOf(files[j]) >= 0 || files[j].indexOf(filePath) >= 0)) {
+        return concepts[i].industryName || '';
+      }
+    }
+  }
+  return '';
+}
+
+function gradeLabel(score) {
+  if (typeof score !== 'number') return '待评';
+  if (score >= 90) return '优秀';
+  if (score >= 70) return '良好';
+  return '需改';
+}
+
+// ── 渲染 ① 项目评分（跑分软件式明细：人话名 + 等级 + 折叠态露结论）──
+function renderReviews(reviews) {
+  if (!reviews || !reviews.length) {
+    el('reviews-content').innerHTML = '<div class="placeholder">选一个项目并扫描后，这里会列出各文件跑分与改进建议</div>';
+    return;
+  }
+
+  var total = reviews.reduce(function(s, r) { return s + (r.score || 0); }, 0);
+  var avg = Math.round(total / reviews.length);
+  var avgColorStr = scoreColor(avg);
+
+  var html = '<div class="avg-score-hero">'
+    + '<div class="avg-score-number" style="color:' + avgColorStr + '">' + avg + '</div>'
+    + '<div><div class="avg-score-label">平均得分 · ' + gradeLabel(avg) + '</div>'
+      + '<div style="font-size:12px;color:var(--muted)">检了 ' + reviews.length + ' 个关键文件</div></div>'
+    + '</div>'
+    + '<div class="score-legend">优秀 90+ · 良好 70-89 · 需改 &lt;70</div>'
+    + '<div class="file-reviews-list">';
+
+  reviews.forEach(function(r, rIdx) {
+    var score = r.score != null ? r.score : '--';
+    var cls   = typeof score === 'number' ? scoreClass(score) : 'orange';
+    var grade = gradeLabel(typeof score === 'number' ? score : null);
+    var issues = r.issues || [];
+    var fileId = 'file-issues-' + rIdx;
+
+    // 人话名优先用 review 自带的 nickname（跟文件 100% 对得上），退而求映射概念名，再退文件名
+    var nick = r.nickname || industryNameForFile(r.file) || baseName(r.file || '');
+    // 折叠态露最重一条问题（按 high>mid>low 取）作为一句结论
+    var top = null, rank = { high: 3, mid: 2, low: 1 };
+    issues.forEach(function(it) {
+      var lv = (it.redlineLevel || 'low').toLowerCase();
+      if (!top || (rank[lv] || 1) > (rank[(top.redlineLevel || 'low').toLowerCase()] || 1)) top = it;
+    });
+    var topLevel = top ? (top.redlineLevel || 'low').toLowerCase() : '';
+    if (topLevel !== 'high' && topLevel !== 'mid') topLevel = 'low';
+
+    html += '<div class="file-review-item">'
+      + '<div class="file-review-header" onclick="toggleFileIssues(' + rIdx + ')">'
+        + '<div class="fr-main">'
+          + '<div class="fr-top">'
+            + '<span class="fr-nick">📄 ' + escHtml(nick) + '</span>'
+            + '<span class="score-badge ' + cls + '">' + score + (typeof score === 'number' ? ' ' + grade : '') + '</span>'
+            + '<span class="expand-arrow" id="arrow-' + rIdx + '">▶</span>'
+          + '</div>'
+          + '<div class="fr-file" title="' + escHtml(r.file || '') + '">' + escHtml(r.file || '未知文件') + '</div>'
+          + (top
+              ? '<div class="fr-summary ' + topLevel + '"><span class="issue-dot ' + topLevel + '"></span>'
+                  + escHtml(top.problem || '') + '</div>'
+              : '<div class="fr-summary ok">✓ 没发现明显问题，踏实干活</div>')
+        + '</div>'
+      + '</div>'
+      + '<div class="file-issues" id="' + fileId + '">';
+
+    if (issues.length) {
+      issues.forEach(function(issue) {
+        var level = (issue.redlineLevel || 'low').toLowerCase();
+        if (level !== 'high' && level !== 'mid') level = 'low';
+        var levelTxt = { high: '红线', mid: '注意', low: '提示' }[level];
+
+        html += '<div class="issue-item ' + level + '">'
+          + '<div class="issue-header">'
+            + '<span class="issue-dot ' + level + '"></span>'
+            + '<span class="issue-level-tag ' + level + '">' + levelTxt + '</span>'
+            + '<span class="issue-problem">' + escHtml(issue.problem || '—') + '</span>'
+          + '</div>';
+
+        if (issue.fix) {
+          html += '<div class="issue-fix">'
+            + '<span class="issue-fix-label">怎么改：</span>'
+            + escHtml(issue.fix)
+            + '</div>';
+        }
+        if (issue.techDetail) {
+          html += '<div class="issue-tech">技术细节：' + escHtml(issue.techDetail) + '</div>';
+        }
+        html += '</div>';
+      });
+    } else {
+      html += '<div class="placeholder" style="padding:12px 0">该文件没发现明显问题</div>';
+    }
+
+    html += '</div></div>';
+  });
+
+  html += '</div>';
+  el('reviews-content').innerHTML = html;
+}
+
+// 展开/收起文件问题
+function toggleFileIssues(idx) {
+  var panel = el('file-issues-' + idx);
+  var arrow = el('arrow-' + idx);
+  if (!panel) return;
+  var isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  if (arrow) arrow.classList.toggle('open', !isOpen);
+}
+
+// ── 渲染 ④ 行业映射（业务流程时间线：行业概念 → 对应代码，滚动逐步点亮）──
+function renderMapping(mapping) {
+  var concepts = mapping && mapping.concepts;
+  var box = el('mapping-content');
+  if (!concepts || !concepts.length) {
+    box.innerHTML = mapping && mapping.industry === '未知'
+      ? '<div class="placeholder">行业未识别，先在「人设跟随」里确认行业，再来看映射</div>'
+      : '<div class="placeholder">扫描后，这里用你那行的话讲清楚：项目里几个关键概念分别在干什么</div>';
+    return;
+  }
+
+  var industry = mapping.industry || '你这行';
+  var intro = '<div class="mp-intro">把这个项目里 <b>' + concepts.length + '</b> 个关键概念，'
+    + '按业务发生的先后，翻译成 <b>' + escHtml(industry) + '</b> 的话讲给你听 ——'
+    + '看懂它，你就知道这类需求该怎么让 AI 落地。</div>';
+
+  var steps = '<div class="mp-timeline">';
+  concepts.forEach(function(c, i) {
+    var files = (c.files || []).filter(Boolean);
+    var filesHtml = files.length
+      ? '<div class="mp-files">' + files.map(function(f) {
+          return '<span class="mp-file">📄 ' + escHtml(f) + '</span>';
+        }).join('') + '</div>'
+      : '';
+    steps += '<div class="mp-step" data-mp-idx="' + i + '">'
+      + '<div class="mp-node"><span class="mp-dot"></span>'
+        + (i < concepts.length - 1 ? '<span class="mp-line"></span>' : '')
+        + '<span class="mp-seq">' + (i + 1) + '</span></div>'
+      + '<div class="mp-body">'
+        + '<div class="mp-industry">' + escHtml(c.industryName || '') + '</div>'
+        + '<div class="mp-role">' + escHtml(c.role || '') + '</div>'
+        + '<div class="mp-codecard">'
+          + '<span class="mp-arrow">在代码里就是</span>'
+          + '<span class="mp-codename">' + escHtml(c.codeName || '') + '</span>'
+          + filesHtml
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  });
+  steps += '</div>';
+
+  box.innerHTML = intro + steps;
+
+  // 滚动逐步点亮（IntersectionObserver，零依赖）；不支持则全部直接点亮
+  var stepEls = box.querySelectorAll('.mp-step');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('active');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.35 });
+    stepEls.forEach(function(s) { io.observe(s); });
+    // 兜底：首屏内的若没触发，下一帧补点亮
+    setTimeout(function() {
+      stepEls.forEach(function(s) {
+        var r = s.getBoundingClientRect();
+        if (r.top < window.innerHeight) s.classList.add('active');
+      });
+    }, 120);
+  } else {
+    stepEls.forEach(function(s) { s.classList.add('active'); });
+  }
+}
+
+// ── ④人设跟随：拉取跨项目累积的人设摘要，显示在顶部 ──
+function loadPersona() {
+  fetch(getApiBase() + '/persona', { headers: buildHeaders() })
+    .then(function(res) { return res.json(); })
+    .then(function(d) {
+      var p = d && d.persona;
+      var bar = el('persona-summary');
+      if (!bar) return;
+      if (!p || !p.projectsSeen) { bar.style.display = 'none'; return; }
+      var html = '<span class="persona-icon">🧠</span>'
+        + '<span class="persona-headline">' + escHtml(p.headline || '') + '</span>';
+      if (p.skills && p.skills.length) {
+        html += '<span class="persona-skills">能力库：'
+          + p.skills.slice(0, 4).map(escHtml).join('、')
+          + (p.skills.length > 4 ? ' 等 ' + p.skills.length + ' 项' : '') + '</span>';
+      }
+      bar.innerHTML = html;
+      bar.style.display = 'flex';
+    })
+    .catch(function() { /* 人设拉取失败不影响主流程 */ });
+}
+
+// ── 项目列表：增 / 删 / 选 / 渲染 ──
+function normRoot(root) {
+  // 归一化路径，便于「相同目录」判断：去尾部斜杠
+  return String(root || '').trim().replace(/[\/\\]+$/, '');
+}
+
+function addProject(root, autoScan) {
+  root = normRoot(root);
+  if (!root) return;
+  if (findProject(root)) {        // 相同目录：合并 = 选中并重新扫描刷新
+    selectProject(root);
+    if (autoScan) scanProject(root);
+    return;
+  }
+  // 不同目录：新增一行
+  _projects.push({ root: root, name: baseName(root), status: 'idle', result: null, error: '' });
+  renderProjects();
+  selectProject(root);
+  if (autoScan) scanProject(root);
+}
+
+function removeProject(root) {
+  _projects = _projects.filter(function(p) { return p.root !== root; });
+  if (_activeRoot === root) {
+    _activeRoot = null;
+    _scanResult = null;
+    if (_projects.length) selectProject(_projects[0].root);
+    else clearDetail();
+  }
+  renderProjects();
+}
+
+function selectProject(root) {
+  var p = findProject(root);
+  if (!p) return;
+  _activeRoot = root;
+  _scanResult = p.result || null;
+  renderProjects();
+  if (p.result) {
+    renderDetail(p.result);
+  } else if (p.status === 'error') {
+    clearDetail();
+    setStatus('「' + escHtml(p.name) + '」扫描失败：' + escHtml(p.error || '未知错误'), 'error');
+  } else {
+    clearDetail();
+  }
+}
+
+function renderProjects() {
+  var list = el('projects-list');
+  var hint = el('dropzone-hint');
+  var count = el('projects-count');
+  if (!_projects.length) {
+    list.innerHTML = '';
+    if (hint) hint.style.display = 'block';
+    if (count) count.textContent = '';
+    return;
+  }
+  if (hint) hint.style.display = 'none';
+  if (count) count.textContent = '· 共 ' + _projects.length + ' 个';
+
+  list.innerHTML = _projects.map(function(p) {
+    var statusIcon = p.status === 'scanning'
+      ? '<span class="spinner"></span>'
+      : p.status === 'done' ? '✓'
+      : p.status === 'error' ? '⚠' : '·';
+    var scoreStr = '';
+    if (p.status === 'done' && p.result && p.result.reviews && p.result.reviews.length) {
+      var revs = p.result.reviews;
+      var avg = Math.round(revs.reduce(function(s, r){ return s + (r.score||0); }, 0) / revs.length);
+      scoreStr = '<span class="project-score" style="color:' + scoreColor(avg) + '">' + avg + '</span>';
+    }
+    return '<div class="project-row' + (p.root === _activeRoot ? ' active' : '') + '"'
+        + ' onclick="selectProject(' + JSON.stringify(p.root).replace(/"/g, '&quot;') + ')">'
+      + '<span class="project-status">' + statusIcon + '</span>'
+      + '<span class="project-path">'
+        + '<span class="project-name">' + escHtml(p.name) + '</span>'
+        + '<span class="project-dir" title="' + escHtml(p.root) + '">' + escHtml(p.root) + '</span>'
+      + '</span>'
+      + scoreStr
+      + '<button class="project-remove" title="移除"'
+        + ' onclick="event.stopPropagation();removeProject(' + JSON.stringify(p.root).replace(/"/g, '&quot;') + ')">×</button>'
+    + '</div>';
+  }).join('');
+}
+
+// ── 详情区：渲染 / 清空 ──
+function renderDetail(data) {
+  renderReviews(data.reviews || null);
+  renderReuse(data.reuse || null);
+  renderProfile(data.profile || null);
+  renderMapping(data.mapping || null);
+}
+
+function clearDetail() {
+  el('reviews-content').innerHTML = '<div class="placeholder">选一个项目并扫描后，这里会列出各文件跑分与改进建议</div>';
+  el('reuse-content').innerHTML   = '<div class="placeholder">扫描后这里会列出可复用的公共模块</div>';
+  el('profile-content').innerHTML = '<div class="placeholder">扫描后这里会显示行业画像推断，越用越准</div>';
+  el('mapping-content').innerHTML = '<div class="placeholder">扫描后，这里把项目里的代码文件翻译成你那行的行话</div>';
+}
+
+// ── 核心：扫描单个项目（写进它的槽位）──
+function scanProject(root) {
+  var p = findProject(root);
+  if (!p) return Promise.resolve();
+  p.status = 'scanning';
+  p.error = '';
+  renderProjects();
+  if (root === _activeRoot) setStatus('<span class="spinner"></span> 扫描「' + escHtml(p.name) + '」中…');
+
+  return fetch(getApiBase() + '/scan', {
+    method: 'POST',
+    headers: buildHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ root: root })
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      return res.text().then(function(t) {
+        throw new Error('HTTP ' + res.status + '：' + (t || '服务端错误'));
+      });
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    p.status = 'done';
+    p.result = data;
+    renderProjects();
+    if (root === _activeRoot) {
+      _scanResult = data;
+      var fc = data.scan_summary && data.scan_summary.fileCount;
+      setStatus('✓ 「' + escHtml(p.name) + '」扫描完成（' + (fc != null ? fc + ' 个文件' : '') + '）', 'success');
+      renderDetail(data);
+    }
+    loadPersona();
+  })
+  .catch(function(err) {
+    p.status = 'error';
+    var isNetErr = err instanceof TypeError;
+    p.error = isNetErr ? '评价服务没连上' : err.message;
+    renderProjects();
+    if (root === _activeRoot) {
+      if (isNetErr) {
+        setStatus(
+          '云端 Agent 正在唤醒（免费层休眠后首次启动约 10–30 秒），稍等几秒再点一次按钮即可',
+          'error'
+        );
+      } else {
+        setStatus('「' + escHtml(p.name) + '」扫描出错：' + err.message, 'error');
+      }
+    }
+  });
+}
+
+// ── 扫全部（未扫的逐个扫）──
+function scanAll() {
+  var pending = _projects.filter(function(p) { return p.status === 'idle' || p.status === 'error'; });
+  if (!_projects.length) { setStatus('请先加入项目', 'error'); return; }
+  if (!pending.length) {
+    // 全扫过了：重扫全部
+    pending = _projects.slice();
+  }
+  // 顺序扫，避免一次性打爆本地服务
+  pending.reduce(function(chain, p) {
+    return chain.then(function() { return scanProject(p.root); });
+  }, Promise.resolve());
+}
+
+// ── 外部触发接口（供 Electron 主进程调用） ──
+window.codaScan = function(root, port) {
+  if (port) {
+    el('port-input').value = port;
+    _apiBaseOverride = 'http://127.0.0.1:' + port; // 让 getApiBase() 走本地
+  }
+  addProject(root, true);
+};
+window.selectProject = selectProject;
+window.removeProject = removeProject;
+
+// ── 网页兜底版：预置 Demo 项目按钮（点一个 = 加一行 + 立即扫云端 samples）──
+// 浏览器读不到评委本机文件，所以扫的是「随云端 Agent 一起部署的」示例项目。
+var _cloudWoken = false;
+// 云端免费层会休眠，首次访问先发个 /health 把它唤醒，缩短第一次扫描的等待。
+function wakeCloud() {
+  if (_cloudWoken) return;
+  _cloudWoken = true;
+  try {
+    fetch(getApiBase() + '/health', { headers: buildHeaders() }).catch(function(){});
+  } catch (e) { /* 唤醒失败不影响主流程 */ }
+}
+
+// ── 事件绑定 ──
+Array.prototype.forEach.call(document.querySelectorAll('.btn-demo'), function(btn) {
+  btn.addEventListener('click', function() {
+    var root = btn.getAttribute('data-demo-root');
+    if (root) addProject(root, true);   // 加入并立即扫；相同项目会刷新
+  });
+});
+el('scan-btn').addEventListener('click', scanAll);
+
+el('root-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    var v = el('root-input').value.trim();
+    if (v) { addProject(v, true); el('root-input').value = ''; }
+  }
+});
+
+// ── 拖拽：把文件夹拖进 dropzone 加入列表 ──
+(function initDropzone() {
+  var dz = el('dropzone');
+  if (!dz) return;
+  ['dragenter', 'dragover'].forEach(function(ev) {
+    dz.addEventListener(ev, function(e) {
+      e.preventDefault(); e.stopPropagation();
+      dz.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function(ev) {
+    dz.addEventListener(ev, function(e) {
+      e.preventDefault(); e.stopPropagation();
+      if (ev === 'dragleave' && dz.contains(e.relatedTarget)) return;
+      dz.classList.remove('dragover');
+    });
+  });
+  dz.addEventListener('drop', function(e) {
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (!files || !files.length) return;
+    var added = 0;
+    for (var i = 0; i < files.length; i++) {
+      // Electron 下拖入的文件/文件夹带 .path（绝对路径）
+      var p = files[i].path;
+      if (p) { addProject(p, false); added++; }
+    }
+    if (added) {
+      setStatus('拖入 ' + added + ' 个项目，点「扫全部」或单独点项目扫', 'success');
+    } else {
+      setStatus('浏览器里拖拽拿不到本机绝对路径——请点上方「医疗诊所 A / B」按钮看 Demo', 'error');
+    }
+  });
+})();
+
+// ── 读取 URL query 参数，自动加入并扫描 ──
+(function initFromQuery() {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var root = params.get('root');
+    var port = params.get('port');
+    if (port) el('port-input').value = port;
+    if (root) {
+      // 延一帧确保 DOM 就绪
+      setTimeout(function() { addProject(root, true); }, 60);
+    }
+  } catch (e) {
+    // URL API 异常时静默跳过
+  }
+})();
+
+// ── 页面打开即预热云端 Agent（缩短首次扫描等待）──
+wakeCloud();
+</script>
+</body>
+</html>
