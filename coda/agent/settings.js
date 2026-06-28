@@ -22,7 +22,32 @@ function loadSettings() {
   try {
     const raw = fs.readFileSync(SETTINGS_PATH, 'utf8');
     const obj = JSON.parse(raw);
-    // 浅合并兜底
+
+    // ── 一次性兼容迁移：把误存到顶级的 LLM 字段挪进 llm.{} ──
+    // 历史 bug：前端早期把 provider/apiKey/model/baseUrl 写在顶级（不是嵌套在 llm 里），
+    // 导致 getLLMConfig 读不到。这里检测后修正 + 同时处理 baseUrl 大小写变体。
+    const topHasReal = obj.provider && obj.provider !== 'none' && obj.apiKey;
+    const nestedIsEmpty = !obj.llm || !obj.llm.apiKey;
+    if (topHasReal && nestedIsEmpty) {
+      // 智能识别：用户填的「model」如果像 URL，是 baseURL；否则就是 model
+      const m = String(obj.model || '');
+      let baseURL = obj.baseURL || obj.baseUrl || '';
+      let model = m;
+      if (m.startsWith('http://') || m.startsWith('https://')) {
+        baseURL = m; model = '';
+      }
+      obj.llm = { provider: obj.provider, apiKey: obj.apiKey, model, baseURL };
+      // 清掉顶级残留
+      delete obj.provider; delete obj.apiKey; delete obj.model; delete obj.baseURL; delete obj.baseUrl;
+      // 立即落盘修正
+      try { fs.writeFileSync(SETTINGS_PATH, JSON.stringify(obj, null, 2), { mode: 0o600 }); } catch {}
+    }
+    // 仅处理 baseUrl → baseURL 大小写变体
+    if (obj.llm && obj.llm.baseUrl && !obj.llm.baseURL) {
+      obj.llm.baseURL = obj.llm.baseUrl;
+      delete obj.llm.baseUrl;
+    }
+
     return {
       ...DEFAULT_SETTINGS,
       ...obj,

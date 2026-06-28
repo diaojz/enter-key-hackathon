@@ -35,6 +35,7 @@ const { matchReuse } = require('./agent/reuse');
 const { scoreProject } = require('./agent/score');
 const kg = require('./agent/kg');
 const llm = require('./agent/llm');
+const personaStore = require('./agent/persona-store');
 
 const PORT = Number(process.env.CODA_PORT || 8848);
 const WEB_DIR = path.join(__dirname, 'web');
@@ -253,6 +254,20 @@ async function fullAnalyzeWithProgress(rootDir, onEvent) {
   } catch (e) { /* KG 写入失败不阻塞主流程 */ }
   emit('kg', { status: 'done', nodes: kgNodes, edges: kgEdges, durationMs: Date.now() - tKG0 });
 
+  // ── 长期画像 history append（永不删 jsonl 决策日志）──
+  try {
+    personaStore.appendDecision({
+      ts: new Date().toISOString(),
+      root: rootAbs,
+      industry: profile.industry,
+      industryLabel: profile.label,
+      confidence: profile.confidence,
+      evidenceWords: (profile.evidence || []).map((e) => e.word).slice(0, 8),
+      topRedlines: (allIssues || []).slice(0, 3).map((i) => i.redlineName),
+      score: scorecard && scorecard.total,
+    });
+  } catch { /* 历史写入失败不阻塞主流程 */ }
+
   const result = {
     scan_summary: { scanId: scan.scanId, rootDir: rootAbs, fileCount: scan.totalFiles },
     // profile：对齐 coda-eval.html renderProfile —— industry 用中文显示串、
@@ -371,7 +386,8 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/' && req.method === 'GET') {
       return sendJSON(res, 200, {
         service: 'coda-agent', port: PORT,
-        endpoints: ['/scan', '/scan/stream', '/persona', '/profile/override', '/projects', '/review', '/reuse', '/chat',
+        endpoints: ['/scan', '/scan/stream', '/persona', '/persona/detailed', '/persona/correction', '/persona/history',
+          '/profile/override', '/projects', '/review', '/reuse', '/chat',
           '/kg/graph', '/kg/related', '/kg/similar'],
         note: '对接 coda-desktop 工作台；契约见 coda/README.md',
       });
@@ -418,6 +434,36 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/persona' && req.method === 'GET') {
       return sendJSON(res, 200, { persona: buildPersona() });
+    }
+
+    // ── 长期持久化画像：3 层（KG + history + edits）合成的完整 personaSummary ──
+    if (pathname === '/persona/detailed' && req.method === 'GET') {
+      try {
+        const kgData = kg.loadKG();
+        const history = personaStore.loadHistory({ limit: 200 });
+        const edits = personaStore.loadEdits();
+        const summary = personaStore.personaSummary({ kg: kgData, history, edits });
+        return sendJSON(res, 200, { ok: true, persona: summary });
+      } catch (e) {
+        return sendJSON(res, 500, { ok: false, error: String(e && e.message || e) });
+      }
+    }
+
+    if (pathname === '/persona/correction' && req.method === 'POST') {
+      return withBody(req, res, (body) => {
+        const { kind, before, after, reason } = body || {};
+        if (!kind) return sendJSON(res, 400, { ok: false, error: '缺少 kind' });
+        const edits = personaStore.recordCorrection({
+          ts: new Date().toISOString(),
+          kind, before, after, reason,
+        });
+        sendJSON(res, 200, { ok: true, saved: personaStore.EDITS_PATH, corrections: (edits.corrections || []).length });
+      });
+    }
+
+    if (pathname === '/persona/history' && req.method === 'GET') {
+      const limit = Number(parsed.searchParams.get('limit') || 50);
+      return sendJSON(res, 200, personaStore.loadHistory({ limit }));
     }
 
     if (pathname === '/api/settings' && req.method === 'GET') {

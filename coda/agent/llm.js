@@ -10,6 +10,13 @@ const { getLLMConfig } = require('./settings');
 const DEFAULT_MODEL = {
   anthropic: 'claude-haiku-4-5-20251001',
   openai: 'gpt-4o-mini',
+  deepseek: 'deepseek-chat',
+  moonshot: 'moonshot-v1-8k',
+};
+const DEFAULT_BASE_URL = {
+  openai: 'https://api.openai.com',
+  deepseek: 'https://api.deepseek.com',
+  moonshot: 'https://api.moonshot.cn',
 };
 const TIMEOUT_MS = 8000;
 
@@ -66,8 +73,10 @@ function parseSSE(raw, onEvent) {
   });
 }
 
-async function callAnthropic({ apiKey, model, system, user, maxTokens, onChunk }) {
-  const url = 'https://api.anthropic.com/v1/messages';
+async function callAnthropic({ apiKey, baseURL, model, system, user, maxTokens, onChunk }) {
+  // 支持自定义 baseURL，让兼容 Anthropic 协议的网关（如 DeepSeek、第三方代理）也能用
+  const base = (baseURL || 'https://api.anthropic.com').replace(/\/+$/, '');
+  const url = base + (base.endsWith('/v1') || base.endsWith('/anthropic') ? '/messages' : '/v1/messages');
   const headers = {
     'x-api-key': apiKey,
     'anthropic-version': '2023-06-01',
@@ -154,9 +163,22 @@ async function chatCompletion({ system = '', user, maxTokens = 800, onChunk = nu
   const cfg = getLLMConfig();
   if (cfg.provider === 'none' || !cfg.apiKey) throw new Error('LLM not configured');
   if (cfg.provider === 'anthropic') {
-    return callAnthropic({ apiKey: cfg.apiKey, model: cfg.model, system, user, maxTokens, onChunk });
+    return callAnthropic({ apiKey: cfg.apiKey, baseURL: cfg.baseURL, model: cfg.model, system, user, maxTokens, onChunk });
   }
   if (cfg.provider === 'openai') {
+    return callOpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL || DEFAULT_BASE_URL.openai, model: cfg.model, system, user, maxTokens, onChunk });
+  }
+  if (cfg.provider === 'deepseek') {
+    // DeepSeek 用 OpenAI 兼容 API
+    return callOpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL || DEFAULT_BASE_URL.deepseek, model: cfg.model || DEFAULT_MODEL.deepseek, system, user, maxTokens, onChunk });
+  }
+  if (cfg.provider === 'moonshot') {
+    // Kimi 同样是 OpenAI 兼容
+    return callOpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL || DEFAULT_BASE_URL.moonshot, model: cfg.model || DEFAULT_MODEL.moonshot, system, user, maxTokens, onChunk });
+  }
+  if (cfg.provider === 'custom') {
+    // 兜底：完全用户配置，要求传 baseURL
+    if (!cfg.baseURL) throw new Error('custom provider 需要在 settings 里配 baseURL');
     return callOpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL, model: cfg.model, system, user, maxTokens, onChunk });
   }
   throw new Error('unknown provider: ' + cfg.provider);

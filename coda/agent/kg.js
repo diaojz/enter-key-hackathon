@@ -282,13 +282,29 @@ function personaFromKG(kg) {
   }
   const sortBy = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]);
 
-  return {
+  const out = {
     projectsSeen: projects.length,
     topIndustries: sortBy(indCount).map(([id, c]) => ({ industry: id, count: c, label: nameOf(id).label || id })),
     topWords: sortBy(wordScore).slice(0, 8).map(([id, s]) => ({ word: nameOf(id).word || id, score: s })),
     topWheels: sortBy(wheelHits).slice(0, 5).map(([id, c]) => ({ name: nameOf(id).name || id, reused: c })),
     oldPits: sortBy(redHits).slice(0, 3).map(([id, c]) => ({ name: nameOf(id).name || id, hit: c })),
   };
+
+  // ── 增强：叠加 history / edits 长期画像（如果存在 persona-store）──
+  try {
+    const personaStore = require('./persona-store');
+    const history = personaStore.loadHistory({ limit: 100 });
+    const edits = personaStore.loadEdits();
+    out.longTerm = {
+      totalScans: (history.all || []).length,
+      uniqueProjects: Object.keys(history.byProject || {}).length,
+      corrections: (edits.corrections || []).length,
+      lastScanTs: (history.all && history.all.length) ? history.all[history.all.length - 1].ts : null,
+      industryOverrides: edits.industryOverrides || {},
+    };
+  } catch { /* persona-store 不可用时降级，不影响原返回 */ }
+
+  return out;
 }
 
 module.exports = {
