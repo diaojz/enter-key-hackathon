@@ -11,8 +11,8 @@
 
 ```bash
 cd coda
-node server.js                      # 启动本地服务器（默认 :7777）
-# 浏览器打开 http://localhost:7777
+node server.js                      # 启动本地服务器（默认 :8848）
+# 浏览器打开 http://localhost:8848
 ```
 
 - 点「**项目A · 诊所挂号**」→ 看炸场反推 + 质量报告（第一幕）
