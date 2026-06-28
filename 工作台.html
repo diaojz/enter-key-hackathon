@@ -1892,14 +1892,17 @@ function scanProject(root) {
 
     if (!total) { finishScan(p, root, fcStr); return; }
 
+    // 评审并发：每个文件单独评（LLM 单次就十几秒），串行会叠成 N 倍延迟。
+    // 改成一次性全发，谁先回来就回填渲染（边出边看），全部 settle 后收尾。
     var done = 0;
-    function reviewOne(i) {
-      if (i >= targets.length) { finishScan(p, root, fcStr); return; }
+    function bumpStatus() {
       if (root === _activeRoot) {
         setStatus('<span class="spinner"></span> AI 逐文件评审「' + escHtml(p.name) + '」… '
           + done + '/' + total);
       }
-      var t = targets[i];
+    }
+    bumpStatus();
+    var jobs = targets.map(function(t) {
       return fetch(getApiBase() + '/review', {
         method: 'POST',
         headers: buildHeaders({ 'Content-Type': 'application/json' }),
@@ -1911,15 +1914,15 @@ function scanProject(root) {
         rv.file = t.file;
         data.reviews.push(rv);
         done++;
+        bumpStatus();
         if (root === _activeRoot) {
           _scanResult = data;
           renderReviews(data.reviews);
           renderProjects();
         }
-        return reviewOne(i + 1);
       });
-    }
-    return reviewOne(0);
+    });
+    return Promise.all(jobs).then(function() { finishScan(p, root, fcStr); });
   })
   .catch(function(err) {
     p.status = 'error';

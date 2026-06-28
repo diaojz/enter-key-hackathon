@@ -23,6 +23,7 @@
 | 看什么 | 在线打开（点开即看） | 一句话 |
 |---|---|---|
 | 🐾 **工作台（网页兜底版）** | [打开 →](https://diaojz.github.io/enter-key-hackathon/workbench.html) | **装不上 App 也能用** · 点「医疗诊所 A/B」即真扫真评，浏览器内看完整画像/评分/复用/映射 |
+| 💻 **桌面 App 下载** | [🍎 macOS (Apple Silicon) →](https://github.com/diaojz/enter-key-hackathon/releases/download/v0.10.0/Clawd-on-Desk-0.10.0-arm64.dmg) · [🪟 Windows 11 (x64) →](https://github.com/diaojz/enter-key-hackathon/releases/download/v0.10.0/Clawd-on-Desk-Setup-0.10.0-x64.exe) | 双击装即用 · 含本地后端，**能扫本机目录** · 全部 [Release →](https://github.com/diaojz/enter-key-hackathon/releases/tag/v0.10.0) |
 | 🐕 **小哒 Coda 后端（可跑）** | [看源码 →](https://github.com/diaojz/enter-key-hackathon/tree/main/coda) | Node 零依赖 · `cd coda && node server.js` → `localhost:8848` · 扫盘反推行业 + 评分/行话/复用 + 知识图谱 |
 | 🎤 **路演 PPT** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94PPT.html) | 8 页 · 深蓝暖金 · 浏览器按 `P` 进投影、`←→` 翻页 |
 | 🗣️ **路演逐字稿** | [打开 →](https://diaojz.github.io/enter-key-hackathon/%E8%B7%AF%E6%BC%94%E7%A8%BF.html) | 对齐 PPT · 约 5 分半 · 含时间码 + 语气提示 + 商业模式口播 |
@@ -38,13 +39,18 @@
 
 ---
 
-## 📌 一句话产品定位
+## 📌 项目说明
 
-> **小哒 Coda** 是一个常驻桌面、懂你行业的 **Review 助手**——
-> 授权后它**扫一遍你的本地项目**，反推出你是哪行的，用**「你那行的话」**把代码问题讲给你听、打分给建议（**只读不改**）；你越用它越懂你，还能把你攒下的轮子在**新项目里直接复用**。
->
-> **三能力**：看得见（桌宠 + 收窄监听）· **懂业务（扫盘→行业画像→翻译报告，现场真做主线）** · 能复用（同领域跨项目复用轮子）。
-> _v4 收口：Demo 高潮由「插件裂变」改为「扫存量项目→反推行业画像」；「懂业务」由纸面升为现场真做；金样本行业 = 医疗。详见 [`选题定稿.html`](./选题定稿.html)。_
+**应用场景**：面向**懂行业、不懂代码**的人（用 AI 写代码的产品/业务/创业者）。**小哒 Coda** 是一个常驻桌面、懂你行业的 **Review 助手**——授权后它**只读扫一遍你的本地项目**，反推出你是哪行的，先给一个**看得懂的分**让你心里有底，再用**「你那行的话」**讲清问题与改法（**只读不改**）；你越用它越懂你（人设可手改、跨项目累积），还能把攒下的轮子在**新项目里直接复用**。
+
+**技术架构**：`扫盘引擎 → 反推行业画像 → 调 LLM 打分/行话翻译/改法` 的流水线。
+- **后端**（[`agent/`](./agent)）：Python **零三方依赖**（标准库 `http.server` + `urllib`），暴露 `/scan` `/profile` `/review` `/explain` `/reuse` `/notify` `/persona` 等 REST 接口（对齐 [`Agent接口契约.html`](./Agent接口契约.html)）；扫盘 `scanner.py` 本地遍历 + 关键词反推画像（**只读**），`review.py` 调 LLM 打分。
+- **LLM 可切换**：调用全收口在 `llm_client.py`，OpenAI 兼容 `/chat/completions` 协议，环境变量一键切后端（openai / deepseek / mock 离线兜底），业务代码零改动。
+- **前端**：Electron 桌宠（表情/状态联动）+ 纯静态网页兜底版 [`工作台.html`](./工作台.html)（装不上 App 也能用）。
+- **部署**：云端门面（自建香港服务器）+ 本地后端可用 PyInstaller 焊进桌面 App。
+
+> **三能力**：①**会评价**（扫盘反推画像 + 跑分式打分 + 行话翻译/改法，只读不改）· ②**会解释**（反推并可手改人设 + 技术概念→行业类比 + 业务时间线）· ③**能复用**（同领域跨项目抽轮子、命中即提醒）。
+> _v4 收口：Demo 高潮 =「扫存量项目→反推行业画像」；金样本行业 = 医疗。详见 [`选题定稿.html`](./选题定稿.html)。_
 
 ---
 

@@ -60,6 +60,15 @@ def push_state(state: str, event: str = "", cwd: str = "", *, quiet: bool = True
     state 取值：idle / thinking / working / done / error / notification / sleeping
     （done/cheer 等语义值会自动映射到 coda 主题合法表情）
     """
+    try:
+        return _push_state_inner(state, event, cwd, quiet=quiet)
+    except Exception:  # noqa: BLE001 —— 桌宠推送是旁路，绝不能拖垮调用方（如 /scan/plan 报 500）
+        if not quiet:
+            print(f"  [pet] 推送异常已忽略（state={state}）")
+        return False
+
+
+def _push_state_inner(state: str, event: str = "", cwd: str = "", *, quiet: bool = True) -> bool:
     state = STATE_ALIAS.get(state, state)
     body = json.dumps({
         "state": state,
