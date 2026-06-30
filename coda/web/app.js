@@ -6,16 +6,42 @@ let lastData = null;       // 最近一次分析结果
 let editedProfile = null;  // 用户手改后的画像
 
 // ── 桌宠状态 ────────────────────────────────────────────────
+// 每个状态：[图片文件, emoji 兜底, 气泡文案]。图片在 coda/web/pet/，由 server.js 的 /pet/ 路由提供。
 const PET = {
-  idle:  ['🐕', '嗨，我是小哒 🐾<br>给我个项目目录，我扫一眼就懂你～'],
-  scan:  ['🔍', '<span class="spin">🔍</span> 扫盘中…<br>正在翻你的变量名、文件名、注释找行业线索'],
-  think: ['💭', '让我想想…<br>在反推你是哪个行业的'],
-  done:  ['✅', '搞定！<br>报告出来了，注意——我只读不改 🔒'],
-  ask:   ['🙋', '画像可以改哦<br>改完保存，下次我更懂你'],
+  idle:      ['idle.png',      '🐾', '嗨，我是小哒 🐾<br>给我个项目目录，我扫一眼就懂你～'],
+  scan:      ['busy.gif',      '🔍', '<span class="spin">🔍</span> 扫盘中…<br>正在翻你的变量名、文件名、注释找行业线索'],
+  think:     ['think.png',     '💭', '让我想想…<br>在反推你是哪个行业的'],
+  done:      ['done.png',      '✅', '搞定！<br>报告出来了，注意——我只读不改 🔒'],
+  ask:       ['ask.png',       '🙋', '画像可以改哦<br>改完保存，下次我更懂你'],
+  busy:      ['busy.gif',      '🤹', '手忙脚乱但靠谱～<br>多件事一起扛着呢'],
+  happy:     ['happy.png',     '🤩', '哇，这分数漂亮！<br>代码质量在线 ✨'],
+  worry:     ['worry.png',     '😰', '注意点哦…<br>我闻到几条红线的味道'],
+  reuse:     ['reuse.png',     '💡', '灵光一现！<br>这块好像有现成的轮子可复用'],
+  sleep:     ['sleep.png',     '😴', '没活的时候我就眯一会儿…<br>有事叫我 zzz'],
+  error:     ['error.png',     '😵', '诶？出了点状况<br>我有点懵，再试一次？'],
+  celebrate: ['celebrate.png', '🎉', '全部搞定，撒花！<br>这一轮干得漂亮 🎊'],
 };
+// 后端 7 阶段 → 桌宠状态映射（前端轮询/SSE 可直接喂阶段名）
+const PHASE_TO_STATE = {
+  scan: 'scan', profile: 'think', llm: 'think', redlines: 'worry',
+  score: 'busy', reuse: 'reuse', kg: 'busy', complete: 'done',
+};
+function petByPhase(phase) { pet(PHASE_TO_STATE[phase] || 'busy'); }
+
 function pet(state) {
-  const [dog, msg] = PET[state] || PET.idle;
-  $('petDog').textContent = dog;
+  const entry = PET[state] || PET.idle;
+  const [img, fallback, msg] = entry;
+  const el = $('petDog');
+  if (el) {
+    // 用图片渲染；加载失败回退到 emoji，保证永不空白
+    el.innerHTML = '';
+    const im = new Image();
+    im.src = `/pet/${img}`;
+    im.alt = state;
+    im.className = 'pet-img';
+    im.onerror = () => { el.textContent = fallback; };
+    el.appendChild(im);
+  }
   $('petBubble').innerHTML = msg;
 }
 function toast(msg) {
@@ -169,4 +195,44 @@ document.addEventListener('click', (e) => {
   if (e.target.dataset.fix != null) copy(e.target.dataset.fix);
   if (e.target.dataset.snippet != null) copy(e.target.dataset.snippet);
 });
+
+// ── 桌宠右键菜单 ────────────────────────────────────────────
+const petMenu = $('petMenu');
+function showPetMenu(x, y) {
+  petMenu.hidden = false;
+  // 先显出来量尺寸，再夹住不超出视口
+  const w = petMenu.offsetWidth, h = petMenu.offsetHeight;
+  petMenu.style.left = Math.min(x, innerWidth - w - 8) + 'px';
+  petMenu.style.top = Math.max(8, y - h) + 'px';
+}
+function hidePetMenu() { petMenu.hidden = true; }
+
+document.querySelector('.pet').addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  showPetMenu(e.clientX, e.clientY);
+});
+petMenu.addEventListener('click', (e) => {
+  const action = e.target.dataset.action;
+  if (!action) return;
+  hidePetMenu();
+  if (action === 'graph') {
+    // 相对路径打开 → 同源，graph.html 自动跟随当前端口
+    window.open('graph.html', '_blank');
+  } else if (action === 'reload') {
+    const dir = $('dir').value.trim();
+    if (dir) runAnalyze(dir); else toast('先填个项目目录');
+  } else if (action === 'top') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+// 点别处 / Esc / 滚动 关菜单
+document.addEventListener('click', (e) => { if (!petMenu.contains(e.target)) hidePetMenu(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePetMenu(); });
+window.addEventListener('scroll', hidePetMenu, { passive: true });
+
+// 性能：标签页切到后台时暂停桌宠浮动动画，省 CPU
+document.addEventListener('visibilitychange', () => {
+  document.body.classList.toggle('pet-paused', document.hidden);
+});
+
 pet('idle');

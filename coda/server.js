@@ -480,9 +480,16 @@ function sendJSON(res, code, obj) {
 function serveStatic(res, file) {
   const ext = path.extname(file).toLowerCase();
   const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+  // 图片类型：二进制返回，不能带 charset（否则浏览器按文本解码导致图损坏）
+  const binTypes = { '.gif': 'image/gif', '.png': 'image/png', '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not found'); return; }
-    res.writeHead(200, { 'Content-Type': (types[ext] || 'text/plain') + '; charset=utf-8' });
+    if (binTypes[ext]) {
+      res.writeHead(200, { 'Content-Type': binTypes[ext], 'Cache-Control': 'max-age=3600' });
+    } else {
+      res.writeHead(200, { 'Content-Type': (types[ext] || 'text/plain') + '; charset=utf-8' });
+    }
     res.end(data);
   });
 }
@@ -684,6 +691,14 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/style.css') return serveStatic(res, path.join(WEB_DIR, 'style.css'));
     if (pathname === '/index.html') return serveStatic(res, path.join(WEB_DIR, 'index.html'));
     if (pathname === '/web/graph.html' || pathname === '/graph.html') return serveStatic(res, path.join(WEB_DIR, 'graph.html'));
+    if (pathname === '/pet-test.html') return serveStatic(res, path.join(WEB_DIR, 'pet-test.html'));
+    // 桌宠状态图/GIF：/pet/<file> → web/pet/<file>（限制在 pet 目录内，防目录穿越）
+    if (pathname.startsWith('/pet/')) {
+      const petDir = path.join(WEB_DIR, 'pet');
+      const target = path.normalize(path.join(petDir, pathname.slice('/pet/'.length)));
+      if (!target.startsWith(petDir)) { res.writeHead(403); return res.end('Forbidden'); }
+      return serveStatic(res, target);
+    }
     if (pathname === '/api/config') {
       return sendJSON(res, 200, { defaultDir: 'fixtures/clinic-booking', cwd: process.cwd(),
         fixtures: ['fixtures/clinic-booking', 'fixtures/clinic-checkup'] });
