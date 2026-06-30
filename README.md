@@ -142,6 +142,8 @@ node cli.js review fixtures/clinic-booking   # 评审打分 + 行话翻译
 | [`coda/scanner/`](./coda/scanner) | 扫盘引擎（只读遍历 + 词库匹配 + 权重反推行业，**0 LLM、不改任何文件**） |
 | [`coda/agent/`](./coda/agent) | Agent 层：评分 / 复用 / 人设持久化 / 知识图谱 / 耦合度 / 真 LLM 集成 |
 | [`coda/web/`](./coda/web) | 前端（暖米编辑风）+ 知识图谱力导向可视化 `graph.html` |
+| [`coda/web/pet/`](./coda/web/pet) | 桌宠「小哒」12 状态资源（7 动画 GIF + 5 静态 PNG），随评价 Agent 进度切换神态 |
+| [`coda/web/pet-test.html`](./coda/web/pet-test.html) | **小哒桌宠 · 状态图鉴**（暖米编辑风）：12 状态一览 + 舞台切换预览，本地起服务后开 `localhost:8848/pet-test.html` |
 | [`coda/dict/`](./coda/dict) | 行业词库（医疗厚 + 电商/教育/金融） |
 | [`coda/fixtures/`](./coda/fixtures) | Demo 素材：`clinic-booking`（项目A）/ `clinic-checkup`（项目B，演跨项目复用） |
 | [`coda/README.md`](./coda/README.md) | Coda 后端完整说明（架构 / 权重算法 / 只读承诺 / 知识图谱层） |

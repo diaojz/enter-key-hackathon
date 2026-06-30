@@ -8,15 +8,15 @@ let editedProfile = null;  // 用户手改后的画像
 // ── 桌宠状态 ────────────────────────────────────────────────
 // 每个状态：[图片文件, emoji 兜底, 气泡文案]。图片在 coda/web/pet/，由 server.js 的 /pet/ 路由提供。
 const PET = {
-  idle:      ['idle.png',      '🐾', '嗨，我是小哒 🐾<br>给我个项目目录，我扫一眼就懂你～'],
+  idle:      ['idle.gif',      '🐾', '嗨，我是小哒 🐾<br>给我个项目目录，我扫一眼就懂你～'],
   scan:      ['scan.gif',      '🔍', '<span class="spin">🔍</span> 扫盘中…<br>正在翻你的变量名、文件名、注释找行业线索'],
   think:     ['think.gif',     '💭', '让我想想…<br>在反推你是哪个行业的'],
-  done:      ['done.png',      '✅', '搞定！<br>报告出来了，注意——我只读不改 🔒'],
-  ask:       ['ask.png',       '🙋', '画像可以改哦<br>改完保存，下次我更懂你'],
+  done:      ['done.gif',      '✅', '搞定！<br>报告出来了，注意——我只读不改 🔒'],
+  ask:       ['ask.gif',       '🙋', '画像可以改哦<br>改完保存，下次我更懂你'],
   busy:      ['busy.gif',      '🤹', '手忙脚乱但靠谱～<br>多件事一起扛着呢'],
   happy:     ['happy.gif',     '🤩', '哇，这分数漂亮！<br>代码质量在线 ✨'],
-  worry:     ['worry.png',     '😰', '注意点哦…<br>我闻到几条红线的味道'],
-  reuse:     ['reuse.png',     '💡', '灵光一现！<br>这块好像有现成的轮子可复用'],
+  worry:     ['worry.gif',     '😰', '注意点哦…<br>我闻到几条红线的味道'],
+  reuse:     ['reuse.gif',     '💡', '灵光一现！<br>这块好像有现成的轮子可复用'],
   sleep:     ['sleep.gif',     '😴', '没活的时候我就眯一会儿…<br>有事叫我 zzz'],
   error:     ['error.gif',     '😵', '诶？出了点状况<br>我有点懵，再试一次？'],
   celebrate: ['celebrate.gif', '🎉', '全部搞定，撒花！<br>这一轮干得漂亮 🎊'],

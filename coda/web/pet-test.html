@@ -1,34 +1,178 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
-<title>小哒桌宠状态验收</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒桌宠 · 状态图鉴</title>
 <link rel="stylesheet" href="/style.css">
 <style>
-body{background:#ece7de;font-family:-apple-system,"PingFang SC",sans-serif;color:#2b2620;padding:24px}
-h1{font-size:20px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:16px}
-.c{background:#fff;border:1px solid #ddd5c9;border-radius:12px;padding:12px;text-align:center}
-.c img{width:120px;height:120px;object-fit:contain;animation:bob 2.4s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.c .n{font-weight:600;font-size:14px;margin-top:6px}.c .m{font-size:11px;color:#9a9088;margin-top:3px}
-.live{margin:16px 0;padding:14px;background:#fff;border:1px dashed #c9bfae;border-radius:12px}
-button{font-family:inherit;font-size:13px;padding:6px 12px;border:1px solid #ddd5c9;background:#f0eadf;border-radius:8px;cursor:pointer;margin:2px}
-</style></head><body>
-<h1>🐾 小哒桌宠 · 12 状态验收（右下角是真实 demo 桌宠）</h1>
-<div class="live"><b>逐状态触发：</b><span id="btns"></span> <span id="cur" style="margin-left:10px;color:#e0623a"></span></div>
-<div class="grid" id="g"></div>
-<!-- 真实桌宠 DOM，复用 app.js 的 pet() -->
+  :root{
+    --bg:#ece7de; --card:#fff; --ink:#2b2620; --sub:#6b635a; --mute:#9a9088;
+    --accent:#e0623a; --accent-soft:#fbe9e1; --line:#ddd5c9; --pill:#f0eadf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;
+    background-image:radial-gradient(circle at 12% 18%,rgba(224,98,58,.05),transparent 38%),
+                     radial-gradient(circle at 88% 82%,rgba(224,98,58,.05),transparent 38%)}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px}
+
+  /* 头部 */
+  header{margin-bottom:26px}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;letter-spacing:2px;
+    padding:5px 14px;border-radius:999px;margin-bottom:14px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:38px;font-weight:700;letter-spacing:.5px;line-height:1.15}
+  h1 .em{color:var(--accent)}
+  .lead{color:var(--sub);font-size:15px;margin-top:10px;max-width:680px}
+  .stats{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:13px}
+  .stat b{font-family:Georgia,serif;font-size:20px;color:var(--accent);margin-right:5px}
+
+  /* 舞台：大预览 + 切换 */
+  .stage{display:flex;gap:24px;background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin:22px 0 30px;align-items:center;flex-wrap:wrap;box-shadow:0 6px 24px rgba(0,0,0,.05)}
+  .stage-view{position:relative;width:230px;height:230px;flex:0 0 auto;border-radius:16px;
+    background:repeating-conic-gradient(#f6f1e8 0% 25%,#efe8dc 0% 50%) 50%/26px 26px;
+    display:flex;align-items:center;justify-content:center}
+  .stage-view img{width:180px;height:180px;object-fit:contain;
+    filter:drop-shadow(0 6px 12px rgba(0,0,0,.16));animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .stage-meta{flex:1;min-width:260px}
+  .stage-bubble{background:var(--accent-soft);border:1px solid #f3d3c6;border-radius:14px 14px 14px 4px;
+    padding:12px 16px;font-size:14px;color:#9c4326;display:inline-block;max-width:100%}
+  .stage-name{font-family:Georgia,serif;font-size:26px;margin:14px 0 4px}
+  .stage-key{font-size:12px;color:var(--mute);font-family:"SF Mono",Menlo,monospace}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .pill{font-family:inherit;font-size:13px;padding:6px 13px;border:1px solid var(--line);
+    background:var(--pill);color:var(--ink);border-radius:999px;cursor:pointer;transition:.14s}
+  .pill:hover{border-color:var(--accent);color:var(--accent)}
+  .pill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* 分组标题 */
+  .group-title{display:flex;align-items:center;gap:10px;margin:30px 0 14px;font-size:15px;color:var(--sub)}
+  .group-title::before{content:"";width:6px;height:18px;background:var(--accent);border-radius:3px}
+  .group-title .tip{font-size:12px;color:var(--mute);font-weight:400}
+
+  /* 卡片网格 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:16px}
+  .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:center;
+    cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;position:relative}
+  .c:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.10);border-color:#e8c9bb}
+  .c .thumb{height:130px;display:flex;align-items:center;justify-content:center;
+    background:repeating-conic-gradient(#f8f4ec 0% 25%,#f1ebe0 0% 50%) 50%/20px 20px;border-radius:12px}
+  .c .thumb img{width:108px;height:108px;object-fit:contain;animation:bob 2.6s ease-in-out infinite}
+  .c .n{font-weight:700;font-size:15px;margin-top:10px}
+  .c .scene{font-size:12px;color:var(--sub);margin-top:3px;min-height:32px}
+  .c .foot{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
+  .c .key{font-size:11px;color:var(--mute);font-family:"SF Mono",Menlo,monospace}
+  .badge{font-size:10px;padding:2px 9px;border-radius:999px;font-weight:600;white-space:nowrap;flex:0 0 auto}
+  .c .foot{flex-wrap:nowrap}
+  .badge.gif{background:#e9f3ec;color:#3f9a5a}
+  .badge.png{background:#fbf2dc;color:#b08428}
+
+  footer{text-align:center;color:var(--mute);font-size:12px;margin-top:40px;
+    border-top:1px solid var(--line);padding-top:20px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* 隐藏复用的真实桌宠（本页用舞台预览，不需右下角那只） */
+  .pet{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">CODA · 小哒桌宠</span>
+    <h1>小哒 · <span class="em">状态图鉴</span></h1>
+    <p class="lead">小哒会跟着评价 Agent 的工作进度变换神态——扫盘、思考、出报告、发现可复用、踩到红线……
+      12 种状态，全部都是循环动画。点下面任意状态，舞台里的小哒就切给你看。</p>
+    <div class="stats">
+      <div class="stat"><b>12</b>种状态</div>
+      <div class="stat"><b>12</b>动画 GIF</div>
+      <div class="stat"><b>2</b>帧/状态 起循环</div>
+    </div>
+  </header>
+
+  <!-- 舞台 -->
+  <div class="stage">
+    <div class="stage-view"><img id="stageImg" src="/pet/busy.gif" alt="busy"></div>
+    <div class="stage-meta">
+      <div class="stage-bubble" id="stageBubble">手忙脚乱但靠谱～ 多件事一起扛着呢</div>
+      <div class="stage-name" id="stageName">忙碌杂耍</div>
+      <div class="stage-key" id="stageKey">busy · busy.gif</div>
+      <div class="pills" id="pills"></div>
+    </div>
+  </div>
+
+  <div class="group-title">全部状态 <span class="tip">— 每个都是多帧循环 GIF，会自己动</span></div>
+  <div class="grid" id="gridGif"></div>
+  <div class="grid" id="gridPng" hidden></div>
+
+  <footer>小哒 Coda · 桌宠状态图鉴 · 暖米编辑风 · 真实状态资源来自 <a href="/index.html">demo 工作台</a></footer>
+</div>
+
+<!-- 复用 app.js 的桌宠 DOM（本页隐藏，仅占位避免脚本报错） -->
 <div class="pet"><div class="bubble" id="petBubble"></div><div class="dog" id="petDog"></div></div>
+
 <script>
-const PET={idle:['idle.png','待命挥手'],scan:['scan.gif','扫盘中'],think:['think.gif','思考'],
-done:['done.png','完成'],ask:['ask.png','举手提问'],busy:['busy.gif','忙碌杂耍★'],
-happy:['happy.gif','高分狂喜'],worry:['worry.png','担忧红线'],reuse:['reuse.png','发现复用'],
-sleep:['sleep.gif','打盹'],error:['error.gif','出错懵圈'],celebrate:['celebrate.gif','撒花庆祝']};
-const g=document.getElementById('g'),btns=document.getElementById('btns'),cur=document.getElementById('cur');
-for(const k in PET){const [f,n]=PET[k];
-  g.innerHTML+=`<div class="c"><img src="/pet/${f}" alt="${k}" onerror="this.style.opacity=.2;this.after('❌缺图')"><div class="n">${n}</div><div class="m">${k} · ${f}</div></div>`;
-  const b=document.createElement('button');b.textContent=k;b.onclick=()=>{window.__pet(k);cur.textContent='当前：'+k};btns.appendChild(b);
+// [文件, 中文名, 触发场景, 气泡文案]。与 app.js 的 PET 对齐。
+const PET = {
+  busy:      ['busy.gif',      '忙碌杂耍', '多任务并行 / 跑分入库阶段',   '手忙脚乱但靠谱～ 多件事一起扛着呢'],
+  scan:      ['scan.gif',      '扫盘中',   '正在遍历文件、提取线索',       '扫盘中… 正在翻你的变量名、文件名、注释找行业线索'],
+  think:     ['think.gif',     '思考',     '反推行业 / 调 LLM 分析',       '让我想想… 在反推你是哪个行业的'],
+  happy:     ['happy.gif',     '高分狂喜', '评分漂亮、代码质量在线',       '哇，这分数漂亮！代码质量在线 ✨'],
+  worry:     ['worry.gif',     '担忧红线', '逐文件检查闻到红线',           '注意点哦… 我闻到几条红线的味道'],
+  reuse:     ['reuse.gif',     '发现复用', '命中跨项目可复用的轮子',       '灵光一现！这块好像有现成的轮子可复用'],
+  sleep:     ['sleep.gif',     '打盹',     '长时间空闲没活',               '没活的时候我就眯一会儿… 有事叫我 zzz'],
+  error:     ['error.gif',     '出错懵圈', '接口失败 / 异常',             '诶？出了点状况，我有点懵，再试一次？'],
+  celebrate: ['celebrate.gif', '撒花庆祝', '全链路收官',                   '全部搞定，撒花！这一轮干得漂亮 🎊'],
+  idle:      ['idle.gif',      '待命挥手', '初始 / 没任务',               '嗨，我是小哒 🐾 给我个项目目录，我扫一眼就懂你～'],
+  done:      ['done.gif',      '完成',     '报告已出（只读不改）',         '搞定！报告出来了，注意——我只读不改 🔒'],
+  ask:       ['ask.gif',       '举手提问', '画像可编辑、等你确认',         '画像可以改哦，改完保存，下次我更懂你'],
+};
+// 12 状态全部为动画 GIF
+const ORDER_GIF = ['busy','scan','think','happy','reuse','sleep','error','celebrate','idle','done','ask','worry'];
+const ORDER_PNG = [];
+
+const $ = (id)=>document.getElementById(id);
+const isGif = (f)=>f.endsWith('.gif');
+
+function setStage(k){
+  const [f,n,scene,msg] = PET[k];
+  $('stageImg').src = '/pet/'+f;
+  $('stageImg').alt = k;
+  $('stageName').textContent = n;
+  $('stageKey').textContent = k+' · '+f;
+  $('stageBubble').textContent = msg;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('on', p.dataset.k===k));
 }
-// 简化版 pet()（独立于 app.js，专供本验收页）
-window.__pet=(s)=>{const [f]=PET[s]||PET.idle;const el=document.getElementById('petDog');
-  el.innerHTML='';const im=new Image();im.src='/pet/'+f;im.className='pet-img';el.appendChild(im);
-  document.getElementById('petBubble').textContent=s};
-window.__pet('busy');cur.textContent='当前：busy';
-</script></body></html>
+
+// 切换药丸
+const pills = $('pills');
+[...ORDER_GIF, ...ORDER_PNG].forEach(k=>{
+  const b=document.createElement('button');
+  b.className='pill'; b.dataset.k=k; b.textContent=PET[k][1];
+  b.onclick=()=>setStage(k);
+  pills.appendChild(b);
+});
+
+// 卡片
+function card(k){
+  const [f,n,scene] = PET[k];
+  const badge = isGif(f) ? '<span class="badge gif">● 动画</span>' : '<span class="badge png">○ 静态</span>';
+  const div=document.createElement('div');
+  div.className='c';
+  div.innerHTML =
+    `<div class="thumb"><img src="/pet/${f}" alt="${k}" onerror="this.style.opacity=.2"></div>`+
+    `<div class="n">${n}</div>`+
+    `<div class="scene">${scene}</div>`+
+    `<div class="foot">${badge}<span class="key">${f}</span></div>`;
+  div.onclick=()=>{ setStage(k); window.scrollTo({top:0,behavior:'smooth'}); };
+  return div;
+}
+ORDER_GIF.forEach(k=>$('gridGif').appendChild(card(k)));
+ORDER_PNG.forEach(k=>$('gridPng').appendChild(card(k)));
+
+setStage('busy');
+</script>
+</body>
+</html>
