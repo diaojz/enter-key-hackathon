@@ -7,6 +7,7 @@
 [![GitHub](https://img.shields.io/badge/GitHub-enter--key--hackathon-181717?logo=github)](https://github.com/diaojz/enter-key-hackathon)
 [![赛道](https://img.shields.io/badge/赛道-Coding%20Agent-ff7a00.svg)](#)
 [![产品](https://img.shields.io/badge/产品-小哒%20Coda-e8a84a.svg)](./PRD.html)
+[![状态图鉴](https://img.shields.io/badge/🐾%20小哒状态图鉴-在线预览-e0623a.svg)](https://diaojz.github.io/enter-key-hackathon/)
 
 > **小哒 Coda** · 一个常驻桌面、懂你行业的 Coding Agent 助手
 > 队名 **回车键** · 3 人小队 · **Coding Agent** 赛道 · 48H 极限开发
@@ -142,8 +143,9 @@ node cli.js review fixtures/clinic-booking   # 评审打分 + 行话翻译
 | [`coda/scanner/`](./coda/scanner) | 扫盘引擎（只读遍历 + 词库匹配 + 权重反推行业，**0 LLM、不改任何文件**） |
 | [`coda/agent/`](./coda/agent) | Agent 层：评分 / 复用 / 人设持久化 / 知识图谱 / 耦合度 / 真 LLM 集成 |
 | [`coda/web/`](./coda/web) | 前端（暖米编辑风）+ 知识图谱力导向可视化 `graph.html` |
-| [`coda/web/pet/`](./coda/web/pet) | 桌宠「小哒」12 状态资源（7 动画 GIF + 5 静态 PNG），随评价 Agent 进度切换神态 |
-| [`coda/web/pet-test.html`](./coda/web/pet-test.html) | **小哒桌宠 · 状态图鉴**（暖米编辑风）：12 状态一览 + 舞台切换预览，本地起服务后开 `localhost:8848/pet-test.html` |
+| [`coda/web/pet/`](./coda/web/pet) | 桌宠「小哒」12 状态资源（全部为循环动画 GIF），随评价 Agent 进度切换神态 |
+| [`coda/web/pet-test.html`](./coda/web/pet-test.html) | **小哒桌宠 · 状态图鉴**（暖米编辑风）：12 状态一览 + 舞台切换预览（本地起服务后开 `localhost:8848/pet-test.html`） |
+| [`docs/`](./docs) | **状态图鉴的 GitHub Pages 静态版**（自包含、零依赖）→ 在线访问：**https://diaojz.github.io/enter-key-hackathon/** |
 | [`coda/dict/`](./coda/dict) | 行业词库（医疗厚 + 电商/教育/金融） |
 | [`coda/fixtures/`](./coda/fixtures) | Demo 素材：`clinic-booking`（项目A）/ `clinic-checkup`（项目B，演跨项目复用） |
 | [`coda/README.md`](./coda/README.md) | Coda 后端完整说明（架构 / 权重算法 / 只读承诺 / 知识图谱层） |

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小哒桌宠 · 状态图鉴 · Coda</title>
+<meta name="description" content="小哒 Coda 桌宠的 12 种状态图鉴，全部为循环动画 GIF。">
+<link rel="icon" href="pet/logo.png">
+<style>
+  :root{
+    --bg:#ece7de; --card:#fff; --ink:#2b2620; --sub:#6b635a; --mute:#9a9088;
+    --accent:#e0623a; --accent-soft:#fbe9e1; --line:#ddd5c9; --pill:#f0eadf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;
+    background-image:radial-gradient(circle at 12% 18%,rgba(224,98,58,.05),transparent 38%),
+                     radial-gradient(circle at 88% 82%,rgba(224,98,58,.05),transparent 38%)}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px}
+
+  header{margin-bottom:26px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  header .logo{width:96px;height:96px;flex:0 0 auto;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.14));animation:bob 2.6s ease-in-out infinite}
+  .htext{flex:1;min-width:280px}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;letter-spacing:2px;
+    padding:5px 14px;border-radius:999px;margin-bottom:12px}
+  h1{font-family:Georgia,"Songti SC",serif;font-size:36px;font-weight:700;letter-spacing:.5px;line-height:1.15}
+  h1 .em{color:var(--accent)}
+  .lead{color:var(--sub);font-size:15px;margin-top:10px;max-width:680px}
+  .stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:13px}
+  .stat b{font-family:Georgia,serif;font-size:20px;color:var(--accent);margin-right:5px}
+
+  .stage{display:flex;gap:24px;background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:24px;margin:22px 0 30px;align-items:center;flex-wrap:wrap;box-shadow:0 6px 24px rgba(0,0,0,.05)}
+  .stage-view{position:relative;width:230px;height:230px;flex:0 0 auto;border-radius:16px;
+    background:repeating-conic-gradient(#f6f1e8 0% 25%,#efe8dc 0% 50%) 50%/26px 26px;
+    display:flex;align-items:center;justify-content:center}
+  .stage-view img{width:180px;height:180px;object-fit:contain;
+    filter:drop-shadow(0 6px 12px rgba(0,0,0,.16));animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .stage-meta{flex:1;min-width:260px}
+  .stage-bubble{background:var(--accent-soft);border:1px solid #f3d3c6;border-radius:14px 14px 14px 4px;
+    padding:12px 16px;font-size:14px;color:#9c4326;display:inline-block;max-width:100%}
+  .stage-name{font-family:Georgia,serif;font-size:26px;margin:14px 0 4px}
+  .stage-key{font-size:12px;color:var(--mute);font-family:"SF Mono",Menlo,monospace}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .pill{font-family:inherit;font-size:13px;padding:6px 13px;border:1px solid var(--line);
+    background:var(--pill);color:var(--ink);border-radius:999px;cursor:pointer;transition:.14s}
+  .pill:hover{border-color:var(--accent);color:var(--accent)}
+  .pill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  .group-title{display:flex;align-items:center;gap:10px;margin:30px 0 14px;font-size:15px;color:var(--sub)}
+  .group-title::before{content:"";width:6px;height:18px;background:var(--accent);border-radius:3px}
+  .group-title .tip{font-size:12px;color:var(--mute);font-weight:400}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:16px}
+  .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:center;
+    cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
+  .c:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.10);border-color:#e8c9bb}
+  .c .thumb{height:130px;display:flex;align-items:center;justify-content:center;
+    background:repeating-conic-gradient(#f8f4ec 0% 25%,#f1ebe0 0% 50%) 50%/20px 20px;border-radius:12px}
+  .c .thumb img{width:108px;height:108px;object-fit:contain;animation:bob 2.6s ease-in-out infinite}
+  .c .n{font-weight:700;font-size:15px;margin-top:10px}
+  .c .scene{font-size:12px;color:var(--sub);margin-top:3px;min-height:32px}
+  .c .foot{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;flex-wrap:nowrap}
+  .c .key{font-size:11px;color:var(--mute);font-family:"SF Mono",Menlo,monospace}
+  .badge{font-size:10px;padding:2px 9px;border-radius:999px;font-weight:600;white-space:nowrap;flex:0 0 auto;
+    background:#e9f3ec;color:#3f9a5a}
+
+  footer{text-align:center;color:var(--mute);font-size:12px;margin-top:40px;
+    border-top:1px solid var(--line);padding-top:20px}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="pet/logo.png" alt="小哒 Coda">
+    <div class="htext">
+      <span class="kicker">CODA · 小哒桌宠</span>
+      <h1>小哒 · <span class="em">状态图鉴</span></h1>
+      <p class="lead">小哒会跟着评价 Agent 的工作进度变换神态——扫盘、思考、出报告、发现可复用、踩到红线……
+        12 种状态，全部都是循环动画。点下面任意状态，舞台里的小哒就切给你看。</p>
+      <div class="stats">
+        <div class="stat"><b>12</b>种状态</div>
+        <div class="stat"><b>12</b>动画 GIF</div>
+        <div class="stat"><b>2</b>帧/状态 起循环</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="stage-view"><img id="stageImg" src="pet/busy.gif" alt="busy"></div>
+    <div class="stage-meta">
+      <div class="stage-bubble" id="stageBubble">手忙脚乱但靠谱～ 多件事一起扛着呢</div>
+      <div class="stage-name" id="stageName">忙碌杂耍</div>
+      <div class="stage-key" id="stageKey">busy · busy.gif</div>
+      <div class="pills" id="pills"></div>
+    </div>
+  </div>
+
+  <div class="group-title">全部状态 <span class="tip">— 每个都是多帧循环 GIF，会自己动</span></div>
+  <div class="grid" id="grid"></div>
+
+  <footer>小哒 Coda · 桌宠状态图鉴 · 暖米编辑风 · 「回车键」黑客松 · Coding Agent 赛道</footer>
+</div>
+
+<script>
+// [文件, 中文名, 触发场景, 气泡文案]
+const PET = {
+  busy:      ['busy.gif',      '忙碌杂耍', '多任务并行 / 跑分入库阶段',   '手忙脚乱但靠谱～ 多件事一起扛着呢'],
+  scan:      ['scan.gif',      '扫盘中',   '正在遍历文件、提取线索',       '扫盘中… 正在翻你的变量名、文件名、注释找行业线索'],
+  think:     ['think.gif',     '思考',     '反推行业 / 调 LLM 分析',       '让我想想… 在反推你是哪个行业的'],
+  happy:     ['happy.gif',     '高分狂喜', '评分漂亮、代码质量在线',       '哇，这分数漂亮！代码质量在线 ✨'],
+  reuse:     ['reuse.gif',     '发现复用', '命中跨项目可复用的轮子',       '灵光一现！这块好像有现成的轮子可复用'],
+  worry:     ['worry.gif',     '担忧红线', '逐文件检查闻到红线',           '注意点哦… 我闻到几条红线的味道'],
+  sleep:     ['sleep.gif',     '打盹',     '长时间空闲没活',               '没活的时候我就眯一会儿… 有事叫我 zzz'],
+  error:     ['error.gif',     '出错懵圈', '接口失败 / 异常',             '诶？出了点状况，我有点懵，再试一次？'],
+  celebrate: ['celebrate.gif', '撒花庆祝', '全链路收官',                   '全部搞定，撒花！这一轮干得漂亮 🎊'],
+  idle:      ['idle.gif',      '待命挥手', '初始 / 没任务',               '嗨，我是小哒 🐾 给我个项目目录，我扫一眼就懂你～'],
+  done:      ['done.gif',      '完成',     '报告已出（只读不改）',         '搞定！报告出来了，注意——我只读不改 🔒'],
+  ask:       ['ask.gif',       '举手提问', '画像可编辑、等你确认',         '画像可以改哦，改完保存，下次我更懂你'],
+};
+const ORDER = ['busy','scan','think','happy','reuse','worry','sleep','error','celebrate','idle','done','ask'];
+const $ = (id)=>document.getElementById(id);
+
+function setStage(k){
+  const [f,n,scene,msg] = PET[k];
+  $('stageImg').src = 'pet/'+f; $('stageImg').alt = k;
+  $('stageName').textContent = n; $('stageKey').textContent = k+' · '+f;
+  $('stageBubble').textContent = msg;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('on', p.dataset.k===k));
+}
+const pills = $('pills');
+ORDER.forEach(k=>{
+  const b=document.createElement('button');
+  b.className='pill'; b.dataset.k=k; b.textContent=PET[k][1];
+  b.onclick=()=>setStage(k); pills.appendChild(b);
+});
+const grid = $('grid');
+ORDER.forEach(k=>{
+  const [f,n,scene] = PET[k];
+  const div=document.createElement('div'); div.className='c';
+  div.innerHTML =
+    `<div class="thumb"><img src="pet/${f}" alt="${k}" onerror="this.style.opacity=.2"></div>`+
+    `<div class="n">${n}</div><div class="scene">${scene}</div>`+
+    `<div class="foot"><span class="badge">● 动画</span><span class="key">${f}</span></div>`;
+  div.onclick=()=>{ setStage(k); window.scrollTo({top:0,behavior:'smooth'}); };
+  grid.appendChild(div);
+});
+setStage('busy');
+</script>
+</body>
+</html>
