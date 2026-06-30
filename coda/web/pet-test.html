@@ -17,10 +17,10 @@ button{font-family:inherit;font-size:13px;padding:6px 12px;border:1px solid #ddd
 <!-- 真实桌宠 DOM，复用 app.js 的 pet() -->
 <div class="pet"><div class="bubble" id="petBubble"></div><div class="dog" id="petDog"></div></div>
 <script>
-const PET={idle:['idle.png','待命挥手'],scan:['busy.gif','扫盘中'],think:['think.png','思考'],
+const PET={idle:['idle.png','待命挥手'],scan:['scan.gif','扫盘中'],think:['think.gif','思考'],
 done:['done.png','完成'],ask:['ask.png','举手提问'],busy:['busy.gif','忙碌杂耍★'],
-happy:['happy.png','高分狂喜'],worry:['worry.png','担忧红线'],reuse:['reuse.png','发现复用'],
-sleep:['sleep.png','打盹'],error:['error.png','出错懵圈'],celebrate:['celebrate.png','撒花庆祝']};
+happy:['happy.gif','高分狂喜'],worry:['worry.png','担忧红线'],reuse:['reuse.png','发现复用'],
+sleep:['sleep.gif','打盹'],error:['error.gif','出错懵圈'],celebrate:['celebrate.gif','撒花庆祝']};
 const g=document.getElementById('g'),btns=document.getElementById('btns'),cur=document.getElementById('cur');
 for(const k in PET){const [f,n]=PET[k];
   g.innerHTML+=`<div class="c"><img src="/pet/${f}" alt="${k}" onerror="this.style.opacity=.2;this.after('❌缺图')"><div class="n">${n}</div><div class="m">${k} · ${f}</div></div>`;
