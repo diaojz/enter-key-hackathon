@@ -148,7 +148,10 @@ const TYPE_DESCRIPTIONS = {
   IndustryWord: '行业关键词', File: '项目中的源文件', Wheel: '可复用片段', Redline: '行业合规红线'
 };
 
-const PORT = (new URLSearchParams(location.search)).get('port') || '8848';
+// 后端地址：?port= 显式指定 > 当前页面所在端口（http(s) 打开时自动跟随）> 兜底 8848（file:// 离线打开时）
+const PORT = (new URLSearchParams(location.search)).get('port') || location.port || '8848';
+// http(s) 下用同源相对路径，避开 127.0.0.1↔localhost 的 CSP/跨域差异；file:// 离线时回退到 127.0.0.1:PORT
+const API_BASE = location.protocol.startsWith('http') ? '' : `http://127.0.0.1:${PORT}`;
 const $ = (s) => document.querySelector(s);
 
 const canvas = $('#canvas');
@@ -184,11 +187,11 @@ function sizeCanvas() {
 async function loadKG() {
   $('#status').textContent = '载入中…';
   try {
-    const r = await fetch(`http://127.0.0.1:${PORT}/kg/graph`);
+    const r = await fetch(`${API_BASE}/kg/graph`);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     state.raw = await r.json();
   } catch (e) {
-    $('#status').textContent = '连接 8848 失败：' + e.message;
+    $('#status').textContent = `连接 ${API_BASE || ':'+PORT} 失败：` + e.message;
     $('#empty').style.display = 'flex';
     $('#empty').querySelector('div:nth-child(2)').textContent = '连不上后端';
     $('#empty').querySelector('.hint').innerHTML = '请确认 <code style="background:var(--pill);padding:1px 5px;border-radius:3px">cd coda && node server.js</code> 已启动';
