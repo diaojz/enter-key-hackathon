@@ -28,3 +28,6 @@ Thumbs.db
 # 桌宠帧生图的中间产物：校色前备份 / 跑偏废弃帧（本地留底，不入库）
 assets/pet-frames/states/_pre_recolor_backup/
 assets/pet-frames/states/_rejected/
+
+# 路演 PPT 的 PDF 导出（由同名 HTML 导出的衍生物，体积大，不入库）
+*.pdf
