@@ -21,3 +21,10 @@ Thumbs.db
 *.tmp
 
 .codegraph/
+
+# 现场情报页（含其他队选手照片/姓名，仅本地查看，不提交、不公开）
+黑客松现场情报.html
+
+# 桌宠帧生图的中间产物：校色前备份 / 跑偏废弃帧（本地留底，不入库）
+assets/pet-frames/states/_pre_recolor_backup/
+assets/pet-frames/states/_rejected/
